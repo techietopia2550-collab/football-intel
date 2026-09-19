@@ -26,6 +26,7 @@ class Settings(BaseSettings):
     api_football_key: str = Field(default="", alias="API_FOOTBALL_KEY")
     db_path: Path = Field(default=PROJECT_ROOT / "data" / "football.db", alias="DB_PATH")
     cache_dir: Path = Field(default=PROJECT_ROOT / "data" / "raw", alias="CACHE_DIR")
+    processed_dir: Path = Field(default=PROJECT_ROOT / "data" / "processed", alias="PROCESSED_DIR")
     scrape_delay_seconds: float = Field(default=3.0, alias="SCRAPE_DELAY_SECONDS")
 
     def ensure_dirs(self) -> None:

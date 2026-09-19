@@ -42,3 +42,18 @@ class PlayerSeasonRecord(BaseModel):
     birth_year: int | None = None
     nationality: str | None = None
     raw_stats: dict[str, Any]
+
+
+class PositionAssignment(BaseModel):
+    """Position group derived for one player from real per-match data.
+
+    `position_group` is None only when it cannot be determined; `null_reason`
+    then says why. `minutes_by_group` is the starter-minutes evidence.
+    """
+
+    player_id: int
+    player_name: str
+    position_group: str | None
+    starter_minutes: int
+    minutes_by_group: dict[str, int]
+    null_reason: str | None = None

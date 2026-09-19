@@ -36,15 +36,6 @@ from src.utils.ratelimit import rate_limited
 
 SOURCE = "understat"
 
-# Understat positions are space-separated letters, primary first, e.g. "F M S",
-# "D S", "GK". A trailing "S" marks substitute appearances; a bare "S" means the
-# player only ever came off the bench, so no position is known.
-_POSITION_GROUPS: dict[str, str] = {
-    "D": "DEF",
-    "M": "MID",
-    "F": "FWD",
-}
-
 
 def _raw_cache_path(season: int, league: str) -> Path:
     return settings.cache_dir / "understat" / str(season) / f"{league}.parquet"
@@ -62,18 +53,6 @@ def _read_player_season_stats(us: sd.Understat) -> pd.DataFrame:
 @rate_limited()
 def _read_team_match_stats(us: sd.Understat) -> pd.DataFrame:
     return us.read_team_match_stats()
-
-
-def _position_group(position: str | None) -> str | None:
-    if not position:
-        return None
-    tokens = position.split()
-    if not tokens:
-        return None
-    first = tokens[0].upper()
-    if first == "GK":
-        return "GK"
-    return _POSITION_GROUPS.get(first[0])
 
 
 def _team_season_xg(team_match_df: pd.DataFrame) -> pd.DataFrame:
@@ -185,7 +164,8 @@ def _to_records(df: pd.DataFrame, *, season: int, league: str) -> list[PlayerSea
                 league=league,
                 team=normalize_team_name(str(team)) if team is not None and not pd.isna(team) else None,
                 position=str(position) if position is not None and not pd.isna(position) else None,
-                position_group=_position_group(str(position) if position else None),
+                # position_group is derived from per-match data by understat_positions.py;
+                # Understat's season `position` letters are alphabetical, so they can't set it.
                 minutes=int(minutes_raw) if minutes_raw is not None and not pd.isna(minutes_raw) else None,
                 matches=int(matches_raw) if matches_raw is not None and not pd.isna(matches_raw) else None,
                 raw_stats=raw_stats,
@@ -215,7 +195,6 @@ def _upsert_records(session: Session, records: list[PlayerSeasonRecord]) -> int:
                 set_={
                     "canonical_name": rec.canonical_name,
                     "understat_id": understat_id,
-                    "position_group": rec.position_group,
                 },
             )
         )
@@ -247,7 +226,6 @@ def _upsert_records(session: Session, records: list[PlayerSeasonRecord]) -> int:
                 set_={
                     "team": rec.team,
                     "position": rec.position,
-                    "position_group": rec.position_group,
                     "minutes": rec.minutes,
                     "matches": rec.matches,
                     "raw_stats": rec.raw_stats,

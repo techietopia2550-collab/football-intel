@@ -54,14 +54,38 @@ supplement, not a foundation. Avoid Option 3.
 - **Risk:** anything routed through `soccerdata`'s `BaseRequestsReader` depends on this download
   succeeding on first use. `football_data_csv` does not.
 
-## 3. Other known defects (not blockers)
+## 3. Understat position grouping — RESOLVED (per-match method; limitations below)
 
-- **Understat position grouping is approximate.** Positions are mapped by first letter
-  (`GK`, `D`->DEF, `M`->MID, `F`->FWD), but Understat lists letters alphabetically, not
-  primary-first. 53 EPL 2024 rows containing `D` plus `M`/`F` (`D M S`, `D F M S`, ...) are
-  labelled DEF, including attackers such as Mbeumo and Madueke. 70 rows are `S` only
-  (substitute-only) and have NULL `position_group`. Better signals need another source or a
-  rule based on stats.
+- **Problem:** Understat's season-level `position` ("D F M S") is an alphabetical letter list, not
+  priority-ordered, so a first-letter rule mislabelled 53 attackers as DEF (Mbeumo, Madueke, ...).
+  The letter rule has been removed; `understat.py` no longer sets `position_group`.
+- **Method (`src/ingest/understat_positions.py`):** Understat's per-match rosters
+  (`soccerdata.Understat.read_player_match_stats`, plain HTTP, no Selenium) carry a real position code
+  and minutes for every appearance. For each player, starter minutes are summed per position group and
+  the group with the most minutes wins. Bench appearances (`Sub`) carry no role and are ignored. No
+  priority heuristic. Raw match pages are cached one file per match in
+  `data/raw/understat/<season>/<league>_match_players/`.
+- **Code map:** `GK`; `DC/DL/DR` -> DEF; `DMC/DML/DMR/MC/ML/MR/AMC` -> MID; `AML/AMR/FW/FWL/FWR` -> FWD.
+- **Result, EPL 2024/25:** DEF 172, MID 153, FWD 125, GK 42, NULL 70 (562 players). All 42 goalkeepers
+  match Understat's own `GK` letters. Salah FWD, Van Dijk DEF, Rodri MID, Alisson GK, Mbeumo FWD.
+- **NULLs:** 70 players, all substitute-only (no starts, so no position exists in the data). Reasons are
+  logged in `data/processed/position_nulls.csv` (gitignored). Exclude NULL from position-based analysis.
+- **Limitations:**
+  - **DEF 172 is every player who ever started at DC/DL/DR.** By starter minutes it is 134 at >=450, 108
+    at >=900, 78 at >=1500. Position-based analysis should apply a minutes threshold.
+  - **Taxonomy choices drive edge cases.** Wide attacking mids (`AML/AMR`) are FWD, so Understat "M"
+    wingers such as Grealish and Sancho come out FWD. Wing-backs coded `ML/MR` in back-fives come out MID
+    (Dalot, Semedo), so DEF undercounts them. 39 of 492 grouped players disagree with Understat's own
+    season letters, mostly for these two reasons.
+  - **Mixed roles:** 19 players win with under 60% of their starter minutes (e.g. Wan-Bissaka DEF
+    1778/MID 1350; McGinn MID 1107/FWD 1028). The label is the plurality, not a certainty. A tie gives NULL.
+  - **Thin evidence:** Rodri has one 20-minute start in Understat's data (injury season), so his MID
+    label rests on very little.
+  - **Requires ~380 page fetches per league-season** (~25 min at the 3 s rate limit; resumable from cache).
+    It must be re-run after the season ingest for each new league/season.
+
+## 4. Other known defects (not blockers)
+
 - **Team names are normalized for the EPL 2024/25 only** (`src/ingest/team_identity.py`). Other
   leagues, and promoted/relegated clubs in other seasons, pass through unchanged until added.
   There is no player identity resolution across sources and no `identity.py`.
@@ -74,4 +98,4 @@ supplement, not a foundation. Avoid Option 3.
 ## Next priority
 
 Migrate the primary style/similarity source to StatsBomb Open Data before building similarity
-(Prompt 3). Improve position grouping before position-based analysis.
+(Prompt 3). Apply a minutes threshold when using position groups.

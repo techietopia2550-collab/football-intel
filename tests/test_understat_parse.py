@@ -5,10 +5,9 @@ from __future__ import annotations
 from pathlib import Path
 
 import pandas as pd
-import pytest
 
 from src.ingest.team_identity import is_known_team
-from src.ingest.understat import SOURCE, _position_group, _to_records
+from src.ingest.understat import SOURCE, _to_records
 
 FIXTURE = Path(__file__).parent / "fixtures" / "understat_sample.parquet"
 LEAGUE = "ENG-Premier League"
@@ -43,37 +42,12 @@ def test_parse_drops_rows_without_player_name() -> None:
     assert len(_to_records(df, season=2024, league=LEAGUE)) == len(df) - 1
 
 
-def test_goalkeeper_position_group_is_mapped() -> None:
-    gk = next(r for r in _records() if r.position == "GK")
-    assert gk.position_group == "GK"
-
-
-def test_outfield_position_group_is_mapped() -> None:
+def test_season_parse_keeps_raw_position_but_leaves_group_unset() -> None:
+    """Understat's season `position` is alphabetical letters ("D F M"), so it must not
+    drive position_group. The group comes from per-match data (understat_positions)."""
     by_name = {r.canonical_name: r for r in _records()}
-    assert by_name["Mohamed Salah"].position == "F M"
-    assert by_name["Mohamed Salah"].position_group == "FWD"
-    assert by_name["Erling Haaland"].position_group == "FWD"
-
-
-@pytest.mark.parametrize(
-    ("position", "expected"),
-    [
-        ("GK", "GK"),
-        ("GK S", "GK"),
-        ("D", "DEF"),
-        ("D S", "DEF"),
-        ("D M", "DEF"),  # first letter wins, per spec
-        ("M S", "MID"),
-        ("F M", "FWD"),
-        ("F M S", "FWD"),
-        ("D F M S", "DEF"),
-        ("S", None),  # substitute-only: no position is known
-        ("", None),
-        (None, None),
-    ],
-)
-def test_position_group_mapping(position: str | None, expected: str | None) -> None:
-    assert _position_group(position) == expected
+    assert by_name["Mohamed Salah"].position == "F M"  # raw string preserved
+    assert all(r.position_group is None for r in by_name.values())
 
 
 def test_team_names_are_canonical() -> None:
