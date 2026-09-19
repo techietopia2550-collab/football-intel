@@ -1,8 +1,13 @@
 # BLOCKERS
 
-## 1. FBref ingest is blocked (Selenium) — OPEN
+## 1. FBref: DEAD (definitively, not just blocked)
 
-- **Blocked file:** `src/ingest/_blocked/fbref.py` (see `src/ingest/_blocked/BLOCKED.md`). Never executed.
+FBref is not coming back as a source. Three independent reasons, each sufficient: (1) `soccerdata.FBref`
+needs Selenium, which the project forbids; (2) plain HTTP is stopped by a site-wide Cloudflare JavaScript
+challenge (403 on every path, including `robots.txt`); (3) in January 2026 FBref lost its Opta advanced
+data, so the defensive and passing tables no longer exist. Evidence is in section 5. Do not revisit.
+
+- **Quarantined file:** `src/ingest/_blocked/fbref.py` (see `src/ingest/_blocked/BLOCKED.md`). Never executed.
 - **What:** `soccerdata` 1.9.1 `FBref.__mro__` is `[FBref, BaseSeleniumReader, BaseReader, ...]`.
   Constructing it launches undetected Chrome via `seleniumbase` (`uc=True`), and its CAPTCHA
   handler can drive the desktop with pyautogui (`uc_gui_handle_captcha`) when `headless=False`.
@@ -16,7 +21,7 @@
 - **Also affects:** `soccerdata.WhoScored` and `soccerdata.Sofascore` (seleniumbase-based per the README).
   Verify with `__mro__` before use.
 
-### Replacement options
+### Replacement options (historical: the choice was made in section 5)
 
 1. **StatsBomb Open Data** — free JSON on GitHub (`statsbomb/open-data`), plain HTTP, no scraping.
    Event-level data supports rich style features (pressures, progressive actions, carries).
@@ -30,9 +35,8 @@
 
 ### Recommendation
 
-Superseded: see section 5. The earlier recommendation (StatsBomb as the primary source) does not
-hold for current-season data, because StatsBomb Open Data has no 2024/25 coverage of any top-5 league,
-and plain-requests FBref (Option 2) is blocked by Cloudflare and no longer has the advanced data.
+Superseded by section 5: StatsBomb Open Data was chosen, on 2015/16 only. Option 2 (plain-requests
+FBref) is ruled out (Cloudflare 403, and the advanced data is gone); Option 3 is rejected by the project rule.
 
 ## 2. `tls_requests` native DLL failure — RESOLVED (transient, watch for recurrence)
 
@@ -93,115 +97,94 @@ and plain-requests FBref (Option 2) is blocked by Cloudflare and no longer has t
   `_upsert_records` are testable offline. The network fetch functions are untested.
 - **Only `ENG-Premier League` 2024 has been ingested live.**
 
-## Next priority
+## 5. Defensive and passing stats: DECIDED, StatsBomb Open Data on 2015/16 (2026-09-19)
 
-Decide the defensive/passing stats approach (section 5). Apply a minutes threshold when using
-position groups.
+**Decision:** use StatsBomb Open Data for player-level defensive and passing metrics, on the
+2015/16 season. Do not use the Kaggle FBref mirrors (legal risk) and do not spend more effort on FBref.
 
-## 5. Player-level defensive and passing stats: source investigation (2026-09-19)
+**The trade-off, stated plainly: no free source gives current-season (2024/25 or later) defensive or
+advanced passing data.** With StatsBomb 2015/16 we can design, build and validate profiles,
+similarity and squad-needs logic for defenders and midfielders, but only for 2015/16 players. Current
+players can only be described by Understat's attacking numbers (xG, xA, shots, key passes). Anything
+built on this data must say which season it describes. Getting current defensive data would need a paid
+provider (Opta/StatsBomb commercial, Wyscout, etc.); that is out of scope while the project is free-data only.
 
-Goal: find a non-Selenium source for tackles, interceptions, blocks, pressures, progressive
-passes/carries and pass completion. Investigation only; no ingest code was written. Each source was
-hit only a handful of times.
+### Why the alternatives were ruled out (evidence from the investigation)
 
-### A. FBref via plain `requests`: NOT VIABLE
+- **FBref: dead.** A plain `requests` GET of the EPL 2024/25 stats page returned `403 Forbidden`,
+  `cf-mitigated: challenge` (Cloudflare "Just a moment..." JavaScript challenge); `/robots.txt` and `/en/`
+  returned the same, so no path is exempt. `soccerdata.FBref` needs Selenium, which the project forbids.
+  Independently, in January 2026 Opta (Stats Perform) terminated Sports Reference's feed and FBref removed
+  all Opta advanced stats, keeping only basic stats (press coverage; the announcement itself returned 403 to
+  my fetcher). The Opta-derived tables (defense, passing, possession) are gone even if Cloudflare were passed.
+  Cloudflare-evasion tools (curl_cffi, cloudscraper, FlareSolverr, headless browsers) were not tried: they are
+  new dependencies and at odds with the no-browser-automation rule and FBref's terms.
+- **Kaggle FBref mirrors: rejected on legal grounds.** The data is Opta-derived and Opta demanded its
+  deletion, so redistribution is doubtful. Nothing was downloaded or inspected. The one public scraper feeding
+  them uses Playwright and its scheduled runs have failed since at least 2025-12-29.
+- **WhoScored / Sofascore:** Selenium-based in `soccerdata`, blocked by the same rule.
 
-- **Request:** `GET https://fbref.com/en/comps/9/2024-2025/stats/2024-2025-Premier-League-Stats` with a
-  Chrome User-Agent and Accept headers.
-- **Response:** `403 Forbidden`, `server: cloudflare`, `cf-mitigated: challenge`, 5938-byte body starting
-  `<!DOCTYPE html>...<title>Just a moment...</title>` (Cloudflare's JavaScript challenge). `requests`
-  cannot run it.
-- **Site-wide:** `/robots.txt` and `/en/` return the same 403 challenge, so no path is exempt.
-- **CSV export:** FBref's "Get table as CSV" is a client-side JavaScript feature of the rendered page
-  (per public write-ups; I could not inspect the page to confirm). There is no server-side CSV endpoint
-  to call, and the `/en/share/<hash>/` links cannot be tried without the page.
-- **Public workarounds** (browser-fingerprint TLS clients such as curl_cffi, cloudscraper, FlareSolverr,
-  headless browsers) are Cloudflare-evasion tools. I did not try them: they are new dependencies, and
-  evasion is at odds with the "no browser automation" rule and with FBref's terms. The one public
-  Kaggle-feeding scraper I found (below) uses Playwright.
-- **Second, independent problem: the advanced data no longer exists.** In January 2026 Opta (Stats
-  Perform) terminated Sports Reference's data feed and required deletion; FBref removed all Opta advanced
-  stats (announced ~20-23 Jan 2026) and says it keeps "basic, non-advanced" stats. The sources I could
-  read do not list categories, but tackles, interceptions, pressures, progressive actions and pass
-  completion were Opta-derived (my inference), so they are gone from the live site even if Cloudflare
-  were bypassed. The Sports Reference announcement itself returned 403 to my fetcher; this rests on press
-  coverage.
-- **Verdict:** FBref is closed for defensive stats, live or scraped.
+### StatsBomb coverage (men's; from `competitions.json` and `matches/<comp>/<season>.json`)
 
-### B. StatsBomb Open Data: usable, but NOT current
+Competition and season ids are read from `competitions.json` at run time. Confirmed for 2015/16:
+EPL `(2, 27)`, La Liga `(11, 27)`, Serie A `(12, 27)`, Ligue 1 `(7, 27)`.
 
-Repo `statsbomb/open-data`: last push 2026-09-07, last data commit 2026-05-26 ("1647 new games").
-License shows as `NOASSERTION`; the README requires crediting StatsBomb and using their logo on anything
-published. Plain HTTP from `raw.githubusercontent.com`; no auth.
-
-Coverage (men's; `data/competitions.json`, match counts from `data/matches/<comp>/<season>.json`):
-
-| Competition | Seasons available | Coverage |
+| Competition | Available seasons | Coverage |
 |---|---|---|
-| Premier League | 2003/04 (38 matches), **2015/16 (380, full season)** | 2015/16 all 20 clubs |
-| La Liga | 2004/05 to 2020/21 | **2015/16 = 380 matches (full)**; other seasons are Barcelona matches only (7-38 each) |
+| Premier League | 2003/04 (38), **2015/16 (380, full)** | 2015/16 all 20 clubs |
+| La Liga | 2004/05 to 2020/21 | **2015/16 = 380 (full)**; other seasons are Barcelona only |
 | Serie A | 1986/87 (1), **2015/16 (380, full)** | 2015/16 all clubs |
-| Bundesliga | 2015/16 (34), 2023/24 (34) | Bayer Leverkusen matches only |
-| Ligue 1 | **2015/16 (377)**, 2021/22 (26), 2022/23 (32) | 2015/16 near-full; 2021/22 and 2022/23 are PSG matches only |
-| Champions League | 1970/71 to 2018/19 (18 seasons) | 2017/18 and 2018/19 = the final only (1 match each); others partial |
+| Bundesliga | 2015/16 (34), 2023/24 (34) | Bayer Leverkusen only: **not usable** for league-wide work |
+| Ligue 1 | **2015/16 (377)**, 2021/22, 2022/23 | 2015/16 near-full; later seasons PSG only |
+| Champions League | 1970/71 to 2018/19 | one final or partial seasons |
 
-**2024/25 is not available for any of these.** The only 2024 entries in the whole dataset are Copa America
-and UEFA Euro. No 2025/26 either.
+2024/25 is not available for any of these (the only 2024 entries in the dataset are Copa America and the
+Euros). Full-league 2015/16 is roughly 1,500 matches across four leagues. The Bundesliga has no full season.
+The repo shows license `NOASSERTION`; its README requires crediting StatsBomb and using their logo
+(done: see the README attribution and `src/app/static/statsbomb-logo.png`).
 
-Schema (checked on Bundesliga 2023/24 match 3895292, 3,843 events, 3.2 MB JSON): one event list per match.
-Every event carries `type`, `player`, `team`, `position` (actual on-pitch role, e.g. "Center Attacking
-Midfield"), `location`, `minute`/`second`, `under_pressure`, `possession`, `related_events`.
-- **Pass:** `recipient`, `length`, `angle`, `height`, `end_location`, `body_part`, `type`, flags (`cross`,
-  `through_ball`, `switch`, `shot_assist`, ...). `outcome` is absent when the pass completed. So pass
-  completion and progressive passes can be derived from `location`/`end_location`.
-- **Carry:** `end_location` (progressive carries derivable).
-- **Pressure:** `location`, `duration`, `counterpress`.
-- **Duel:** `duel.type` is "Tackle" or "Aerial Lost", with `outcome` (Won / Lost In Play / ...).
-- **Interception**, **Block**, **Clearance**, **Ball Recovery**, **Dribbled Past** are their own event types.
-- Lineups (`Starting XI`) and `Substitution` events allow minutes to be derived.
+### What the foundation does (built 2026-09-19, one match ingested)
 
-Verdict: everything needed exists, but **only for old seasons**: full-league coverage is 2015/16 alone
-(PL, La Liga, Serie A, Ligue 1); the rest are single-club subsets. It cannot describe current players.
+Modules in `src/ingest/statsbomb/`: `discovery.py` (competitions and matches), `fetch.py` (cached, validated
+downloads), `parse.py` (per-player match metrics), `identity.py` (`statsbomb:<id>` players), `ingest.py`
+(single-match orchestrator). New tables: `matches`, `player_match_stats`; new column `players.statsbomb_id`
+(added by an idempotent migration in `init_db`).
 
-### C. Mirror datasets: the only route to 2024/25, unverified
+Proof match: Manchester City 1-3 Leicester City (2016-02-06, id 3754290), 28 players. Verified against
+independent facts: team minutes sum to 11 x match length, lineup minutes agree with all 6 `Substitution`
+events, goals match the official score, and pass, shot and card totals equal the raw event counts.
 
-Kaggle pages render client-side, so last-update date, license and columns could not be read without a
-browser or Kaggle credentials. Marked unverified rather than guessed.
+Metrics computed: minutes, position played, passes (attempted, completed, %), progressive passes,
+passes into final third and box, carries, progressive carries, carry distance, pressures (with mean
+duration and counterpressures), tackles (and won), interceptions, blocks, clearances, ball recoveries,
+dribbles, shots, goals, **xG (present in the data: `shot.statsbomb_xg` on every shot)**, fouls, cards.
+Definitions and thresholds are documented at the top of `src/ingest/statsbomb/parse.py`.
 
-| Candidate | Covers (claimed) | Last update | License |
-|---|---|---|---|
-| kaggle.com/datasets/hubertsidorowicz/football-players-stats-2024-2025 | Big 5 leagues, 2024/25, FBref | unverified | unverified |
-| kaggle.com/datasets/siddhrajthakor/fbref-premier-league-202425-player-stats-dataset | Premier League, 2024/25, FBref | unverified | unverified |
-| kaggle.com/datasets/furkanark/premier-league-2024-2025-data | Premier League 2024/25, FBref match and stats pages | unverified | unverified |
-| github.com/hubertsid/football-data-scraper (feeds the 2025-26 sibling of the first dataset) | Big 5, current season, FBref | last push 2026-03-17; **every weekly run since at least 2025-12-29 failed** | none declared |
-| github.com/eddwebster/football_analytics | curated resource list, not a data dump | 2025-10-09 | none declared |
+### Known limitations of the foundation
 
-Facts from the scraper source: it collects Big-5 player tables `standard`, `shooting`, `passing`,
-`passing_types`, `gca`, `defense`, `possession`, `playing_time`, `misc`, `keepers`, `keepers_adv`, so a
-snapshot from it would contain the defensive/passing/possession tables. It uses Playwright (a headless
-browser), which independently confirms plain HTTP does not work. Its runs failing since December 2025
-suggests the current-season dataset is stale or empty.
+- **Progressive thresholds are our own:** a pass or carry is progressive if it cuts the straight-line
+  distance to the goal centre by at least 10 yards. This is not FBref's or StatsBomb's own definition, so
+  do not compare the numbers with published ones.
+- **Minutes are event-clock play time**, so a full match is about 97 minutes here, not 90.
+- **Minutes and position come from the lineup file's position spells.** If a match's lineup lacks them for a
+  player who has events, parsing raises `LineupError` rather than guessing. Only one match has been checked.
+  Older or partial matches may lack spells; this must be checked across all 380 before trusting a season.
+- **Temporary `Player Off`/`Player On` (injury) events are ignored.**
+- **`position_played` is StatsBomb's position name** (e.g. "Left Center Midfield"). It is not mapped to
+  GK/DEF/MID/FWD yet. StatsBomb players have no `position_group`.
+- **`interceptions` counts attempts** whatever the outcome; `tackles` counts all Tackle duels.
+- **Player names** use StatsBomb's nickname where present (e.g. "Pablo Zabaleta"). Not linked to Understat.
+- **Team names** use `team_identity`, which only knows 2024/25 EPL clubs; 2015/16 clubs that are not in that
+  table (Swansea City, Watford, Norwich City, Sunderland, ...) pass through with StatsBomb's spelling.
+- Per-match rows are not aggregated to seasons yet, and no analytics exist.
 
-Risks: (1) the 2024/25 snapshots are one-off, static season aggregates whose provenance is unaudited;
-(2) the data is Opta-derived and Opta has demanded deletion, so redistribution licensing is doubtful and
-the datasets may be pulled; (3) nothing verifies they predate the January 2026 removal (an automated
-overwrite could have replaced advanced columns with blanks); (4) they carry no per-match data and must be
-joined to Understat by fuzzy player name.
+## Next priority: the full 2015/16 EPL ingest (next session)
 
-### Recommendation
-
-There is no verified free, non-Selenium source of *current* (2024/25 or later) defensive stats today.
-- **StatsBomb Open Data** is the only clean, legal, stable source and has everything needed, but only for
-  2015/16 full leagues (~1,500 matches). Use it to design and validate defender and defensive-midfielder
-  metrics, position groups and similarity, not to profile current players.
-- **A Kaggle FBref 2024/25 snapshot** is the only candidate for current-season defensive numbers, pending a
-  verification step: download one file (needs your approval) and confirm the `defense`, `passing` and
-  `possession` columns are populated, then decide on the licensing risk.
-- Do not spend effort on FBref directly.
-
-An ingest module for the StatsBomb path would need to handle: `competitions.json` and per-season
-`matches` discovery; one 2-4 MB events file per match (~380 files per full season) cached to `data/raw`,
-with a courtesy delay; deriving minutes from lineups/substitutions; mapping StatsBomb player/team names
-(different IDs from Understat) to our canonical names, which needs a player identity layer that does not
-exist yet; computing progressive and completion metrics from coordinates in `/src/analytics`; and the
-required StatsBomb attribution in the UI and reports.
+1. Loop `ingest_match` over the 380 matches from `list_available("EPL", 2015)`, resumable from the
+   cache, collecting failures and failing loudly (do not silently skip a match). Expect about 3 MB per
+   events file, roughly 1.1 GB of raw JSON on disk D (962 GB free) and about 25 to 30 minutes at the 2 s delay.
+2. Before trusting the season, check that every match has lineup position spells and that per-match
+   invariants hold (team minutes vs match length, goals vs official score, substitutions cross-check).
+3. Add the 2015/16 EPL clubs missing from `team_identity`.
+4. Map StatsBomb position names to GK/DEF/MID/FWD (as a reviewed, documented table, not a heuristic).
+5. Only then aggregate to season level and start analytics; La Liga, Serie A and Ligue 1 follow the same path.
