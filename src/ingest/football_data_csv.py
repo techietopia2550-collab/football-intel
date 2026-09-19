@@ -14,7 +14,7 @@ from __future__ import annotations
 
 import argparse
 import io
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import pandas as pd
@@ -24,7 +24,14 @@ from sqlalchemy.orm import Session
 
 from src.ingest.team_identity import normalize_team_name
 from src.models.match import MatchRecord
-from src.models.schema import IngestLog, MatchResult, Team, build_team_id, get_session_factory, init_db
+from src.models.schema import (
+    IngestLog,
+    MatchResult,
+    Team,
+    build_team_id,
+    get_session_factory,
+    init_db,
+)
 from src.utils.config import settings
 from src.utils.logging import logger
 from src.utils.ratelimit import rate_limited
@@ -102,7 +109,9 @@ def fetch_csv(season: int, league: str, *, force: bool = False) -> bytes:
 
     cache_path.parent.mkdir(parents=True, exist_ok=True)
     cache_path.write_bytes(content)
-    logger.info("Wrote football-data raw cache: {path} ({n} bytes)", path=cache_path, n=len(content))
+    logger.info(
+        "Wrote football-data raw cache: {path} ({n} bytes)", path=cache_path, n=len(content)
+    )
     return content
 
 
@@ -150,7 +159,12 @@ def _to_records(df: pd.DataFrame, *, season: int, league: str) -> list[MatchReco
         )
 
     if dropped:
-        logger.warning("Dropped {n} football-data rows (no teams/date) for {league} {season}", n=dropped, league=canonical, season=season)
+        logger.warning(
+            "Dropped {n} football-data rows (no teams/date) for {league} {season}",
+            n=dropped,
+            league=canonical,
+            season=season,
+        )
     return records
 
 
@@ -174,8 +188,20 @@ def _upsert_records(session: Session, records: list[MatchRecord]) -> int:
             sqlite_insert(MatchResult)
             .values(**values)
             .on_conflict_do_update(
-                index_elements=["source", "season", "league", "match_date", "home_team", "away_team"],
-                set_={k: v for k, v in values.items() if k not in {"source", "season", "league", "match_date", "home_team", "away_team"}},
+                index_elements=[
+                    "source",
+                    "season",
+                    "league",
+                    "match_date",
+                    "home_team",
+                    "away_team",
+                ],
+                set_={
+                    k: v
+                    for k, v in values.items()
+                    if k
+                    not in {"source", "season", "league", "match_date", "home_team", "away_team"}
+                },
             )
         )
     session.commit()
@@ -186,7 +212,7 @@ def ingest_football_data(season: int, league: str, *, force: bool = False) -> in
     """Fetch, normalize, and upsert football-data match results. Returns row count."""
     init_db()
     session_factory = get_session_factory()
-    started_at = datetime.now(timezone.utc)
+    started_at = datetime.now(UTC)
     status = "success"
     error: str | None = None
     rows = 0
@@ -201,7 +227,12 @@ def ingest_football_data(season: int, league: str, *, force: bool = False) -> in
     except Exception as exc:  # noqa: BLE001 - always log to ingest_log before re-raising
         status = "failed"
         error = str(exc)
-        logger.error("football-data ingest failed for {league} {season}: {exc}", league=league_name, season=season, exc=exc)
+        logger.error(
+            "football-data ingest failed for {league} {season}: {exc}",
+            league=league_name,
+            season=season,
+            exc=exc,
+        )
         raise
     finally:
         with session_factory() as session:
@@ -213,21 +244,30 @@ def ingest_football_data(season: int, league: str, *, force: bool = False) -> in
                     rows=rows,
                     status=status,
                     started_at=started_at,
-                    finished_at=datetime.now(timezone.utc),
+                    finished_at=datetime.now(UTC),
                     error=error,
                 )
             )
             session.commit()
 
-    logger.info("football-data ingest complete: {rows} rows for {league} {season}", rows=rows, league=league_name, season=season)
+    logger.info(
+        "football-data ingest complete: {rows} rows for {league} {season}",
+        rows=rows,
+        league=league_name,
+        season=season,
+    )
     return rows
 
 
 def _main() -> None:
     parser = argparse.ArgumentParser(description="Ingest football-data.co.uk match results.")
     parser.add_argument("--season", type=int, required=True, help="Season start year, e.g. 2024.")
-    parser.add_argument("--league", type=str, required=True, help=f"One of {sorted(LEAGUES)} (or E0/SP1/I1/D1/F1).")
-    parser.add_argument("--force", action="store_true", help="Re-download even if a raw cache exists.")
+    parser.add_argument(
+        "--league", type=str, required=True, help=f"One of {sorted(LEAGUES)} (or E0/SP1/I1/D1/F1)."
+    )
+    parser.add_argument(
+        "--force", action="store_true", help="Re-download even if a raw cache exists."
+    )
     args = parser.parse_args()
 
     rows = ingest_football_data(args.season, args.league, force=args.force)

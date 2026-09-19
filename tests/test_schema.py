@@ -39,12 +39,25 @@ def test_tables_have_expected_columns(engine: Engine) -> None:
     assert {"player_id", "season", "league", "source"} <= cols("player_season_stats")
     assert {"season", "league", "source"} <= cols("match_results")
     assert {
-        "match_date", "home_team", "away_team", "home_goals", "away_goals",
-        "home_shots", "away_shots", "home_shots_on_target", "away_shots_on_target",
-        "home_corners", "away_corners", "home_cards_yellow", "away_cards_yellow",
-        "home_cards_red", "away_cards_red",
+        "match_date",
+        "home_team",
+        "away_team",
+        "home_goals",
+        "away_goals",
+        "home_shots",
+        "away_shots",
+        "home_shots_on_target",
+        "away_shots_on_target",
+        "home_corners",
+        "away_corners",
+        "home_cards_yellow",
+        "away_cards_yellow",
+        "home_cards_red",
+        "away_cards_red",
     } <= cols("match_results")
-    assert {"source", "season", "league", "rows", "status", "started_at", "error"} <= cols("ingest_log")
+    assert {"source", "season", "league", "rows", "status", "started_at", "error"} <= cols(
+        "ingest_log"
+    )
 
 
 def _player_record(name: str = "Test Player", minutes: int = 900) -> PlayerSeasonRecord:
@@ -73,8 +86,14 @@ def test_player_upsert_does_not_duplicate(engine: Engine) -> None:
 def test_match_upsert_does_not_duplicate(engine: Engine) -> None:
     init_db(engine)
     rec = MatchRecord(
-        source="football_data_csv", season="2024", league="ENG-Premier League",
-        match_date="2024-08-16", home_team="A", away_team="B", home_goals=1, away_goals=0,
+        source="football_data_csv",
+        season="2024",
+        league="ENG-Premier League",
+        match_date="2024-08-16",
+        home_team="A",
+        away_team="B",
+        home_goals=1,
+        away_goals=0,
     )
     with Session(engine) as session:
         upsert_matches(session, [rec])

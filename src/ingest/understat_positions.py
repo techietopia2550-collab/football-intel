@@ -19,7 +19,7 @@ so an interrupted run resumes without re-fetching.
 from __future__ import annotations
 
 import argparse
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import pandas as pd
@@ -96,7 +96,12 @@ def fetch_match_players(season: int, league: str, *, force: bool = False) -> pd.
 
     schedule = _read_schedule(us)
     game_ids = sorted(int(g) for g in schedule["game_id"])
-    logger.info("Understat positions: {n} matches for {league} {season}", n=len(game_ids), league=league, season=season)
+    logger.info(
+        "Understat positions: {n} matches for {league} {season}",
+        n=len(game_ids),
+        league=league,
+        season=season,
+    )
 
     frames: list[pd.DataFrame] = []
     failed: list[int] = []
@@ -108,7 +113,9 @@ def fetch_match_players(season: int, league: str, *, force: bool = False) -> pd.
         try:
             df = _read_match_players(us, game_id).reset_index()
         except Exception as exc:  # noqa: BLE001 - collect, then fail once with the full list
-            logger.error("Failed to fetch Understat match {game_id}: {exc}", game_id=game_id, exc=exc)
+            logger.error(
+                "Failed to fetch Understat match {game_id}: {exc}", game_id=game_id, exc=exc
+            )
             failed.append(game_id)
             continue
         df.to_parquet(path, index=False)
@@ -117,7 +124,9 @@ def fetch_match_players(season: int, league: str, *, force: bool = False) -> pd.
             logger.info("Fetched {i}/{n} matches", i=i, n=len(game_ids))
 
     if failed:
-        raise RuntimeError(f"{len(failed)} match(es) could not be fetched: {failed}. Re-run to resume from cache.")
+        raise RuntimeError(
+            f"{len(failed)} match(es) could not be fetched: {failed}. Re-run to resume from cache."
+        )
     return pd.concat(frames, ignore_index=True)
 
 
@@ -180,22 +189,36 @@ def apply_position_groups(
     DataFrame shaped like `NULLS_COLUMNS`.
     """
     by_id = {f"{UNDERSTAT_SOURCE}:{a.player_id}": a for a in assignments}
-    rows = session.execute(
-        PlayerSeasonStats.__table__.select().where(
-            PlayerSeasonStats.source == UNDERSTAT_SOURCE,
-            PlayerSeasonStats.season == str(season),
-            PlayerSeasonStats.league == league,
+    rows = (
+        session.execute(
+            PlayerSeasonStats.__table__.select().where(
+                PlayerSeasonStats.source == UNDERSTAT_SOURCE,
+                PlayerSeasonStats.season == str(season),
+                PlayerSeasonStats.league == league,
+            )
         )
-    ).mappings().all()
+        .mappings()
+        .all()
+    )
 
     nulls: list[dict[str, object]] = []
     for row in rows:
         assignment = by_id.get(row["player_id"])
         group = assignment.position_group if assignment else None
-        session.execute(update(PlayerSeasonStats).where(PlayerSeasonStats.id == row["id"]).values(position_group=group))
-        session.execute(update(Player).where(Player.player_id == row["player_id"]).values(position_group=group))
+        session.execute(
+            update(PlayerSeasonStats)
+            .where(PlayerSeasonStats.id == row["id"])
+            .values(position_group=group)
+        )
+        session.execute(
+            update(Player).where(Player.player_id == row["player_id"]).values(position_group=group)
+        )
         if group is None:
-            reason = assignment.null_reason if assignment else "player not present in Understat per-match data"
+            reason = (
+                assignment.null_reason
+                if assignment
+                else "player not present in Understat per-match data"
+            )
             name = assignment.player_name if assignment else row["player_id"]
             nulls.append(
                 {
@@ -218,7 +241,11 @@ def write_nulls_csv(nulls: pd.DataFrame, *, season: int, league: str) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
     if path.exists():
         existing = pd.read_csv(path, dtype=str)
-        keep = ~((existing["season"] == str(season)) & (existing["league"] == league) & (existing["source"] == UNDERSTAT_SOURCE))
+        keep = ~(
+            (existing["season"] == str(season))
+            & (existing["league"] == league)
+            & (existing["source"] == UNDERSTAT_SOURCE)
+        )
         nulls = pd.concat([existing[keep], nulls.astype(str)], ignore_index=True)
     nulls.to_csv(path, index=False)
     return path
@@ -228,7 +255,7 @@ def ingest_understat_positions(season: int, league: str, *, force: bool = False)
     """Derive and apply position groups. Returns the number of players given a group."""
     init_db()
     session_factory = get_session_factory()
-    started_at = datetime.now(timezone.utc)
+    started_at = datetime.now(UTC)
     status = "success"
     error: str | None = None
     assigned = 0
@@ -249,7 +276,12 @@ def ingest_understat_positions(season: int, league: str, *, force: bool = False)
     except Exception as exc:  # noqa: BLE001 - always log to ingest_log before re-raising
         status = "failed"
         error = str(exc)
-        logger.error("Understat positions failed for {league} {season}: {exc}", league=league, season=season, exc=exc)
+        logger.error(
+            "Understat positions failed for {league} {season}: {exc}",
+            league=league,
+            season=season,
+            exc=exc,
+        )
         raise
     finally:
         with session_factory() as session:
@@ -261,20 +293,29 @@ def ingest_understat_positions(season: int, league: str, *, force: bool = False)
                     rows=assigned,
                     status=status,
                     started_at=started_at,
-                    finished_at=datetime.now(timezone.utc),
+                    finished_at=datetime.now(UTC),
                     error=error,
                 )
             )
             session.commit()
 
-    logger.info("Understat positions complete: {n} players grouped for {league} {season}", n=assigned, league=league, season=season)
+    logger.info(
+        "Understat positions complete: {n} players grouped for {league} {season}",
+        n=assigned,
+        league=league,
+        season=season,
+    )
     return assigned
 
 
 def _main() -> None:
-    parser = argparse.ArgumentParser(description="Derive Understat position groups from per-match rosters.")
+    parser = argparse.ArgumentParser(
+        description="Derive Understat position groups from per-match rosters."
+    )
     parser.add_argument("--season", type=int, required=True, help="Season start year, e.g. 2024.")
-    parser.add_argument("--league", type=str, required=True, help="League code, e.g. 'ENG-Premier League'.")
+    parser.add_argument(
+        "--league", type=str, required=True, help="League code, e.g. 'ENG-Premier League'."
+    )
     parser.add_argument("--force", action="store_true", help="Re-fetch matches even if cached.")
     args = parser.parse_args()
 

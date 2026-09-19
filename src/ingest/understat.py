@@ -19,7 +19,7 @@ never silently dropped.
 from __future__ import annotations
 
 import argparse
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import pandas as pd
@@ -29,7 +29,15 @@ from sqlalchemy.orm import Session
 
 from src.ingest.team_identity import normalize_team_name
 from src.models.player import PlayerSeasonRecord
-from src.models.schema import IngestLog, Player, PlayerSeasonStats, Team, build_team_id, get_session_factory, init_db
+from src.models.schema import (
+    IngestLog,
+    Player,
+    PlayerSeasonStats,
+    Team,
+    build_team_id,
+    get_session_factory,
+    init_db,
+)
 from src.utils.config import UNDERSTAT_LEAGUES, settings
 from src.utils.logging import logger
 from src.utils.ratelimit import rate_limited
@@ -63,19 +71,22 @@ def _team_season_xg(team_match_df: pd.DataFrame) -> pd.DataFrame:
     cached to raw only, not upserted into any table.
     """
     if team_match_df.empty:
-        return pd.DataFrame(columns=["league", "season", "team", "xg_for_sum", "xg_against_sum", "matches"])
+        return pd.DataFrame(
+            columns=["league", "season", "team", "xg_for_sum", "xg_against_sum", "matches"]
+        )
 
     df = team_match_df.reset_index()
-    home = df.rename(
-        columns={"home_team": "team", "home_xg": "xg_for", "away_xg": "xg_against"}
-    )[["league", "season", "team", "xg_for", "xg_against"]]
-    away = df.rename(
-        columns={"away_team": "team", "away_xg": "xg_for", "home_xg": "xg_against"}
-    )[["league", "season", "team", "xg_for", "xg_against"]]
+    home = df.rename(columns={"home_team": "team", "home_xg": "xg_for", "away_xg": "xg_against"})[
+        ["league", "season", "team", "xg_for", "xg_against"]
+    ]
+    away = df.rename(columns={"away_team": "team", "away_xg": "xg_for", "home_xg": "xg_against"})[
+        ["league", "season", "team", "xg_for", "xg_against"]
+    ]
     combined = pd.concat([home, away], ignore_index=True)
-    return (
-        combined.groupby(["league", "season", "team"], as_index=False)
-        .agg(xg_for_sum=("xg_for", "sum"), xg_against_sum=("xg_against", "sum"), matches=("xg_for", "count"))
+    return combined.groupby(["league", "season", "team"], as_index=False).agg(
+        xg_for_sum=("xg_for", "sum"),
+        xg_against_sum=("xg_against", "sum"),
+        matches=("xg_for", "count"),
     )
 
 
@@ -102,7 +113,9 @@ def fetch_understat(season: int, league: str, *, force: bool = False) -> pd.Data
 
     us = sd.Understat(leagues=league, seasons=season)
 
-    logger.info("Fetching Understat player season stats for {league} {season}", league=league, season=season)
+    logger.info(
+        "Fetching Understat player season stats for {league} {season}", league=league, season=season
+    )
     df = _read_player_season_stats(us)
     df = df.reset_index()
 
@@ -111,13 +124,21 @@ def fetch_understat(season: int, league: str, *, force: bool = False) -> pd.Data
     logger.info("Wrote Understat raw cache: {path} ({rows} rows)", path=cache_path, rows=len(df))
 
     try:
-        logger.info("Fetching Understat team match stats for {league} {season}", league=league, season=season)
+        logger.info(
+            "Fetching Understat team match stats for {league} {season}",
+            league=league,
+            season=season,
+        )
         team_match_df = _read_team_match_stats(us)
         team_xg_df = _team_season_xg(team_match_df)
         team_xg_path = _team_xg_cache_path(season, league)
         team_xg_path.parent.mkdir(parents=True, exist_ok=True)
         team_xg_df.to_parquet(team_xg_path, index=False)
-        logger.info("Wrote Understat team xG raw cache: {path} ({rows} rows)", path=team_xg_path, rows=len(team_xg_df))
+        logger.info(
+            "Wrote Understat team xG raw cache: {path} ({rows} rows)",
+            path=team_xg_path,
+            rows=len(team_xg_df),
+        )
     except Exception as exc:  # noqa: BLE001 - team xG is context data, must not fail the ingest
         logger.error(
             "Failed to fetch Understat team match stats for {league} {season}: {exc}",
@@ -146,11 +167,26 @@ def _to_records(df: pd.DataFrame, *, season: int, league: str) -> list[PlayerSea
         raw_stats = {
             k: v
             for k, v in row.items()
-            if k not in {"league", "season", "team", "player", "player_id", "team_id", "league_id", "season_id", "position", "matches", "minutes"}
+            if k
+            not in {
+                "league",
+                "season",
+                "team",
+                "player",
+                "player_id",
+                "team_id",
+                "league_id",
+                "season_id",
+                "position",
+                "matches",
+                "minutes",
+            }
             and not (isinstance(v, float) and pd.isna(v))
         }
 
-        player_id = f"understat:{understat_id}" if understat_id is not None else f"understat:{name}:{team}"
+        player_id = (
+            f"understat:{understat_id}" if understat_id is not None else f"understat:{name}:{team}"
+        )
 
         matches_raw = row.get("matches")
         minutes_raw = row.get("minutes")
@@ -162,18 +198,29 @@ def _to_records(df: pd.DataFrame, *, season: int, league: str) -> list[PlayerSea
                 source=SOURCE,
                 season=str(season),
                 league=league,
-                team=normalize_team_name(str(team)) if team is not None and not pd.isna(team) else None,
+                team=normalize_team_name(str(team))
+                if team is not None and not pd.isna(team)
+                else None,
                 position=str(position) if position is not None and not pd.isna(position) else None,
                 # position_group is derived from per-match data by understat_positions.py;
                 # Understat's season `position` letters are alphabetical, so they can't set it.
-                minutes=int(minutes_raw) if minutes_raw is not None and not pd.isna(minutes_raw) else None,
-                matches=int(matches_raw) if matches_raw is not None and not pd.isna(matches_raw) else None,
+                minutes=int(minutes_raw)
+                if minutes_raw is not None and not pd.isna(minutes_raw)
+                else None,
+                matches=int(matches_raw)
+                if matches_raw is not None and not pd.isna(matches_raw)
+                else None,
                 raw_stats=raw_stats,
             )
         )
 
     if dropped:
-        logger.warning("Dropped {n} Understat rows with no player name for {league} {season}", n=dropped, league=league, season=season)
+        logger.warning(
+            "Dropped {n} Understat rows with no player name for {league} {season}",
+            n=dropped,
+            league=league,
+            season=season,
+        )
     return records
 
 
@@ -203,7 +250,13 @@ def _upsert_records(session: Session, records: list[PlayerSeasonRecord]) -> int:
             team_id = build_team_id(league=rec.league, season=rec.season, name=rec.team)
             session.execute(
                 sqlite_insert(Team)
-                .values(team_id=team_id, name=rec.team, league=rec.league, season=rec.season, source=rec.source)
+                .values(
+                    team_id=team_id,
+                    name=rec.team,
+                    league=rec.league,
+                    season=rec.season,
+                    source=rec.source,
+                )
                 .on_conflict_do_nothing(index_elements=["team_id"])
             )
 
@@ -241,7 +294,7 @@ def ingest_understat(season: int, league: str, *, force: bool = False) -> int:
     """Fetch, normalize, and upsert Understat player-season stats. Returns row count."""
     init_db()
     session_factory = get_session_factory()
-    started_at = datetime.now(timezone.utc)
+    started_at = datetime.now(UTC)
     status = "success"
     error: str | None = None
     rows = 0
@@ -258,12 +311,17 @@ def ingest_understat(season: int, league: str, *, force: bool = False) -> int:
                     rows=0,
                     status=status,
                     started_at=started_at,
-                    finished_at=datetime.now(timezone.utc),
+                    finished_at=datetime.now(UTC),
                     error=error,
                 )
             )
             session.commit()
-        logger.warning("Understat ingest skipped for {league} {season}: {error}", league=league, season=season, error=error)
+        logger.warning(
+            "Understat ingest skipped for {league} {season}: {error}",
+            league=league,
+            season=season,
+            error=error,
+        )
         return 0
 
     try:
@@ -274,7 +332,12 @@ def ingest_understat(season: int, league: str, *, force: bool = False) -> int:
     except Exception as exc:  # noqa: BLE001 - always log to ingest_log before re-raising
         status = "failed"
         error = str(exc)
-        logger.error("Understat ingest failed for {league} {season}: {exc}", league=league, season=season, exc=exc)
+        logger.error(
+            "Understat ingest failed for {league} {season}: {exc}",
+            league=league,
+            season=season,
+            exc=exc,
+        )
         raise
     finally:
         with session_factory() as session:
@@ -286,20 +349,27 @@ def ingest_understat(season: int, league: str, *, force: bool = False) -> int:
                     rows=rows,
                     status=status,
                     started_at=started_at,
-                    finished_at=datetime.now(timezone.utc),
+                    finished_at=datetime.now(UTC),
                     error=error,
                 )
             )
             session.commit()
 
-    logger.info("Understat ingest complete: {rows} rows for {league} {season}", rows=rows, league=league, season=season)
+    logger.info(
+        "Understat ingest complete: {rows} rows for {league} {season}",
+        rows=rows,
+        league=league,
+        season=season,
+    )
     return rows
 
 
 def _main() -> None:
     parser = argparse.ArgumentParser(description="Ingest Understat player-season stats.")
     parser.add_argument("--season", type=int, required=True, help="Season start year, e.g. 2024.")
-    parser.add_argument("--league", type=str, required=True, help="League code, e.g. 'ENG-Premier League'.")
+    parser.add_argument(
+        "--league", type=str, required=True, help="League code, e.g. 'ENG-Premier League'."
+    )
     parser.add_argument("--force", action="store_true", help="Re-fetch even if a raw cache exists.")
     args = parser.parse_args()
 

@@ -30,6 +30,7 @@ def _rows(*appearances: tuple[int, str, str, int]) -> pd.DataFrame:
 
 # --- The five known players, derived from real 2024/25 per-match rosters ------------
 
+
 @pytest.mark.parametrize(
     ("player", "expected"),
     [
@@ -46,6 +47,7 @@ def test_known_player_position_group(player: str, expected: str) -> None:
 
 
 # --- Derivation rules ---------------------------------------------------------------
+
 
 def test_group_with_most_starter_minutes_wins() -> None:
     df = _rows((1, "A", "DC", 90), (1, "A", "DMC", 90), (1, "A", "DMC", 90))
@@ -89,6 +91,7 @@ def test_fixture_has_no_unmapped_codes() -> None:
 
 # --- Applying to the DB -------------------------------------------------------------
 
+
 @pytest.fixture()
 def engine(tmp_path: Path) -> Engine:
     eng = create_engine(f"sqlite:///{tmp_path / 'test.db'}")
@@ -111,13 +114,25 @@ def _record(player_id: int, name: str, position: str) -> PlayerSeasonRecord:
 
 
 def test_apply_sets_groups_clears_stale_and_logs_nulls(engine: Engine) -> None:
-    records = [_record(1, "Starter", "D S"), _record(2, "Bench Only", "S"), _record(3, "Missing", "F")]
-    assignments = derive_position_groups(_rows((1, "Starter", "DC", 90), (2, "Bench Only", "Sub", 20)))
+    records = [
+        _record(1, "Starter", "D S"),
+        _record(2, "Bench Only", "S"),
+        _record(3, "Missing", "F"),
+    ]
+    assignments = derive_position_groups(
+        _rows((1, "Starter", "DC", 90), (2, "Bench Only", "Sub", 20))
+    )
     with Session(engine) as session:
         upsert_players(session, records)
-        session.execute(PlayerSeasonStats.__table__.update().values(position_group="DEF"))  # stale labels
+        session.execute(
+            PlayerSeasonStats.__table__.update().values(position_group="DEF")
+        )  # stale labels
         nulls = apply_position_groups(session, assignments, season=2024, league=LEAGUE)
-        groups = dict(session.execute(select(PlayerSeasonStats.player_id, PlayerSeasonStats.position_group)).all())
+        groups = dict(
+            session.execute(
+                select(PlayerSeasonStats.player_id, PlayerSeasonStats.position_group)
+            ).all()
+        )
 
     assert groups == {"understat:1": "DEF", "understat:2": None, "understat:3": None}
     assert list(nulls.columns) == NULLS_COLUMNS

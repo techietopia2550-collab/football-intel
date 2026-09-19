@@ -10,7 +10,17 @@ from __future__ import annotations
 import argparse
 from datetime import date, datetime
 
-from sqlalchemy import JSON, Date, DateTime, Engine, ForeignKey, Integer, String, UniqueConstraint, create_engine
+from sqlalchemy import (
+    JSON,
+    Date,
+    DateTime,
+    Engine,
+    ForeignKey,
+    Integer,
+    String,
+    UniqueConstraint,
+    create_engine,
+)
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column, sessionmaker
 
 from src.utils.config import settings
@@ -49,7 +59,9 @@ class PlayerSeasonStats(Base):
     )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    player_id: Mapped[str] = mapped_column(String, ForeignKey("players.player_id"), nullable=False, index=True)
+    player_id: Mapped[str] = mapped_column(
+        String, ForeignKey("players.player_id"), nullable=False, index=True
+    )
     source: Mapped[str] = mapped_column(String, nullable=False)
     season: Mapped[str] = mapped_column(String, nullable=False)
     league: Mapped[str] = mapped_column(String, nullable=False)
@@ -69,9 +81,7 @@ class Team(Base):
     """
 
     __tablename__ = "teams"
-    __table_args__ = (
-        UniqueConstraint("name", "league", "season", name="uq_team_league_season"),
-    )
+    __table_args__ = (UniqueConstraint("name", "league", "season", name="uq_team_league_season"),)
 
     team_id: Mapped[str] = mapped_column(String, primary_key=True)
     name: Mapped[str] = mapped_column(String, nullable=False)
@@ -86,7 +96,13 @@ class MatchResult(Base):
     __tablename__ = "match_results"
     __table_args__ = (
         UniqueConstraint(
-            "source", "season", "league", "match_date", "home_team", "away_team", name="uq_match_result"
+            "source",
+            "season",
+            "league",
+            "match_date",
+            "home_team",
+            "away_team",
+            name="uq_match_result",
         ),
     )
 
@@ -156,7 +172,9 @@ def init_db(engine: Engine | None = None) -> Engine:
 
 def _main() -> None:
     parser = argparse.ArgumentParser(description="Manage the Football Intel database schema.")
-    parser.add_argument("--init", action="store_true", help="Create all tables if they don't exist.")
+    parser.add_argument(
+        "--init", action="store_true", help="Create all tables if they don't exist."
+    )
     args = parser.parse_args()
 
     if args.init:

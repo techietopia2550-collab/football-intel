@@ -22,16 +22,48 @@ LEAGUE = "ENG-Premier League"
 
 # Every distinct team spelling observed in each source for EPL 2024/25.
 UNDERSTAT_NAMES = [
-    "Arsenal", "Aston Villa", "Bournemouth", "Brentford", "Brighton", "Chelsea",
-    "Crystal Palace", "Everton", "Fulham", "Ipswich", "Leicester", "Liverpool",
-    "Manchester City", "Manchester United", "Newcastle United", "Nottingham Forest",
-    "Southampton", "Tottenham", "West Ham", "Wolverhampton Wanderers",
+    "Arsenal",
+    "Aston Villa",
+    "Bournemouth",
+    "Brentford",
+    "Brighton",
+    "Chelsea",
+    "Crystal Palace",
+    "Everton",
+    "Fulham",
+    "Ipswich",
+    "Leicester",
+    "Liverpool",
+    "Manchester City",
+    "Manchester United",
+    "Newcastle United",
+    "Nottingham Forest",
+    "Southampton",
+    "Tottenham",
+    "West Ham",
+    "Wolverhampton Wanderers",
 ]
 FOOTBALL_DATA_NAMES = [
-    "Arsenal", "Aston Villa", "Bournemouth", "Brentford", "Brighton", "Chelsea",
-    "Crystal Palace", "Everton", "Fulham", "Ipswich", "Leicester", "Liverpool",
-    "Man City", "Man United", "Newcastle", "Nott'm Forest", "Southampton", "Tottenham",
-    "West Ham", "Wolves",
+    "Arsenal",
+    "Aston Villa",
+    "Bournemouth",
+    "Brentford",
+    "Brighton",
+    "Chelsea",
+    "Crystal Palace",
+    "Everton",
+    "Fulham",
+    "Ipswich",
+    "Leicester",
+    "Liverpool",
+    "Man City",
+    "Man United",
+    "Newcastle",
+    "Nott'm Forest",
+    "Southampton",
+    "Tottenham",
+    "West Ham",
+    "Wolves",
 ]
 
 
@@ -80,8 +112,12 @@ def engine(tmp_path: Path) -> Engine:
 
 def test_teams_table_has_one_row_per_club_across_sources(engine: Engine) -> None:
     init_db(engine)
-    u = understat_records(pd.read_parquet(FIXTURES / "understat_sample.parquet"), season=2024, league=LEAGUE)
-    m = football_data_records(parse_csv((FIXTURES / "football_data_sample.csv").read_bytes()), season=2024, league="EPL")
+    u = understat_records(
+        pd.read_parquet(FIXTURES / "understat_sample.parquet"), season=2024, league=LEAGUE
+    )
+    m = football_data_records(
+        parse_csv((FIXTURES / "football_data_sample.csv").read_bytes()), season=2024, league="EPL"
+    )
     expected = {r.team for r in u if r.team} | {t for r in m for t in (r.home_team, r.away_team)}
 
     with Session(engine) as session:
