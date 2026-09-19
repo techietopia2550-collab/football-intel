@@ -22,8 +22,9 @@ import requests
 from sqlalchemy.dialects.sqlite import insert as sqlite_insert
 from sqlalchemy.orm import Session
 
+from src.ingest.team_identity import normalize_team_name
 from src.models.match import MatchRecord
-from src.models.schema import IngestLog, MatchResult, get_session_factory, init_db
+from src.models.schema import IngestLog, MatchResult, Team, build_team_id, get_session_factory, init_db
 from src.utils.config import settings
 from src.utils.logging import logger
 from src.utils.ratelimit import rate_limited
@@ -142,8 +143,8 @@ def _to_records(df: pd.DataFrame, *, season: int, league: str) -> list[MatchReco
                 season=str(season),
                 league=canonical,
                 match_date=match_date.date(),
-                home_team=home.strip(),
-                away_team=away.strip(),
+                home_team=normalize_team_name(home),
+                away_team=normalize_team_name(away),
                 **stats,
             )
         )
@@ -154,8 +155,20 @@ def _to_records(df: pd.DataFrame, *, season: int, league: str) -> list[MatchReco
 
 
 def _upsert_records(session: Session, records: list[MatchRecord]) -> int:
-    """Upsert match_results rows. Idempotent on rerun."""
+    """Upsert match_results rows (and the teams they mention). Idempotent on rerun."""
     for rec in records:
+        for team in (rec.home_team, rec.away_team):
+            session.execute(
+                sqlite_insert(Team)
+                .values(
+                    team_id=build_team_id(league=rec.league, season=rec.season, name=team),
+                    name=team,
+                    league=rec.league,
+                    season=rec.season,
+                    source=rec.source,
+                )
+                .on_conflict_do_nothing(index_elements=["team_id"])
+            )
         values = rec.model_dump()
         session.execute(
             sqlite_insert(MatchResult)

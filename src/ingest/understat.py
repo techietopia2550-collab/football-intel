@@ -27,6 +27,7 @@ import soccerdata as sd
 from sqlalchemy.dialects.sqlite import insert as sqlite_insert
 from sqlalchemy.orm import Session
 
+from src.ingest.team_identity import normalize_team_name
 from src.models.player import PlayerSeasonRecord
 from src.models.schema import IngestLog, Player, PlayerSeasonStats, Team, build_team_id, get_session_factory, init_db
 from src.utils.config import UNDERSTAT_LEAGUES, settings
@@ -35,11 +36,13 @@ from src.utils.ratelimit import rate_limited
 
 SOURCE = "understat"
 
+# Understat positions are space-separated letters, primary first, e.g. "F M S",
+# "D S", "GK". A trailing "S" marks substitute appearances; a bare "S" means the
+# player only ever came off the bench, so no position is known.
 _POSITION_GROUPS: dict[str, str] = {
-    "GK": "Goalkeeper",
-    "DEF": "Defender",
-    "MID": "Midfielder",
-    "FWD": "Forward",
+    "D": "DEF",
+    "M": "MID",
+    "F": "FWD",
 }
 
 
@@ -64,8 +67,13 @@ def _read_team_match_stats(us: sd.Understat) -> pd.DataFrame:
 def _position_group(position: str | None) -> str | None:
     if not position:
         return None
-    first = position.split(",")[0].split()[0].strip().upper()
-    return _POSITION_GROUPS.get(first)
+    tokens = position.split()
+    if not tokens:
+        return None
+    first = tokens[0].upper()
+    if first == "GK":
+        return "GK"
+    return _POSITION_GROUPS.get(first[0])
 
 
 def _team_season_xg(team_match_df: pd.DataFrame) -> pd.DataFrame:
@@ -175,7 +183,7 @@ def _to_records(df: pd.DataFrame, *, season: int, league: str) -> list[PlayerSea
                 source=SOURCE,
                 season=str(season),
                 league=league,
-                team=str(team) if team is not None and not pd.isna(team) else None,
+                team=normalize_team_name(str(team)) if team is not None and not pd.isna(team) else None,
                 position=str(position) if position is not None and not pd.isna(position) else None,
                 position_group=_position_group(str(position) if position else None),
                 minutes=int(minutes_raw) if minutes_raw is not None and not pd.isna(minutes_raw) else None,
@@ -213,7 +221,7 @@ def _upsert_records(session: Session, records: list[PlayerSeasonRecord]) -> int:
         )
 
         if rec.team:
-            team_id = build_team_id(source=rec.source, league=rec.league, season=rec.season, name=rec.team)
+            team_id = build_team_id(league=rec.league, season=rec.season, name=rec.team)
             session.execute(
                 sqlite_insert(Team)
                 .values(team_id=team_id, name=rec.team, league=rec.league, season=rec.season, source=rec.source)

@@ -56,18 +56,22 @@ supplement, not a foundation. Avoid Option 3.
 
 ## 3. Other known defects (not blockers)
 
-- **Understat position mapping:** `understat._POSITION_GROUPS` keys on `FWD/MID/DEF`, but
-  Understat positions are letters (`F M`, `D F M S`). `position_group` is NULL for 520 of 562
-  EPL 2024 rows (only goalkeepers map). `tests/test_understat_parse.py` documents this. Not fixed
-  this session (no refactor of ingest modules).
-- **No cross-source identity:** team names differ between Understat and football-data
-  (`Manchester United` vs `Man United`). There is no `identity.py`.
+- **Understat position grouping is approximate.** Positions are mapped by first letter
+  (`GK`, `D`->DEF, `M`->MID, `F`->FWD), but Understat lists letters alphabetically, not
+  primary-first. 53 EPL 2024 rows containing `D` plus `M`/`F` (`D M S`, `D F M S`, ...) are
+  labelled DEF, including attackers such as Mbeumo and Madueke. 70 rows are `S` only
+  (substitute-only) and have NULL `position_group`. Better signals need another source or a
+  rule based on stats.
+- **Team names are normalized for the EPL 2024/25 only** (`src/ingest/team_identity.py`). Other
+  leagues, and promoted/relegated clubs in other seasons, pass through unchanged until added.
+  There is no player identity resolution across sources and no `identity.py`.
+- **`src/ingest/_blocked/fbref.py` is stale:** it calls `build_team_id(source=...)`, whose
+  signature changed. It stays quarantined and unmodified.
 - **Fetch and parse are fused** with the DB layer in the ingest modules; only `_to_records` /
   `_upsert_records` are testable offline. The network fetch functions are untested.
-- **Understat is only tested for `ENG-Premier League` 2024.**
+- **Only `ENG-Premier League` 2024 has been ingested live.**
 
 ## Next priority
 
 Migrate the primary style/similarity source to StatsBomb Open Data before building similarity
-(Prompt 3). Fix the Understat position mapping and add team-name resolution before joining
-`player_season_stats` to `match_results`.
+(Prompt 3). Improve position grouping before position-based analysis.

@@ -62,11 +62,15 @@ class PlayerSeasonStats(Base):
 
 
 class Team(Base):
-    """Team identity per league/season/source."""
+    """Team identity per league/season, shared across sources.
+
+    `name` is the canonical name (see `src.ingest.team_identity`); `source` is
+    the first source that registered the team, not a key.
+    """
 
     __tablename__ = "teams"
     __table_args__ = (
-        UniqueConstraint("name", "league", "season", "source", name="uq_team_league_season_source"),
+        UniqueConstraint("name", "league", "season", name="uq_team_league_season"),
     )
 
     team_id: Mapped[str] = mapped_column(String, primary_key=True)
@@ -123,9 +127,12 @@ class IngestLog(Base):
     error: Mapped[str | None] = mapped_column(String, nullable=True)
 
 
-def build_team_id(*, source: str, league: str, season: str, name: str) -> str:
-    """Deterministic team_id so re-ingesting the same team upserts, not duplicates."""
-    return f"{source}:{league}:{season}:{name}"
+def build_team_id(*, league: str, season: str, name: str) -> str:
+    """Deterministic, source-independent team_id (`name` must be canonical).
+
+    Two sources describing the same club/league/season get the same id.
+    """
+    return f"{league}:{season}:{name}"
 
 
 def get_engine() -> Engine:

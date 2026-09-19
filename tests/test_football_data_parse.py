@@ -45,7 +45,7 @@ def test_to_records_shape_and_values() -> None:
     assert first.season == "2024"
     assert first.league == "ENG-Premier League"
     assert first.match_date == date(2024, 8, 16)
-    assert (first.home_team, first.away_team) == ("Man United", "Fulham")
+    assert (first.home_team, first.away_team) == ("Manchester United", "Fulham")  # normalized from "Man United"
     assert (first.home_goals, first.away_goals) == (1, 0)
     assert (first.home_shots, first.away_shots) == (14, 10)
     assert first.home_corners == 7

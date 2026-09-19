@@ -71,8 +71,9 @@ The app is a placeholder; no analytics are wired in yet.
 Full details in [BLOCKERS.md](./BLOCKERS.md). Headlines:
 
 - FBref ingest blocked (Selenium).
-- Understat `position_group` is NULL for most outfield players (position
-  mapping bug, covered by a documenting test).
-- Team names differ between sources (`Man United` vs `Manchester United`);
-  no cross-source team/player identity resolution exists yet.
-- No `identity.py`; player IDs are source-prefixed (`understat:<id>`).
+- Understat `position_group` is approximate: Understat lists position letters
+  alphabetically, not primary-first, so 53 multi-position players (e.g.
+  `D F M`) are labelled DEF; 70 substitute-only players (`S`) are NULL.
+- Team names are normalized for the 20 EPL 2024/25 clubs only
+  (`src/ingest/team_identity.py`); other leagues pass through unchanged.
+  There is no player identity resolution across sources yet.

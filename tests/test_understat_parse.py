@@ -5,8 +5,10 @@ from __future__ import annotations
 from pathlib import Path
 
 import pandas as pd
+import pytest
 
-from src.ingest.understat import SOURCE, _to_records
+from src.ingest.team_identity import is_known_team
+from src.ingest.understat import SOURCE, _position_group, _to_records
 
 FIXTURE = Path(__file__).parent / "fixtures" / "understat_sample.parquet"
 LEAGUE = "ENG-Premier League"
@@ -43,13 +45,38 @@ def test_parse_drops_rows_without_player_name() -> None:
 
 def test_goalkeeper_position_group_is_mapped() -> None:
     gk = next(r for r in _records() if r.position == "GK")
-    assert gk.position_group == "Goalkeeper"
+    assert gk.position_group == "GK"
 
 
-def test_outfield_position_group_known_gap() -> None:
-    """Documents a real bug: Understat outfield positions are letters ('F M', 'D F M S'),
-    but understat._POSITION_GROUPS keys on 'FWD'/'MID'/'DEF', so they map to None.
-    Flip this assertion when the mapping is fixed."""
-    salah = next(r for r in _records() if r.canonical_name == "Mohamed Salah")
-    assert salah.position == "F M"
-    assert salah.position_group is None
+def test_outfield_position_group_is_mapped() -> None:
+    by_name = {r.canonical_name: r for r in _records()}
+    assert by_name["Mohamed Salah"].position == "F M"
+    assert by_name["Mohamed Salah"].position_group == "FWD"
+    assert by_name["Erling Haaland"].position_group == "FWD"
+
+
+@pytest.mark.parametrize(
+    ("position", "expected"),
+    [
+        ("GK", "GK"),
+        ("GK S", "GK"),
+        ("D", "DEF"),
+        ("D S", "DEF"),
+        ("D M", "DEF"),  # first letter wins, per spec
+        ("M S", "MID"),
+        ("F M", "FWD"),
+        ("F M S", "FWD"),
+        ("D F M S", "DEF"),
+        ("S", None),  # substitute-only: no position is known
+        ("", None),
+        (None, None),
+    ],
+)
+def test_position_group_mapping(position: str | None, expected: str | None) -> None:
+    assert _position_group(position) == expected
+
+
+def test_team_names_are_canonical() -> None:
+    teams = {r.team for r in _records()}
+    assert "Manchester City" in teams
+    assert all(is_known_team(t) for t in teams if t)
