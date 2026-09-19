@@ -1,0 +1,51 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+build/
+dist/
+
+# Virtual environments
+.venv/
+.venv_check/
+venv/
+env/
+
+# Environment / secrets
+.env
+
+# Data (cached scraper output + local db)
+data/raw/**
+!data/raw/.gitkeep
+data/football.db
+*.db
+*.sqlite
+*.sqlite3
+
+# Processed data can be large; keep dir, ignore contents
+data/processed/**
+!data/processed/.gitkeep
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Parquet is ignored (large processed/raw data) except tiny test fixtures
+*.parquet
+!tests/fixtures/*.parquet
+
+# soccerdata/seleniumbase scratch dir
+downloaded_files/
