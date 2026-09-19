@@ -8,8 +8,12 @@ Minutes and position come from the lineup file, where each player has
 position spells (`positions[].from/to` game-clock times and periods). Play time
 is measured on the event clock: the game clock restarts at 45:00 in the second
 half, so a clock time is converted to elapsed minutes using each period's real
-length (the last event of that period). Substitutions and red cards are already
-reflected in the spells; `check_against_substitutions` cross-checks them.
+length (the last event of that period). Substitutions are reflected in the spells and
+`check_against_substitutions` cross-checks them. Red cards are NOT reliably reflected:
+StatsBomb can leave a sent-off player's last spell open until the final whistle (Courtois in
+Chelsea v Swansea 2015/16), so spells are cut at the dismissal event (`dismissal_times`) and each
+cut is reported by `find_corrections`. Temporary `Player Off`/`Player On` breaks are already
+gaps in the spells.
 
 Metric definitions (all count every match event of that type for the player,
 excluding the penalty shoot-out, period 5):
@@ -37,6 +41,16 @@ excluding the penalty shoot-out, period 5):
   fouls_committed/won     `Foul Committed` / `Foul Won` events.
   yellow_cards            Yellow Card + Second Yellow. red_cards: Red Card + Second Yellow.
 
+Position groups: StatsBomb positions are full names ("Right Center Back", id 3), 25 in
+total, and each spell in the lineup carries the position actually played. There is no
+"Sub" position: a substitute's spell holds the position he took, so every minute on the
+pitch has a position. `position_group` is the group (GK/DEF/MID/FWD) with the most minutes
+in the match; a tie goes to the group of the player's earliest spell. See POSITION_GROUPS.
+
+Minutes: StatsBomb minutes are event-clock play time, about 97 for a full match once
+stoppage time is included. `parse_match(..., minutes_scale=s)` multiplies every player's
+minutes by `s`; `match_minutes_scale` returns 90 / match length so a full match is 90.0.
+
 Not computed: touches, aerial duels, and passes received are available in the events but not
 requested yet. Temporary `Player Off`/`Player On` (injury) events are ignored.
 """
@@ -60,6 +74,44 @@ BOX_X_MIN = 102.0
 BOX_Y_MIN, BOX_Y_MAX = 18.0, 62.0
 PERIOD_START = {1: 0.0, 2: 45.0, 3: 90.0, 4: 105.0}  # game clock at the start of each period
 SHOOTOUT_PERIOD = 5
+
+FULL_MATCH_MINUTES = 90.0
+
+# StatsBomb position name -> position group. Keyed on the name as it appears in lineups/events.
+# Ids are StatsBomb's position_id. Observed in real data so far: 1, 2, 3, 5, 6, 12, 13, 15, 16,
+# 22, 24 (one match). The others come from StatsBomb's documented list of 25 positions and are
+# unverified until the season data shows them; an unmapped name is logged and left NULL.
+# Choices: wing-backs -> DEF (they hold the back line, as Understat's DL/DR do); defensive and
+# all central/wide midfielders -> MID (so 4-4-2 wide midfielders such as Mahrez are MID, unlike
+# Understat's wide attacking mids, which are FWD); attacking midfielders on the flanks and
+# wingers -> FWD; central attacking midfielders -> MID.
+POSITION_GROUPS: dict[str, str] = {
+    "Goalkeeper": "GK",  # 1
+    "Right Back": "DEF",  # 2
+    "Right Center Back": "DEF",  # 3
+    "Center Back": "DEF",  # 4
+    "Left Center Back": "DEF",  # 5
+    "Left Back": "DEF",  # 6
+    "Right Wing Back": "DEF",  # 7
+    "Left Wing Back": "DEF",  # 8
+    "Right Defensive Midfield": "MID",  # 9
+    "Center Defensive Midfield": "MID",  # 10
+    "Left Defensive Midfield": "MID",  # 11
+    "Right Midfield": "MID",  # 12
+    "Right Center Midfield": "MID",  # 13
+    "Center Midfield": "MID",  # 14
+    "Left Center Midfield": "MID",  # 15
+    "Left Midfield": "MID",  # 16
+    "Right Wing": "FWD",  # 17
+    "Right Attacking Midfield": "FWD",  # 18
+    "Center Attacking Midfield": "MID",  # 19
+    "Left Attacking Midfield": "FWD",  # 20
+    "Left Wing": "FWD",  # 21
+    "Right Center Forward": "FWD",  # 22
+    "Center Forward": "FWD",  # 23
+    "Left Center Forward": "FWD",  # 24
+    "Secondary Striker": "FWD",  # 25
+}
 
 _TACKLE_WON = {"Won", "Success", "Success In Play", "Success Out"}
 _YELLOW = {"Yellow Card", "Second Yellow"}
@@ -108,36 +160,130 @@ def _gain(start: list[float], end: list[float]) -> float:
     return _distance_to_goal(*start) - _distance_to_goal(*end)
 
 
+def dismissal_times(events: list[dict[str, Any]], lengths: dict[int, float]) -> dict[int, float]:
+    """Player id -> elapsed minute of his dismissal (`Red Card` or `Second Yellow`)."""
+    out: dict[int, float] = {}
+    for e in events:
+        if e["period"] >= SHOOTOUT_PERIOD or "player" not in e:
+            continue
+        if e["type"]["name"] in {"Foul Committed", "Bad Behaviour"}:
+            card = (e.get("foul_committed") or e.get("bad_behaviour") or {}).get("card")
+            if card and card["name"] in _RED:
+                out.setdefault(e["player"]["id"], elapsed_minutes(e["period"], _clock(e), lengths))
+    return out
+
+
 def player_spells(
-    lineups: list[dict[str, Any]], lengths: dict[int, float]
+    lineups: list[dict[str, Any]],
+    lengths: dict[int, float],
+    dismissals: dict[int, float] | None = None,
 ) -> dict[int, list[tuple[str, float, float]]]:
-    """Map player id -> [(position, start_elapsed, end_elapsed)] from the lineup files."""
+    """Map player id -> [(position, start_elapsed, end_elapsed)] from the lineup files.
+
+    If `dismissals` is given, a player's spells are cut at his dismissal time: a sent-off
+    player cannot play on, and StatsBomb's lineup can leave his last spell open until the
+    final whistle (seen in Chelsea v Swansea 2015/16, where Courtois is sent off).
+    """
     total = sum(lengths.values())
     spells: dict[int, list[tuple[str, float, float]]] = {}
     for team in lineups:
         for player in team["lineup"]:
             player_spells_: list[tuple[str, float, float]] = []
+            cutoff = (dismissals or {}).get(player["player_id"])
             for pos in player.get("positions") or []:
                 start = elapsed_minutes(pos["from_period"], _parse_clock(pos["from"]), lengths)
                 if pos.get("to") is None:
                     end = total
                 else:
                     end = elapsed_minutes(pos["to_period"], _parse_clock(pos["to"]), lengths)
-                player_spells_.append((pos["position"], start, min(end, total)))
+                end = min(end, total)
+                if cutoff is not None:
+                    if start >= cutoff:
+                        continue
+                    end = min(end, cutoff)
+                player_spells_.append((pos["position"], start, end))
             spells[player["player_id"]] = player_spells_
     return spells
 
 
-def _minutes_and_position(spells: list[tuple[str, float, float]]) -> tuple[float, str | None]:
-    """Total minutes and the position with the most minutes (earliest spell wins a tie)."""
+def find_corrections(events: list[dict[str, Any]], lineups: list[dict[str, Any]]) -> list[str]:
+    """Describe every player whose lineup minutes were cut back to his dismissal time.
+
+    Only reports cuts larger than 0.1 minutes; a lineup that already ends the spell at the
+    dismissal needs no correction and produces no message.
+    """
+    lengths = period_lengths(events)
+    dismissals = dismissal_times(events, lengths)
+    raw = player_spells(lineups, lengths)
+    cut = player_spells(lineups, lengths, dismissals)
+    names = {
+        p["player_id"]: p.get("player_nickname") or p["player_name"]
+        for t in lineups
+        for p in t["lineup"]
+    }
+    messages = []
+    for pid, when in dismissals.items():
+        removed = sum(e - s for _, s, e in raw.get(pid, [])) - sum(
+            e - s for _, s, e in cut.get(pid, [])
+        )
+        if removed > 0.1:
+            messages.append(
+                f"{names.get(pid, pid)}: {removed:.1f} min of lineup spells after his "
+                f"dismissal at {when:.1f} min removed"
+            )
+    return messages
+
+
+def position_group(position: str) -> str | None:
+    """GK/DEF/MID/FWD for a StatsBomb position name; None (and a warning) if it is unmapped."""
+    group = POSITION_GROUPS.get(position)
+    if group is None:
+        logger.warning(
+            "Unmapped StatsBomb position {name!r}; position_group left NULL", name=position
+        )
+    return group
+
+
+def match_minutes_scale(events: list[dict[str, Any]], *, normalize: bool) -> float:
+    """Factor that turns event-clock minutes into minutes where a full match is 90.0.
+
+    1.0 when `normalize` is False. This is an approximation: it spreads stoppage time evenly.
+    """
+    if not normalize:
+        return 1.0
+    total = sum(period_lengths(events).values())
+    return FULL_MATCH_MINUTES / total if total > 0 else 1.0
+
+
+def _minutes_and_position(
+    spells: list[tuple[str, float, float]],
+) -> tuple[float, str | None, str | None]:
+    """Total minutes, the position with the most minutes, and the group with the most minutes.
+
+    Ties go to the earliest spell. The group is None if no spell's position is mapped.
+    """
     by_position: dict[str, float] = defaultdict(float)
+    by_group: dict[str, float] = defaultdict(float)
     for position, start, end in spells:
-        by_position[position] += max(end - start, 0.0)
+        length = max(end - start, 0.0)
+        by_position[position] += length
+        group = position_group(position)
+        if group is not None:
+            by_group[group] += length
     if not by_position:
-        return 0.0, None
+        return 0.0, None, None
     best = max(by_position.values())
     top = next(pos for pos, _, _ in spells if by_position[pos] == best)
-    return sum(by_position.values()), top
+
+    top_group: str | None = None
+    if by_group:
+        best_group = max(by_group.values())
+        top_group = next(
+            g
+            for pos, _, _ in spells
+            if (g := POSITION_GROUPS.get(pos)) and by_group[g] == best_group
+        )
+    return sum(by_position.values()), top, top_group
 
 
 def _new_accumulator() -> Counter[str]:
@@ -221,11 +367,18 @@ def aggregate_events(
 
 
 def parse_match(
-    events: list[dict[str, Any]], lineups: list[dict[str, Any]], match: StatsBombMatch
+    events: list[dict[str, Any]],
+    lineups: list[dict[str, Any]],
+    match: StatsBombMatch,
+    *,
+    minutes_scale: float = 1.0,
 ) -> list[PlayerMatchRecord]:
-    """Build one `PlayerMatchRecord` per player who was on the pitch."""
+    """Build one `PlayerMatchRecord` per player who was on the pitch.
+
+    Every player's minutes are multiplied by `minutes_scale` (see `match_minutes_scale`).
+    """
     lengths = period_lengths(events)
-    spells = player_spells(lineups, lengths)
+    spells = player_spells(lineups, lengths, dismissal_times(events, lengths))
     stats, pressure_durations = aggregate_events(events)
 
     team_names = {t["team_id"]: normalize_team_name(t["team_name"]) for t in lineups}
@@ -235,7 +388,7 @@ def parse_match(
         opponent = next(name for tid, name in team_names.items() if tid != team["team_id"])
         for player in team["lineup"]:
             pid = player["player_id"]
-            minutes, position = _minutes_and_position(spells.get(pid, []))
+            minutes, position, group = _minutes_and_position(spells.get(pid, []))
             if minutes <= 0:
                 if pid in stats:
                     raise LineupError(
@@ -258,7 +411,8 @@ def parse_match(
                     season=match.season,
                     league=match.league,
                     position_played=position,
-                    minutes=round(minutes, 2),
+                    position_group=group,
+                    minutes=round(minutes * minutes_scale, 2),
                     passes_attempted=attempted,
                     passes_completed=s["passes_completed"],
                     pass_completion_pct=(

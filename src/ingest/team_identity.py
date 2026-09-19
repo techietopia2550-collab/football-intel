@@ -1,7 +1,7 @@
 """Canonical team names, so the same club is one row across every source.
 
-Covers the 20 Premier League clubs of 2024/25. Names not in the table are
-returned stripped but otherwise unchanged (never dropped or guessed at), so
+Covers the Premier League clubs of 2015/16 and 2024/25. Names not in the table
+are returned stripped but otherwise unchanged (never dropped or guessed at), so
 other leagues pass through until their clubs are added here.
 """
 
@@ -27,13 +27,70 @@ _ALIASES: dict[str, tuple[str, ...]] = {
     "Manchester City": ("Man City",),
     "Manchester United": ("Man United", "Man Utd"),
     "Newcastle United": ("Newcastle", "Newcastle Utd"),
+    "Norwich City": ("Norwich",),
     "Nottingham Forest": ("Nott'm Forest", "Nottm Forest", "Nott Forest"),
     "Southampton": (),
+    "Stoke City": ("Stoke",),
+    "Sunderland": (),
+    "Swansea City": ("Swansea",),
     "Tottenham Hotspur": ("Tottenham", "Spurs"),
+    "Watford": (),
+    "West Bromwich Albion": ("West Brom",),
     "West Ham United": ("West Ham",),
     "Wolverhampton Wanderers": ("Wolves", "Wolverhampton"),
 }
 
+# The clubs of each Premier League season, by canonical name (season = start year).
+EPL_2015_16: frozenset[str] = frozenset(
+    {
+        "Arsenal",
+        "Aston Villa",
+        "Bournemouth",
+        "Chelsea",
+        "Crystal Palace",
+        "Everton",
+        "Leicester City",
+        "Liverpool",
+        "Manchester City",
+        "Manchester United",
+        "Newcastle United",
+        "Norwich City",
+        "Southampton",
+        "Stoke City",
+        "Sunderland",
+        "Swansea City",
+        "Tottenham Hotspur",
+        "Watford",
+        "West Bromwich Albion",
+        "West Ham United",
+    }
+)
+EPL_2024_25: frozenset[str] = frozenset(
+    {
+        "Arsenal",
+        "Aston Villa",
+        "Bournemouth",
+        "Brentford",
+        "Brighton & Hove Albion",
+        "Chelsea",
+        "Crystal Palace",
+        "Everton",
+        "Fulham",
+        "Ipswich Town",
+        "Leicester City",
+        "Liverpool",
+        "Manchester City",
+        "Manchester United",
+        "Newcastle United",
+        "Nottingham Forest",
+        "Southampton",
+        "Tottenham Hotspur",
+        "West Ham United",
+        "Wolverhampton Wanderers",
+    }
+)
+
+# Every club we can name: the union of the seasons above.
 CANONICAL_TEAMS: frozenset[str] = frozenset(_ALIASES)
 
 

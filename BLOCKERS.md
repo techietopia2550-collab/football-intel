@@ -143,16 +143,25 @@ Euros). Full-league 2015/16 is roughly 1,500 matches across four leagues. The Bu
 The repo shows license `NOASSERTION`; its README requires crediting StatsBomb and using their logo
 (done: see the README attribution and `src/app/static/statsbomb-logo.png`).
 
-### What the foundation does (built 2026-09-19, one match ingested)
+### What the foundation does (built 2026-09-19; full 2015/16 EPL ingested 2026-09-19)
 
 Modules in `src/ingest/statsbomb/`: `discovery.py` (competitions and matches), `fetch.py` (cached, validated
-downloads), `parse.py` (per-player match metrics), `identity.py` (`statsbomb:<id>` players), `ingest.py`
-(single-match orchestrator). New tables: `matches`, `player_match_stats`; new column `players.statsbomb_id`
-(added by an idempotent migration in `init_db`).
+downloads), `parse.py` (per-player match metrics), `checks.py` (per-match invariants), `identity.py`
+(`statsbomb:<id>` players), `ingest.py` (`ingest_match` for one match, `ingest_season` for a whole
+league-season, resumable and loud). New tables: `matches`, `player_match_stats`; new column
+`players.statsbomb_id` (added by an idempotent migration in `init_db`).
 
 Proof match: Manchester City 1-3 Leicester City (2016-02-06, id 3754290), 28 players. Verified against
 independent facts: team minutes sum to 11 x match length, lineup minutes agree with all 6 `Substitution`
 events, goals match the official score, and pass, shot and card totals equal the raw event counts.
+
+**Full season run (2026-09-19):** all 380 EPL 2015/16 matches discovered; 374 stored, 6 failed (below the
+20-failure stop threshold, so the run continued to completion). 10,302 `player_match_stats` rows, 0 with
+a NULL `position_group`, all 20 clubs normalize to the expected EPL 2015/16 set. 58 lineup corrections
+(all dismissal spell-cuts, the pattern from section 7), 1 invariant violation (section 7, item 4). Pre-flight
+lineup scan across all 380 matches found 24 unique StatsBomb position names in real data, all already
+mapped in `POSITION_GROUPS`; the 8 positions listed as unverified below are now confirmed (only
+"Secondary Striker" never appeared this season). Raw JSON cache: 1.1 GB in `data/raw/statsbomb/`, on disk D.
 
 Metrics computed: minutes, position played, passes (attempted, completed, %), progressive passes,
 passes into final third and box, carries, progressive carries, carry distance, pressures (with mean
@@ -165,26 +174,96 @@ Definitions and thresholds are documented at the top of `src/ingest/statsbomb/pa
 - **Progressive thresholds are our own:** a pass or carry is progressive if it cuts the straight-line
   distance to the goal centre by at least 10 yards. This is not FBref's or StatsBomb's own definition, so
   do not compare the numbers with published ones.
-- **Minutes are event-clock play time**, so a full match is about 97 minutes here, not 90.
+- **Minutes are event-clock play time**, so a full match is about 97 minutes here, not 90 (see section 6
+  for the 90-minute normalization applied on top of this).
 - **Minutes and position come from the lineup file's position spells.** If a match's lineup lacks them for a
-  player who has events, parsing raises `LineupError` rather than guessing. Only one match has been checked.
-  Older or partial matches may lack spells; this must be checked across all 380 before trusting a season.
-- **Temporary `Player Off`/`Player On` (injury) events are ignored.**
-- **`position_played` is StatsBomb's position name** (e.g. "Left Center Midfield"). It is not mapped to
-  GK/DEF/MID/FWD yet. StatsBomb players have no `position_group`.
+  player who has events, parsing raises `LineupError` rather than guessing; none of the 374 stored matches
+  hit this.
+- **Temporary `Player Off`/`Player On` (injury treatment) events are subtracted from expected team minutes**
+  (`checks.temporary_absences`). A *permanent* unreplaced injury exit (no matching `Player On`, no card, all
+  subs used) is not handled the same way and surfaces as an invariant violation instead — see section 7,
+  item 4.
+- **`position_played` is StatsBomb's position name** (e.g. "Left Center Midfield"), mapped to
+  GK/DEF/MID/FWD via `POSITION_GROUPS`. All 24 names observed in the full 2015/16 EPL season are mapped;
+  see section 7 pre-flight results.
 - **`interceptions` counts attempts** whatever the outcome; `tackles` counts all Tackle duels.
 - **Player names** use StatsBomb's nickname where present (e.g. "Pablo Zabaleta"). Not linked to Understat.
-- **Team names** use `team_identity`, which only knows 2024/25 EPL clubs; 2015/16 clubs that are not in that
-  table (Swansea City, Watford, Norwich City, Sunderland, ...) pass through with StatsBomb's spelling.
+- **Team names** use `team_identity`, which now covers both 2024/25 and 2015/16 EPL clubs (26 total); all
+  20 clubs in the 2015/16 season normalize correctly.
 - Per-match rows are not aggregated to seasons yet, and no analytics exist.
 
-## Next priority: the full 2015/16 EPL ingest (next session)
+## 6. StatsBomb minutes are normalized to a 90-minute match (decided 2026-09-19)
 
-1. Loop `ingest_match` over the 380 matches from `list_available("EPL", 2015)`, resumable from the
-   cache, collecting failures and failing loudly (do not silently skip a match). Expect about 3 MB per
-   events file, roughly 1.1 GB of raw JSON on disk D (962 GB free) and about 25 to 30 minutes at the 2 s delay.
-2. Before trusting the season, check that every match has lineup position spells and that per-match
-   invariants hold (team minutes vs match length, goals vs official score, substitutions cross-check).
-3. Add the 2015/16 EPL clubs missing from `team_identity`.
-4. Map StatsBomb position names to GK/DEF/MID/FWD (as a reviewed, documented table, not a heuristic).
-5. Only then aggregate to season level and start analytics; La Liga, Serie A and Ligue 1 follow the same path.
+StatsBomb reports event-clock minutes (~97 for a full match). We normalize to 90 so per-90 metrics are
+comparable to published sources. This is an approximation.
+
+- **Mechanism:** setting `MINUTES_NORMALIZE` (default True). Each match's minutes are multiplied by
+  `90 / match length`, where match length is the sum of the two periods' event clocks. The factor used is stored
+  per match in `matches.minutes_scale_factor` (0.92 to 0.94 in the first five matches), so raw
+  event-clock minutes are recoverable as `minutes / factor`. With `MINUTES_NORMALIZE=False` the factor is
+  stored as 1.0 and minutes stay in event-clock time.
+- **Why it is only approximate:** it spreads stoppage time evenly over the whole match, treats every match's
+  real length as 90, and scales a sent-off player's shortened match by the same factor. Counting metrics
+  (tackles, passes, ...) are not scaled, only minutes, so a per-90 figure is `count / minutes * 90`.
+- **Full-match players come out at 90.0.** A test checks that after ingest they are within 0.5 of 90.
+
+## 7. StatsBomb data quirks found across the full 2015/16 EPL season (smoke test 2026-09-19, full run 2026-09-19)
+
+All were caught by the per-match invariant checks; none was silently patched.
+
+- **A sent-off player's lineup spell can stay open.** First seen in Chelsea v Swansea (3754078): Courtois
+  is sent off at 51:37, but the lineup lists him playing "Center Attacking Midfield" until the final
+  whistle, 42.9 phantom minutes. Handling: `player_spells` cuts spells at the dismissal event (`Red Card`
+  or `Second Yellow`), and every cut larger than 0.1 min is written to
+  `data/processed/statsbomb_corrections.csv` and logged. The correction rests on the dismissal event being
+  right. **58 corrections of this kind across the full season** (see the CSV for the full list; every one
+  is a dismissal spell-cut, the same mechanism as Courtois).
+- **Treatment breaks are real gaps.** Delaney (Crystal Palace v Norwich, 3754138) is off from 64:02 to 64:20
+  (`Player Off`/`Player On`), so a team's minutes can be a fraction short of 11 x match length. The
+  team-minutes invariant subtracts these events. A gap in the lineup with no matching event is still
+  reported as a violation.
+- **`Own Goal For` is credited to the beneficiary team**, which the goals invariant relies on. It held
+  across the season: 0 goal-count violations in 374 stored matches.
+- **Position names are full names, not codes**, and there is no "Sub" position: a substitute's spell carries
+  the position he took. **Pre-flight scan (2026-09-19), all 380 lineup files:** 24 unique position names
+  observed, all 24 already mapped in `POSITION_GROUPS`. This confirms the 8 positions previously listed as
+  unverified (Center Back, Center Midfield, Left/Right Attacking Midfield, Left Defensive Midfield,
+  Left/Right Wing Back). Only "Secondary Striker" (mapped, never observed) did not appear this season.
+- **An unused substitute with events fails the match loudly** (`LineupError`) instead of being guessed at.
+  Did not occur in the full run.
+- **A player's lineup spell can end early with no matching `Player On`, no card, and no substitute
+  available.** New in the full run, distinct from the two cases above. Stoke City 2-0 Manchester City
+  (3754135, 2015-12-05): Fernandinho's last event is `Player Off` at 72:41 (apparent injury); City had
+  already used all three substitutions (Fernando off 55:54, Bony off 56:09, Silva on 61:10), so no
+  replacement is possible and he never returns. `temporary_absences` only subtracts a gap when it finds a
+  matching `Player On` for the same player, so this is not accounted for: the match is stored, but flagged
+  as a violation (Man City minutes 20.43 short of expected) rather than silently absorbed.
+  **Only 1 occurrence in 374 matches.** Not fixed this session; a future pass could treat an unmatched
+  `Player Off` (no card, no return) the same way a dismissal is treated.
+- **Lineup minutes can disagree with the `Substitution` event itself**, not just with a dismissal or
+  treatment break: a player's lineup spell can run to end-of-match (96-103 min) while the actual
+  `Substitution` event that took him off fires 10-50 minutes earlier. `check_against_substitutions` catches
+  this before parsing and the whole match is skipped (not partially stored), because the mismatch calls the
+  reliability of that match's lineup spells into question generally, not just for one player.
+  **6 of 380 matches failed this way** (3754099, 3754148, 3754217, 3754274, 3754336, 3754339 — see
+  `data/processed/statsbomb_failures.csv` for exact player ids and times). This looks like the same class
+  of StatsBomb lineup defect as the dismissal case in reverse (a spell not closed at the right event), but
+  was not investigated or fixed this session — the run was configured to log, skip and continue rather than
+  stop, per the 20-failure threshold (6 is well under it).
+
+## Full 2015/16 EPL ingest: DONE (2026-09-19)
+
+380 matches discovered, 374 stored, 6 failed (item above), 1 invariant violation (item above), 58 lineup
+corrections. 10,302 `player_match_stats` rows, 0 with a NULL `position_group`, all 20 clubs normalize to
+the expected EPL 2015/16 set. Ran in 1,376 s (~23 min) for events (lineups were pre-fetched in a ~980 s
+pre-flight pass). 1.1 GB raw JSON cached on disk D.
+
+## Next priority (future session)
+
+1. Investigate and, if fixable without guessing, fix the 6 lineup/substitution-mismatch failures above
+   (or document them as permanently unrecoverable for those match ids).
+2. Decide whether to fix the unmatched-`Player Off` gap case (1 occurrence) the same way dismissals are
+   handled, or leave it as a reported violation.
+3. La Liga, Serie A and Ligue 1 2015/16 follow the same path (`ingest_season` already supports them via
+   `--league LALIGA/SERIEA/LIGUE1`); each needs its own team-name and position pre-flight pass.
+4. Aggregate `player_match_stats` to season level and start analytics (out of scope this session).

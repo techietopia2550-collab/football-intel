@@ -24,6 +24,7 @@ class StatsBombMatch(BaseModel):
     match_week: int | None = None
     statsbomb_competition_id: int
     statsbomb_season_id: int
+    minutes_scale_factor: float | None = None  # set when the match is ingested
 
 
 class PlayerMatchRecord(BaseModel):
@@ -43,7 +44,8 @@ class PlayerMatchRecord(BaseModel):
     season: str
     league: str
     position_played: str | None
-    minutes: float
+    position_group: str | None = None  # GK/DEF/MID/FWD from the most minutes; None if unmapped
+    minutes: float  # event-clock minutes times the match's minutes_scale_factor
 
     passes_attempted: int = 0
     passes_completed: int = 0

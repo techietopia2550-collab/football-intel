@@ -154,6 +154,8 @@ class Match(Base):
     away_score: Mapped[int | None] = mapped_column(Integer, nullable=True)
     statsbomb_competition_id: Mapped[int | None] = mapped_column(Integer, nullable=True)
     statsbomb_season_id: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    # multiplier applied to that match's event-clock minutes (90 / match length); 1.0 = unscaled
+    minutes_scale_factor: Mapped[float | None] = mapped_column(Float, nullable=True)
 
 
 class PlayerMatchStats(Base):
@@ -179,6 +181,7 @@ class PlayerMatchStats(Base):
     season: Mapped[str] = mapped_column(String, nullable=False, index=True)
     league: Mapped[str] = mapped_column(String, nullable=False, index=True)
     position_played: Mapped[str | None] = mapped_column(String, nullable=True)
+    position_group: Mapped[str | None] = mapped_column(String, nullable=True)
     minutes: Mapped[float] = mapped_column(Float, nullable=False)
 
     passes_attempted: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
@@ -249,6 +252,8 @@ def get_session_factory(engine: Engine | None = None) -> sessionmaker[Session]:
 # table, so `_migrate` adds any of these that are missing: (table, column, SQL type, index).
 _ADDED_COLUMNS: list[tuple[str, str, str, str | None]] = [
     ("players", "statsbomb_id", "VARCHAR", "ix_players_statsbomb_id"),
+    ("matches", "minutes_scale_factor", "FLOAT", None),
+    ("player_match_stats", "position_group", "VARCHAR", None),
 ]
 
 

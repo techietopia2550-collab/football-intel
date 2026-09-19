@@ -12,7 +12,13 @@ from sqlalchemy.orm import Session
 from src.ingest.football_data_csv import _to_records as football_data_records
 from src.ingest.football_data_csv import _upsert_records as upsert_matches
 from src.ingest.football_data_csv import parse_csv
-from src.ingest.team_identity import CANONICAL_TEAMS, is_known_team, normalize_team_name
+from src.ingest.team_identity import (
+    CANONICAL_TEAMS,
+    EPL_2015_16,
+    EPL_2024_25,
+    is_known_team,
+    normalize_team_name,
+)
 from src.ingest.understat import _to_records as understat_records
 from src.ingest.understat import _upsert_records as upsert_players
 from src.models.schema import Team, init_db
@@ -67,8 +73,11 @@ FOOTBALL_DATA_NAMES = [
 ]
 
 
-def test_there_are_20_canonical_teams() -> None:
-    assert len(CANONICAL_TEAMS) == 20
+def test_each_season_has_20_clubs_and_the_canonical_set_is_their_union() -> None:
+    assert len(EPL_2015_16) == len(EPL_2024_25) == 20
+    assert CANONICAL_TEAMS == EPL_2015_16 | EPL_2024_25
+    assert len(CANONICAL_TEAMS) == 26  # 14 clubs are in both seasons
+    assert len(EPL_2015_16 & EPL_2024_25) == 14
 
 
 @pytest.mark.parametrize(
@@ -102,7 +111,7 @@ def test_normalization_is_idempotent() -> None:
 def test_both_sources_normalize_to_the_same_20_teams() -> None:
     understat = {normalize_team_name(n) for n in UNDERSTAT_NAMES}
     football_data = {normalize_team_name(n) for n in FOOTBALL_DATA_NAMES}
-    assert understat == football_data == set(CANONICAL_TEAMS)
+    assert understat == football_data == set(EPL_2024_25)
 
 
 @pytest.fixture()
@@ -130,3 +139,69 @@ def test_teams_table_has_one_row_per_club_across_sources(engine: Engine) -> None
     assert len(names) == len(set(names))  # no club twice
     assert {"Manchester United", "Newcastle United", "Wolverhampton Wanderers"} <= set(names)
     assert not {"Man United", "Newcastle", "Wolves"} & set(names)
+
+
+# --- 2015/16 (StatsBomb) ------------------------------------------------------------------
+
+# Every distinct team name in StatsBomb's 2015/16 Premier League matches.json (20 names, 38
+# matches each), read from the real file.
+STATSBOMB_2015_16_NAMES = [
+    "AFC Bournemouth",
+    "Arsenal",
+    "Aston Villa",
+    "Chelsea",
+    "Crystal Palace",
+    "Everton",
+    "Leicester City",
+    "Liverpool",
+    "Manchester City",
+    "Manchester United",
+    "Newcastle United",
+    "Norwich City",
+    "Southampton",
+    "Stoke City",
+    "Sunderland",
+    "Swansea City",
+    "Tottenham Hotspur",
+    "Watford",
+    "West Bromwich Albion",
+    "West Ham United",
+]
+
+
+def test_statsbomb_2015_16_names_normalize_to_the_20_clubs() -> None:
+    normalized = {normalize_team_name(n) for n in STATSBOMB_2015_16_NAMES}
+    assert normalized == set(EPL_2015_16)
+    assert all(is_known_team(n) for n in STATSBOMB_2015_16_NAMES)
+
+
+@pytest.mark.parametrize(
+    ("raw", "canonical"),
+    [
+        ("West Brom", "West Bromwich Albion"),
+        ("west bromwich albion", "West Bromwich Albion"),
+        ("Norwich", "Norwich City"),
+        ("Stoke", "Stoke City"),
+        ("Swansea", "Swansea City"),
+        ("Leicester", "Leicester City"),
+        ("AFC Bournemouth", "Bournemouth"),
+        ("  WATFORD ", "Watford"),
+    ],
+)
+def test_2015_16_aliases_resolve(raw: str, canonical: str) -> None:
+    assert normalize_team_name(raw) == canonical
+
+
+CACHED_MATCHES = Path("data/raw/statsbomb/matches/2_27.json")
+
+
+@pytest.mark.skipif(not CACHED_MATCHES.exists(), reason="matches.json not cached locally")
+def test_every_team_in_the_real_matches_file_normalizes_to_the_20_clubs() -> None:
+    import json
+
+    matches = json.loads(CACHED_MATCHES.read_text(encoding="utf-8"))
+    assert len(matches) == 380
+    names = {m["home_team"]["home_team_name"] for m in matches}
+    names |= {m["away_team"]["away_team_name"] for m in matches}
+    assert {normalize_team_name(n) for n in names} == set(EPL_2015_16)
+    assert names == set(STATSBOMB_2015_16_NAMES)  # the hard-coded list matches the real file
