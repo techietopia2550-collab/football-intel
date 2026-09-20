@@ -41,6 +41,7 @@ def _event(
     _index += 1
     names = {10: "Alpha", 11: "Bravo", 12: "Charlie", 20: "Delta", 21: "Echo"}
     return {
+        "id": f"evt-{_index}",
         "index": _index,
         "period": period,
         "minute": minute,
@@ -100,8 +101,95 @@ def build_events() -> list[dict[str, Any]]:
         _event(1, 16, 0, "Dribble", a, 1, dribble={"outcome": {"name": "Complete"}}),
         _event(1, 16, 5, "Dribble", a, 1, dribble={"outcome": {"name": "Incomplete"}}),
         # shots: a goal (0.5), a save (0.25), and a shoot-out goal that must be ignored
-        _event(1, 17, 0, "Shot", a, 1, shot={"outcome": {"name": "Goal"}, "statsbomb_xg": 0.5}),
-        _event(1, 17, 30, "Shot", a, 1, shot={"outcome": {"name": "Saved"}, "statsbomb_xg": 0.25}),
+        _event(
+            1,
+            17,
+            0,
+            "Shot",
+            a,
+            1,
+            id="shot-goal",
+            shot={"outcome": {"name": "Goal"}, "statsbomb_xg": 0.5},
+        ),  # fmt: skip
+        _event(
+            1,
+            17,
+            30,
+            "Shot",
+            a,
+            1,
+            id="shot-saved",
+            shot={"outcome": {"name": "Saved"}, "statsbomb_xg": 0.25},
+        ),  # fmt: skip
+        _event(1, 17, 40, "Shot", a, 1, shot={"outcome": {"name": "Blocked"}, "statsbomb_xg": 0.1}),
+        # Bravo: an assist (sets up the goal), a key pass (sets up the save), a plain pass
+        _event(
+            1,
+            16,
+            50,
+            "Pass",
+            11,
+            1,
+            location=[80, 40],
+            **{
+                "pass": {
+                    "end_location": [100, 40],
+                    "goal_assist": True,
+                    "assisted_shot_id": "shot-goal",
+                }
+            },
+        ),  # fmt: skip
+        _event(
+            1,
+            17,
+            20,
+            "Pass",
+            11,
+            1,
+            location=[80, 40],
+            **{
+                "pass": {
+                    "end_location": [100, 40],
+                    "shot_assist": True,
+                    "assisted_shot_id": "shot-saved",
+                }
+            },
+        ),  # fmt: skip
+        _event(1, 17, 25, "Pass", 11, 1, location=[50, 40], **{"pass": {"end_location": [55, 40]}}),
+        # Delta (Team B goalkeeper): saves the 0.25 shot, concedes the 0.5 one, and a few others
+        _event(
+            1,
+            17,
+            31,
+            "Goal Keeper",
+            20,
+            2,
+            related_events=["shot-saved"],
+            goalkeeper={"type": {"name": "Shot Saved"}},
+        ),  # fmt: skip
+        _event(
+            1,
+            17,
+            1,
+            "Goal Keeper",
+            20,
+            2,
+            related_events=["shot-goal"],
+            goalkeeper={"type": {"name": "Goal Conceded"}},
+        ),  # fmt: skip
+        _event(1, 19, 0, "Goal Keeper", 20, 2, goalkeeper={"type": {"name": "Collected"}}),
+        _event(1, 19, 10, "Goal Keeper", 20, 2, goalkeeper={"type": {"name": "Punch"}}),
+        _event(1, 19, 20, "Goal Keeper", 20, 2, goalkeeper={"type": {"name": "Keeper Sweeper"}}),
+        _event(
+            1,
+            19,
+            30,
+            "Goal Keeper",
+            20,
+            2,
+            related_events=["shot-saved"],
+            goalkeeper={"type": {"name": "Shot Saved Off Target"}},
+        ),  # fmt: skip
         _event(5, 120, 0, "Shot", a, 1, shot={"outcome": {"name": "Goal"}, "statsbomb_xg": 0.78}),
         # fouls and cards
         _event(1, 18, 0, "Foul Committed", a, 1, foul_committed={"card": {"name": "Yellow Card"}}),

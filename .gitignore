@@ -49,3 +49,6 @@ logs/
 
 # soccerdata/seleniumbase scratch dir
 downloaded_files/
+
+# local scratch space (kept on D, never committed)
+.scratch/

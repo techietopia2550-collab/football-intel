@@ -40,6 +40,20 @@ excluding the penalty shoot-out, period 5):
                           Own goals are not shots and are not counted.
   fouls_committed/won     `Foul Committed` / `Foul Won` events.
   yellow_cards            Yellow Card + Second Yellow. red_cards: Red Card + Second Yellow.
+  key_passes              `Pass` events that led directly to a shot (they carry `assisted_shot_id`;
+                          StatsBomb flags them `shot_assist`, or `goal_assist` if the shot scored).
+  assists                 `Pass` events flagged `goal_assist` (a subset of key_passes).
+  xa                      sum of `shot.statsbomb_xg` of the shot each key pass set up.
+  shots_on_target         `Shot` events with outcome Goal, Saved or Saved to Post (not Blocked,
+                          Off T, Wayward, Post or Saved Off Target).
+Goalkeeper metrics (from `Goal Keeper` events; shots are linked through `related_events`):
+  gk_saves                `Shot Saved`, `Shot Saved to Post`, `Penalty Saved`
+                          (`Shot Saved Off Target`
+                          and bare `Save` events are not counted).
+  gk_goals_conceded       `Goal Conceded`, `Penalty Conceded`.
+  gk_xg_on_target_faced   sum of pre-shot `statsbomb_xg` over the shots behind saves and goals
+                          conceded. This is NOT post-shot xG: the open data has no PSxG.
+  gk_claims, gk_punches   `Collected` and `Punch` events; gk_sweeper_actions: `Keeper Sweeper`.
 
 Position groups: StatsBomb positions are full names ("Right Center Back", id 3), 25 in
 total, and each spell in the lineup carries the position actually played. There is no
@@ -52,7 +66,8 @@ stoppage time is included. `parse_match(..., minutes_scale=s)` multiplies every 
 minutes by `s`; `match_minutes_scale` returns 90 / match length so a full match is 90.0.
 
 Not computed: touches, aerial duels, and passes received are available in the events but not
-requested yet. Temporary `Player Off`/`Player On` (injury) events are ignored.
+requested yet. Penalties are included in shots, goals and xG. Temporary `Player Off`/`Player On`
+(injury) events are ignored.
 """
 
 from __future__ import annotations
@@ -114,6 +129,9 @@ POSITION_GROUPS: dict[str, str] = {
 }
 
 _TACKLE_WON = {"Won", "Success", "Success In Play", "Success Out"}
+_ON_TARGET = {"Goal", "Saved", "Saved to Post"}
+_GK_SAVES = {"Shot Saved", "Shot Saved to Post", "Penalty Saved"}
+_GK_CONCEDED = {"Goal Conceded", "Penalty Conceded"}
 _YELLOW = {"Yellow Card", "Second Yellow"}
 _RED = {"Red Card", "Second Yellow"}
 
@@ -296,6 +314,11 @@ def aggregate_events(
     """Count event metrics per player id. Returns (counters, pressure durations)."""
     stats: dict[int, Counter[str]] = defaultdict(_new_accumulator)
     pressure_durations: dict[int, list[float]] = defaultdict(list)
+    shot_xg = {  # event id -> xG, to link key passes and goalkeeper events to their shot
+        e["id"]: e["shot"].get("statsbomb_xg", 0.0)
+        for e in events
+        if e["type"]["name"] == "Shot" and "id" in e
+    }
 
     for e in events:
         if e["period"] >= SHOOTOUT_PERIOD or "player" not in e:
@@ -307,6 +330,11 @@ def aggregate_events(
         if kind == "Pass":
             p = e["pass"]
             s["passes_attempted"] += 1
+            if "assisted_shot_id" in p:
+                s["key_passes"] += 1
+                s["xa"] += shot_xg.get(p["assisted_shot_id"], 0.0)
+                if p.get("goal_assist"):
+                    s["assists"] += 1
             if "outcome" not in p:
                 s["passes_completed"] += 1
                 start, end = e["location"], p["end_location"]
@@ -351,6 +379,23 @@ def aggregate_events(
             s["xg"] += e["shot"].get("statsbomb_xg", 0.0)
             if e["shot"]["outcome"]["name"] == "Goal":
                 s["goals"] += 1
+            if e["shot"]["outcome"]["name"] in _ON_TARGET:
+                s["shots_on_target"] += 1
+        elif kind == "Goal Keeper":
+            gk_type = e["goalkeeper"]["type"]["name"]
+            linked_xg = sum(shot_xg.get(r, 0.0) for r in e.get("related_events", []))
+            if gk_type in _GK_SAVES:
+                s["gk_saves"] += 1
+                s["gk_xg_on_target_faced"] += linked_xg
+            elif gk_type in _GK_CONCEDED:
+                s["gk_goals_conceded"] += 1
+                s["gk_xg_on_target_faced"] += linked_xg
+            elif gk_type == "Collected":
+                s["gk_claims"] += 1
+            elif gk_type == "Punch":
+                s["gk_punches"] += 1
+            elif gk_type == "Keeper Sweeper":
+                s["gk_sweeper_actions"] += 1
         elif kind == "Foul Won":
             s["fouls_won"] += 1
 
@@ -440,6 +485,16 @@ def parse_match(
                     shots=s["shots"],
                     goals=s["goals"],
                     xg=round(s["xg"], 4),
+                    shots_on_target=s["shots_on_target"],
+                    assists=s["assists"],
+                    key_passes=s["key_passes"],
+                    xa=round(s["xa"], 4),
+                    gk_saves=s["gk_saves"],
+                    gk_goals_conceded=s["gk_goals_conceded"],
+                    gk_xg_on_target_faced=round(s["gk_xg_on_target_faced"], 4),
+                    gk_claims=s["gk_claims"],
+                    gk_punches=s["gk_punches"],
+                    gk_sweeper_actions=s["gk_sweeper_actions"],
                     fouls_committed=s["fouls_committed"],
                     fouls_won=s["fouls_won"],
                     yellow_cards=s["yellow_cards"],

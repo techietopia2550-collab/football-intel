@@ -148,8 +148,23 @@ def test_dribbles(records) -> None:
 
 def test_shots_goals_xg_ignore_the_shootout(records) -> None:
     a = records["Alpha"]
-    assert (a.shots, a.goals) == (2, 1)
-    assert a.xg == pytest.approx(0.75)
+    assert (a.shots, a.goals) == (3, 1)
+    assert a.xg == pytest.approx(0.85)
+    assert a.shots_on_target == 2  # Goal + Saved; Blocked is not on target
+
+
+def test_assists_key_passes_and_xa(records) -> None:
+    b = records["Bravo"]
+    assert (b.passes_attempted, b.key_passes, b.assists) == (3, 2, 1)
+    assert b.xa == pytest.approx(0.75)  # 0.5 (assisted goal) + 0.25 (assisted saved shot)
+
+
+def test_goalkeeper_actions(records) -> None:
+    d = records["Delta"]
+    assert (d.gk_saves, d.gk_goals_conceded) == (1, 1)  # Saved Off Target is not a save
+    assert d.gk_xg_on_target_faced == pytest.approx(0.75)
+    assert (d.gk_claims, d.gk_punches, d.gk_sweeper_actions) == (1, 1, 1)
+    assert records["Alpha"].gk_saves == 0
 
 
 def test_fouls_and_cards(records) -> None:

@@ -207,6 +207,16 @@ class PlayerMatchStats(Base):
     shots: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     goals: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     xg: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
+    shots_on_target: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    assists: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    key_passes: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    xa: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
+    gk_saves: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    gk_goals_conceded: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    gk_xg_on_target_faced: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
+    gk_claims: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    gk_punches: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    gk_sweeper_actions: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     fouls_committed: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     fouls_won: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     yellow_cards: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
@@ -254,6 +264,16 @@ _ADDED_COLUMNS: list[tuple[str, str, str, str | None]] = [
     ("players", "statsbomb_id", "VARCHAR", "ix_players_statsbomb_id"),
     ("matches", "minutes_scale_factor", "FLOAT", None),
     ("player_match_stats", "position_group", "VARCHAR", None),
+    ("player_match_stats", "shots_on_target", "INTEGER NOT NULL DEFAULT 0", None),
+    ("player_match_stats", "assists", "INTEGER NOT NULL DEFAULT 0", None),
+    ("player_match_stats", "key_passes", "INTEGER NOT NULL DEFAULT 0", None),
+    ("player_match_stats", "xa", "FLOAT NOT NULL DEFAULT 0.0", None),
+    ("player_match_stats", "gk_saves", "INTEGER NOT NULL DEFAULT 0", None),
+    ("player_match_stats", "gk_goals_conceded", "INTEGER NOT NULL DEFAULT 0", None),
+    ("player_match_stats", "gk_xg_on_target_faced", "FLOAT NOT NULL DEFAULT 0.0", None),
+    ("player_match_stats", "gk_claims", "INTEGER NOT NULL DEFAULT 0", None),
+    ("player_match_stats", "gk_punches", "INTEGER NOT NULL DEFAULT 0", None),
+    ("player_match_stats", "gk_sweeper_actions", "INTEGER NOT NULL DEFAULT 0", None),
 ]
 
 

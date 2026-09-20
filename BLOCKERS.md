@@ -190,7 +190,7 @@ Definitions and thresholds are documented at the top of `src/ingest/statsbomb/pa
 - **Player names** use StatsBomb's nickname where present (e.g. "Pablo Zabaleta"). Not linked to Understat.
 - **Team names** use `team_identity`, which now covers both 2024/25 and 2015/16 EPL clubs (26 total); all
   20 clubs in the 2015/16 season normalize correctly.
-- Per-match rows are not aggregated to seasons yet, and no analytics exist.
+- Per-match rows are aggregated to seasons and profiled in section 10 (added 2026-09-20).
 
 ## 6. StatsBomb minutes are normalized to a 90-minute match (decided 2026-09-19)
 
@@ -258,12 +258,72 @@ corrections. 10,302 `player_match_stats` rows, 0 with a NULL `position_group`, a
 the expected EPL 2015/16 set. Ran in 1,376 s (~23 min) for events (lineups were pre-fetched in a ~980 s
 pre-flight pass). 1.1 GB raw JSON cached on disk D.
 
+## 8. The 6 failed 2015/16 EPL matches: StatsBomb data flaw, left out (investigated 2026-09-20)
+
+**Verdict: StatsBomb lineup-file flaw, one shared root cause, not a parser bug. The 6 matches stay out.**
+
+Matches 3754099, 3754148, 3754217, 3754274, 3754336, 3754339. Inspected the raw lineup and event JSON
+for all 6 (not just one). In each, a player is substituted off and the `Substitution` event is correct:
+his last event in the match *is* the substitution and nothing follows it. But the lineup file also gives him
+one extra trailing position spell that starts at the substitution instant (`start_reason` `Player On` in 5
+of the 6, `Tactical Shift` in the other) and stays open until the final whistle. Examples:
+3754099 Berahino is subbed off at half-time (2nd period, 45:00) yet the lineup has him on the left wing
+for 96 minutes; 3754339 Shaqiri has a `Player Off` (52:02) / `Player On` (54:02) treatment break and is
+then subbed off at half-time, but the lineup runs him to 103 minutes.
+
+Why not a parser bug: the parser reads the lineup as given, and `check_against_substitutions` correctly
+refuses to trust a lineup that contradicts the substitution events. Why not auto-fixed: the lineup is wrong
+in a way that needs a guess about which spell to drop (the same class as the dismissal spell-cut in section 7,
+which we did correct, but that one had an unambiguous event to cut at). Per the session rule, no per-match
+patching: the 6 matches are excluded, not repaired.
+
+- **Impact:** 374 of 380 matches (98.4%) are used. The excluded matches drop every player's minutes *and*
+  counts together for those games, so per-90 rates are unbiased in expectation but every player's season
+  `matches`/`minutes_total` is up to ~6 games short. Affected clubs: West Brom, Crystal Palace, Tottenham,
+  Arsenal, Stoke (x2), Everton and their opponents (see `statsbomb_failures.csv` and the match ids).
+- **If revisited:** a possible fix is to close a player's last spell at his `Substitution` event when
+  the lineup contradicts it (5 of 6 have a `Player On` at that instant). That is a data correction and
+  would be logged in `statsbomb_corrections.csv`, like the dismissals.
+
+## 9. Man City minutes gap in match 3754135: accepted, not a bug (2026-09-20)
+
+One 2015/16 match has a team playing ~20 min short due to unreplaced injury. Correct behavior, not a bug.
+(Stoke 2-0 Man City, 3754135: Fernandinho leaves injured at 72:41 after City used all three subs. The
+invariant flags it; the data is right; nothing is auto-corrected.)
+
+## 10. Metrics + percentiles layer, 2015/16 EPL: BUILT (2026-09-20)
+
+Code: `src/analytics/metrics.py`, `src/transform/normalize.py`, `src/analytics/percentiles.py`,
+`src/analytics/profile.py`. Every definition choice is in `ANALYTICS_DECISIONS.md`.
+
+- **Season table:** `player_season_stats_2015_16` has 323 players at or above 900 minutes; `insufficient_sample`
+  has the other 226 (549 players total, none dropped silently, each with a reason).
+- **Multi-team players (11), team with most minutes used, split in `data/processed/multi_team_players_2015_16.csv`:**
+  Pritchard (West Brom 69 / Spurs 8), Murray (Bournemouth 627 / Palace 123), Bamford (Norwich 245 / Palace 139),
+  Lescott (Villa 2626 / West Brom 180), Townsend (Newcastle 1075 / Spurs 42), Grabban (Bournemouth 595 /
+  Norwich 251), Dyer (Leicester 252 / Swansea 22), Shelvey (Swansea 1202 / Newcastle 1052), Naismith
+  (Norwich 851 / Everton 374), Caulker (Southampton 152 / Liverpool 15), Jarvis (Norwich 1017 / West Ham 85).
+  Each is a player's stats over *both* clubs under one team label. Shelvey is the near-even split.
+- **Parser extended** (no network, re-run from the raw cache): `player_match_stats` gained `shots_on_target`,
+  `assists`, `key_passes`, `xa` and six goalkeeper columns. Nothing else about ingest changed; the 6 failures,
+  the 1 violation and the 58 corrections are identical to before.
+- **DEF pools centre-backs and full-backs** (60 CB / 58 FB-WB by main position played), because the spec asks for
+  four position groups. A centre-back's carrying and progression percentiles are therefore against full-backs too.
+  Checked on Wes Morgan: it did not change his result, but it will for others. Splitting DEF is the obvious next step.
+- **21 of 323 players have under 60% of their minutes in their position group** (e.g. Antonio, De Bruyne, Mata,
+  Lallana, Coutinho). `profile()` warns on these. Their percentiles are against the group they played most.
+- **`gk_goals_prevented_p90` is a proxy and is negative for every keeper** (about -0.4 to -1.1 per 90): pre-shot xG
+  averages over all shots, so it understates the danger of on-target ones. Use it to rank keepers, never read its level.
+- **Aerial duels, PSxG and crosses-stopped are unavailable** in this data (see `metrics.UNAVAILABLE`), so aerial
+  centre-backs (Morgan, Huth) and shot-stoppers cannot be described on those.
+
 ## Next priority (future session)
 
-1. Investigate and, if fixable without guessing, fix the 6 lineup/substitution-mismatch failures above
-   (or document them as permanently unrecoverable for those match ids).
-2. Decide whether to fix the unmatched-`Player Off` gap case (1 occurrence) the same way dismissals are
-   handled, or leave it as a reported violation.
-3. La Liga, Serie A and Ligue 1 2015/16 follow the same path (`ingest_season` already supports them via
-   `--league LALIGA/SERIEA/LIGUE1`); each needs its own team-name and position pre-flight pass.
-4. Aggregate `player_match_stats` to season level and start analytics (out of scope this session).
+1. Similarity search (explicitly not started).
+2. Split DEF into CB and FB/WB (from `position_played`) before relying on defender profiles or similarity.
+3. Optionally close the 6 excluded matches by ending a player's last lineup spell at his `Substitution`
+   event (section 8), logged as a correction. And decide whether the unmatched-`Player Off` case (section 9)
+   needs any handling (currently: no, it is correct).
+4. La Liga, Serie A and Ligue 1 2015/16 follow the same path (`ingest_season` already supports them via
+   `--league LALIGA/SERIEA/LIGUE1`); each needs its own team-name and position pre-flight pass. Percentiles are
+   per league-season; cross-league comparison needs a decision first.

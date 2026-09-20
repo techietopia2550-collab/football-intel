@@ -195,7 +195,7 @@ def test_match_and_player_stats_upserts_are_idempotent(engine: Engine) -> None:
             select(PlayerMatchStats).where(PlayerMatchStats.player_name == "Alpha")
         )
         assert (alpha.player_id, alpha.passes_completed, alpha.xg, alpha.minutes) == (
-            "statsbomb:10", 5, 0.75, 90.5,
+            "statsbomb:10", 5, 0.85, 90.5,
         )  # fmt: skip
 
 

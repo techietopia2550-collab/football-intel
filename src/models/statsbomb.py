@@ -75,6 +75,19 @@ class PlayerMatchRecord(BaseModel):
     shots: int = 0
     goals: int = 0
     xg: float = 0.0
+    shots_on_target: int = 0
+
+    assists: int = 0
+    key_passes: int = 0
+    xa: float = 0.0
+
+    # goalkeeper actions (see parse.py); zero for outfield players
+    gk_saves: int = 0
+    gk_goals_conceded: int = 0
+    gk_xg_on_target_faced: float = 0.0  # pre-shot xG of shots on target faced, not PSxG
+    gk_claims: int = 0
+    gk_punches: int = 0
+    gk_sweeper_actions: int = 0
 
     fouls_committed: int = 0
     fouls_won: int = 0
