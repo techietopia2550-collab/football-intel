@@ -18,6 +18,8 @@ so an interrupted run resumes without re-fetching.
 
 from __future__ import annotations
 
+from src.utils import disk_bootstrap  # isort: skip  # noqa: F401  (must be first)
+
 import argparse
 from datetime import UTC, datetime
 from pathlib import Path

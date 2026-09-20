@@ -1,10 +1,9 @@
-import os
-from pathlib import Path
+"""Football Intel.
 
-# soccerdata defaults its own cache to ~/soccerdata, outside the project and
-# potentially on a different disk than data/raw. Redirect it under data/raw
-# so every download lands on the same disk as the rest of the project. This
-# runs on first import of the `src` package, before any submodule can
-# `import soccerdata`.
-_PROJECT_ROOT = Path(__file__).resolve().parent.parent
-os.environ.setdefault("SOCCERDATA_DIR", str(_PROJECT_ROOT / "data" / "raw" / "soccerdata"))
+Importing the `src` package first applies `src.utils.disk_bootstrap`, which points every cache,
+temp dir and library default (including soccerdata's, which would otherwise be `~/soccerdata`
+on C:) at the project drive. It runs before any submodule can import soccerdata, pip-driven
+tooling, pytest, transformers or torch.
+"""
+
+from src.utils import disk_bootstrap  # noqa: F401  (import for its side effects; keep first)

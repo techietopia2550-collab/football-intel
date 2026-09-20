@@ -103,6 +103,37 @@ StatsBomb players are stored as `statsbomb:<id>` (their id is also kept in `play
 and are deliberately **not** linked to Understat players. Metric definitions (progressive
 threshold, final third, box, etc.) are documented at the top of `src/ingest/statsbomb/parse.py`.
 
+### Analytics on the stored 2015/16 data
+
+Run in this order after the ingest above (each step re-runs safely; all offline):
+
+```bash
+python -m src.transform.normalize          # season table, 900+ minutes, fine position groups
+python -m src.analytics.percentiles        # within-position percentiles (8 groups)
+python -m src.analytics.heatmaps           # player_heatmaps: 12x8 grid JSON per player and type
+python -m src.analytics.evaluate_similarity  # writes docs/similarity_eval.md
+```
+
+```python
+from src.analytics.profile import profile
+from src.analytics.similarity import find_similar
+
+profile("Wes Morgan")                                    # strengths / weaknesses, within CB
+find_similar("N'Golo Kanté", "2015", n=10,               # heuristic, same position group only
+             filters={"exclude_same_team": True})
+```
+
+Position groups are `GK, CB, FB, DM, CM, AM, W, ST` (`position_group_fine`). Metric labels (fact /
+proxy / approximation) and what each metric does NOT measure are in
+[ANALYTICS_DECISIONS.md](./ANALYTICS_DECISIONS.md). Nothing here claims to measure leadership, trust
+or positioning intelligence.
+
+### Disk discipline
+
+Every cache, temp dir and library default is pointed at `.cache/` (or `data/raw/soccerdata`) on the
+project drive by `src/utils/disk_bootstrap.py`, imported first by `src/__init__.py`, every CLI,
+`main.py` and `tests/conftest.py`. See [docs/DISK.md](./docs/DISK.md).
+
 ## Run the tests
 
 ```bash
@@ -134,8 +165,9 @@ Full details in [BLOCKERS.md](./BLOCKERS.md). Headlines:
 - `position_group` (GK/DEF/MID/FWD) on Understat players comes from per-match Understat rosters
   (most starter minutes wins). It is NULL for 70 substitute-only players (reasons in
   `data/processed/position_nulls.csv`); exclude those from position-based analysis and apply a
-  minutes threshold. StatsBomb players get `position_group` from `POSITION_GROUPS`, mapped from
-  the on-pitch `position_played`; 0 of the 10,302 stored player-match rows have a NULL value.
+  minutes threshold. StatsBomb players get `position_group` (GK/DEF/MID/FWD) and `position_group_fine`
+  (GK/CB/FB/DM/CM/AM/W/ST) mapped from the on-pitch `position_played`; 0 of the 10,302 stored
+  player-match rows have a NULL value in either. Ranking and similarity use the fine group.
 - Team names are normalized for 26 clubs across both the EPL 2024/25 and 2015/16 seasons
   (`src/ingest/team_identity.py`); other leagues, and clubs outside those two seasons, pass
   through unchanged.

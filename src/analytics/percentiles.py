@@ -2,8 +2,9 @@
 
 Rules:
   - Only qualifying players (those in `player_season_stats_<yy>_<yy>`, i.e. above the minutes
-    threshold) are ranked, and only against players of the same `position_group`, never across.
-  - Outfield metrics are ranked among DEF/MID/FWD and goalkeeper metrics among GK only.
+    threshold) are ranked, and only against players of the same `position_group_fine`
+    (GK/CB/FB/DM/CM/AM/W/ST), never across.
+  - Outfield metrics are ranked among the seven outfield groups and goalkeeper metrics among GK.
   - Percentile is the mid-rank share of the group below the value: (rank - 0.5) / n * 100, with tied
     values sharing the average rank. 100 is the highest *value*; for a metric where lower is better
     the profile layer flips it, so the stored percentile is always "how high is the number".
@@ -18,22 +19,29 @@ Output table `player_percentiles`: one row per qualifying player per applicable 
 
 from __future__ import annotations
 
+from src.utils import disk_bootstrap  # isort: skip  # noqa: F401  (must be first)
+
 import argparse
 
 import pandas as pd
-from sqlalchemy import Engine, inspect, text
+from sqlalchemy import Engine, text
 
 from src.analytics.metrics import GK, METRICS, POSITION_GROUPS, Metric
 from src.models.schema import get_engine, init_db
-from src.transform.normalize import DEFAULT_LEAGUE, DEFAULT_SEASON, season_table_name
+from src.transform.normalize import (
+    DEFAULT_LEAGUE,
+    DEFAULT_SEASON,
+    replace_season_rows,
+    season_table_name,
+)
 from src.utils.logging import logger
 
 PERCENTILES_TABLE = "player_percentiles"
 MIN_GROUP_SIZE = 20
 
 _COLUMNS = [
-    "player_id", "player_name", "team", "season", "league", "source", "position_group", "metric",
-    "metric_group", "value", "percentile", "sample_size", "group_size", "small_group",
+    "player_id", "player_name", "team", "season", "league", "source", "position_group_fine",
+    "metric", "metric_group", "value", "percentile", "sample_size", "group_size", "small_group",
 ]  # fmt: skip
 
 
@@ -45,7 +53,7 @@ def compute_percentiles(stats: pd.DataFrame) -> pd.DataFrame:
     """Long table of percentiles from a season-stats table (columns as built by `normalize`)."""
     frames: list[pd.DataFrame] = []
     for group in POSITION_GROUPS:
-        members = stats[stats["position_group"] == group]
+        members = stats[stats["position_group_fine"] == group]
         if members.empty:
             continue
         for metric in METRICS:
@@ -57,7 +65,7 @@ def compute_percentiles(stats: pd.DataFrame) -> pd.DataFrame:
             percentile = ((rank - 0.5) / n * 100).round(1) if n else values * float("nan")
             frames.append(
                 members[["player_id", "player_name", "team", "season", "league", "source"]].assign(
-                    position_group=group,
+                    position_group_fine=group,
                     metric=metric.name,
                     metric_group=metric.group,
                     value=values,
@@ -81,15 +89,11 @@ def run(
     stats = stats[stats["league"] == league]
     result = compute_percentiles(stats)
 
-    if inspect(engine).has_table(PERCENTILES_TABLE):
-        with engine.begin() as conn:
-            conn.execute(
-                text(f"DELETE FROM {PERCENTILES_TABLE} WHERE season = :s AND league = :l"),
-                {"s": season, "l": league},
-            )
-    result.to_sql(PERCENTILES_TABLE, engine, if_exists="append", index=False)
+    replace_season_rows(engine, PERCENTILES_TABLE, result, season, league)
 
-    sizes = result.drop_duplicates(["position_group"]).set_index("position_group")["group_size"]
+    sizes = result.drop_duplicates(["position_group_fine"]).set_index("position_group_fine")[
+        "group_size"
+    ]
     for group, size in sizes.items():
         if size < MIN_GROUP_SIZE:
             logger.warning(

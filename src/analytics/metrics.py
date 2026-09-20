@@ -13,6 +13,10 @@ StatsBomb events in `src/ingest/statsbomb/parse.py`; the metric itself is what i
   - "derived":     per-90 normalization or a ratio of event counts.
   - "unavailable": cannot be computed from the 2015/16 open data. Listed in `UNAVAILABLE` only.
 
+Metrics whose note starts with "PROXY" describe an event count honestly; they are not measures of a
+trait. Nothing here measures leadership, trust or positioning intelligence. They are descriptive
+(`higher_is_better=None`): ranked and used for similarity, never called a strength or weakness.
+
 `higher_is_better` is True/False when a strength is a high/low value, and None for descriptive
 metrics (style or context, not quality): they are ranked but never called a strength or weakness.
 
@@ -33,7 +37,8 @@ Scope = Literal["outfield", "gk"]
 Status = Literal["direct", "derived", "unavailable"]
 
 GK = "GK"
-OUTFIELD_GROUPS = ("DEF", "MID", "FWD")
+# Fine position groups (`position_group_fine`), the only grouping used for ranking and similarity.
+OUTFIELD_GROUPS = ("CB", "FB", "DM", "CM", "AM", "W", "ST")
 POSITION_GROUPS = (GK, *OUTFIELD_GROUPS)
 
 # Season totals of `player_match_stats` counts (summed over matches).
@@ -44,7 +49,9 @@ COUNT_COLUMNS: tuple[str, ...] = (
     "ball_recoveries", "dribbles_attempted", "dribbles_completed", "shots", "shots_on_target",
     "goals", "xg", "assists", "key_passes", "xa", "fouls_committed", "fouls_won", "yellow_cards",
     "red_cards", "gk_saves", "gk_goals_conceded", "gk_xg_on_target_faced", "gk_claims",
-    "gk_punches", "gk_sweeper_actions",
+    "gk_punches", "gk_sweeper_actions", "aerials_won", "aerials_lost", "passes_received",
+    "passes_received_under_pressure", "progressive_passes_received", "def_actions",
+    "def_action_x_sum", "def_actions_own_box", "cross_clearances",
 )  # fmt: skip
 
 
@@ -124,6 +131,38 @@ METRICS: tuple[Metric, ...] = (
     _rate("yellow_p90", "DISCIPLINE", "yellow_cards", hib=None),
     _rate("red_p90", "DISCIPLINE", "red_cards", hib=None,
           note="Almost every player has 0, so it carries little ranking signal."),
+    # ---- AERIAL (FACT: won = `aerial_won` flag, lost = `Aerial Lost` duel; see parse.py) -----
+    _rate("aerials_attempted_p90", "AERIAL", "aerials_attempted", hib=None,
+          note="Won + lost aerial duels. Role and team style decide how many arise."),
+    _rate("aerials_won_p90", "AERIAL", "aerials_won",
+          note="Volume as much as skill: more contests means more wins."),
+    _ratio("aerial_win_pct", "AERIAL", "aerials_won", "aerials_attempted", scale=100, min_den=20,
+           note="Won / (won + lost) aerial duels, %. Says nothing about the opponents' aerial "
+                "ability or the quality of the ball."),
+    # ---- POSITIONING PROXIES (descriptive: where the defensive events happened) ------------
+    _ratio("avg_defensive_action_x", "POSITIONING", "def_action_x_sum", "def_actions", min_den=50,
+           hib=None,
+           note="PROXY: mean x (yards from own goal line, pitch 0-120) of tackles, interceptions, "
+                "clearances and blocks. Reflects team defensive line and possession as much as "
+                "the player. NOT positioning intelligence."),
+    _rate("def_actions_in_own_box_p90", "POSITIONING", "def_actions_own_box", hib=None,
+          note="PROXY: tackles/interceptions/clearances/blocks inside the own penalty box. Teams "
+               "that defend deep or face more crosses record more. NOT a quality measure."),
+    _rate("cross_clearances_p90", "POSITIONING", "cross_clearances", hib=None,
+          note="PROXY: clearances whose related event is a cross. A lower bound: about 17% of "
+               "clearances have no related event."),
+    _ratio("cross_clearance_pct", "POSITIONING", "cross_clearances", "clearances", scale=100,
+           min_den=30, hib=None,
+           note="PROXY: share of the player's clearances that dealt with a cross. Describes what "
+                "he clears, not how well; a lower bound."),
+    # ---- RECEIVING (the brief's 'trust' proxies; descriptive) -------------------------------
+    _rate("passes_received_p90", "RECEIVING", "passes_received", hib=None,
+          note="PROXY: completed passes to the player. Driven by role, team possession and "
+               "style. NOT a measure of trust or leadership."),
+    _rate("passes_received_under_pressure_p90", "RECEIVING", "passes_received_under_pressure",
+          hib=None, note="PROXY: completed receptions flagged under pressure. Same caveats."),
+    _rate("progressive_passes_received_p90", "RECEIVING", "progressive_passes_received",
+          hib=None, note="PROXY: completed progressive passes (10+ yards toward goal) received."),
     # ---- GOALKEEPER (scope gk) -------------------------------------------------------------
     Metric("gk_shots_on_target_faced_p90", "GK", "gk", "derived", "rate",
            "gk_shots_on_target_faced",
@@ -151,7 +190,10 @@ METRICS_BY_NAME: dict[str, Metric] = {m.name: m for m in METRICS}
 UNAVAILABLE: dict[str, str] = {
     "psxg_minus_goals (GK)": "The open data has pre-shot xG only, no post-shot xG (PSxG).",
     "crosses_stopped_pct (GK)": "Crosses faced are not recorded, only Collected/Punch outcomes.",
-    "aerial_duels_won_pct": "Won aerials are not a full event (only lost duels are recorded).",
+    "last_line_events_p90": "Needs teammate positions at each defensive action; only Shot events "
+                            "carry a freeze frame in the open data.",
+    "is_captain": "The lineup and event files carry no captain field (0 matches for 'captain' in "
+                  "all 380 lineup and event files).",
     "long_pass_pct / launch_pct (GK)": "Computable from pass length; not extracted yet.",
     "npxg": "Computable from shot type; not extracted yet (xG includes penalties).",
 }  # fmt: skip
@@ -166,19 +208,20 @@ def add_derived_totals(totals: pd.DataFrame) -> pd.DataFrame:
     out = totals.copy()
     out["gk_shots_on_target_faced"] = out["gk_saves"] + out["gk_goals_conceded"]
     out["gk_goals_prevented"] = out["gk_xg_on_target_faced"] - out["gk_goals_conceded"]
+    out["aerials_attempted"] = out["aerials_won"] + out["aerials_lost"]
     return out
 
 
 def compute_metrics(totals: pd.DataFrame) -> pd.DataFrame:
     """Add one column per metric to a table of season totals.
 
-    `totals` needs `minutes_total`, `position_group`, the `COUNT_COLUMNS`, and
+    `totals` needs `minutes_total`, `position_group_fine`, the `COUNT_COLUMNS`, and
     `pressure_duration_total` (sum over matches of mean duration x pressures). Outfield metrics are
     set to NaN for goalkeepers and goalkeeper metrics to NaN for everyone else.
     """
     out = add_derived_totals(totals)
     minutes = out["minutes_total"].where(out["minutes_total"] > 0)
-    is_gk = out["position_group"] == GK
+    is_gk = out["position_group_fine"] == GK
     for m in METRICS:
         if m.kind == "rate":
             values = out[m.numerator] / minutes * 90

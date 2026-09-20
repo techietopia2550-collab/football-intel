@@ -1,4 +1,5 @@
-"""Strengths and weaknesses of one player, from within-position percentiles.
+"""Strengths and weaknesses of one player, from within-position percentiles (fine groups:
+GK/CB/FB/DM/CM/AM/W/ST).
 
 `profile(player_name, season)` returns a dict:
   strengths   relevant metrics at or above STRENGTH_PERCENTILE (top 20%), best first
@@ -39,32 +40,67 @@ MIXED_ROLE_SHARE = 0.6  # below this share of minutes in one group, warn about a
 
 _DISCIPLINE = ["fouls_committed_p90", "fouls_won_p90", "yellow_p90", "red_p90"]
 _PRESSING = ["pressures_p90", "counterpressures_p90", "pressure_duration_avg"]
+_AERIAL = ["aerials_won_p90", "aerial_win_pct", "aerials_attempted_p90"]
+# Descriptive proxies (never judged): where defensive events happened, and how often teammates find
+# the player. See the "PROXY" notes in `metrics.py`.
+_POSITIONING = [
+    "avg_defensive_action_x", "def_actions_in_own_box_p90", "cross_clearances_p90",
+    "cross_clearance_pct",
+]  # fmt: skip
+_RECEIVING = [
+    "passes_received_p90", "passes_received_under_pressure_p90", "progressive_passes_received_p90",
+]  # fmt: skip
+_BALL_PROGRESSION = [
+    "progressive_passes_p90", "passes_into_final_third_p90", "carries_p90",
+    "progressive_carries_p90", "carry_distance_p90",
+]  # fmt: skip
+_DEFENDING = ["tackles_p90", "tackle_win_pct", "interceptions_p90", "ball_recoveries_p90"]
+_CREATION = ["assists_p90", "xa_p90", "key_passes_p90", "passes_into_box_p90"]
+_SCORING = ["goals_p90", "xg_p90", "shots_p90"]
+_DRIBBLING = ["dribbles_p90", "dribble_success_pct"]
 
-# Position group -> the metrics that mean something for that role. Everything else is not judged.
-# Deliberate omissions: creation metrics for DEF (a centre-back's low key passes is not a weakness,
-# at the cost of hiding full-back creation) and pass_completion_pct for FWD (style, not skill).
+# Fine position group -> the metrics that mean something for that role. Everything else is not
+# judged. Deliberate omissions: creation and shooting metrics for CB and DM (a centre-back's low key
+# passes is not a weakness), and pass_completion_pct for AM/W/ST (style, not skill).
 RELEVANT_METRICS: dict[str, list[str]] = {
-    "FWD": [
-        "goals_p90", "xg_p90", "shots_p90", "shot_accuracy", "xg_per_shot",
-        "assists_p90", "xa_p90", "key_passes_p90", "passes_into_box_p90",
-        "progressive_carries_p90", "carry_distance_p90", "dribbles_p90", "dribble_success_pct",
-        *_PRESSING, *_DISCIPLINE,
-    ],
-    "MID": [
-        "goals_p90", "xg_p90", "shots_p90",
-        "assists_p90", "xa_p90", "key_passes_p90", "passes_into_box_p90",
-        "pass_completion_pct", "progressive_passes_p90", "passes_into_final_third_p90",
-        "carries_p90", "progressive_carries_p90", "carry_distance_p90", "dribbles_p90",
-        "dribble_success_pct",
-        "tackles_p90", "tackle_win_pct", "interceptions_p90", "ball_recoveries_p90",
-        *_PRESSING, *_DISCIPLINE,
-    ],
-    "DEF": [
-        "pass_completion_pct", "progressive_passes_p90", "passes_into_final_third_p90",
-        "carries_p90", "progressive_carries_p90", "carry_distance_p90",
+    "CB": [
+        "pass_completion_pct", *_BALL_PROGRESSION,
         "tackles_p90", "tackle_win_pct", "interceptions_p90", "blocks_p90", "clearances_p90",
         "ball_recoveries_p90",
-        *_PRESSING, *_DISCIPLINE,
+        *_AERIAL, *_POSITIONING, *_RECEIVING, *_PRESSING, *_DISCIPLINE,
+    ],
+    "FB": [
+        "pass_completion_pct", *_BALL_PROGRESSION, *_CREATION, *_DRIBBLING,
+        *_DEFENDING, "blocks_p90", "clearances_p90",
+        *_AERIAL, *_POSITIONING, *_RECEIVING, *_PRESSING, *_DISCIPLINE,
+    ],
+    "DM": [
+        "pass_completion_pct", *_BALL_PROGRESSION, *_DEFENDING, "blocks_p90", "clearances_p90",
+        "key_passes_p90", "passes_into_box_p90", "xa_p90",
+        *_AERIAL, *_RECEIVING, *_PRESSING, *_DISCIPLINE,
+    ],
+    "CM": [
+        *_SCORING, *_CREATION, "pass_completion_pct", *_BALL_PROGRESSION, *_DRIBBLING,
+        *_DEFENDING,
+        *_AERIAL, *_RECEIVING, *_PRESSING, *_DISCIPLINE,
+    ],
+    "AM": [
+        *_SCORING, "shot_accuracy", "xg_per_shot", *_CREATION,
+        "progressive_passes_p90", "passes_into_final_third_p90",
+        "progressive_carries_p90", "carry_distance_p90", *_DRIBBLING,
+        "tackles_p90", "interceptions_p90", "ball_recoveries_p90",
+        *_RECEIVING, *_PRESSING, *_DISCIPLINE,
+    ],
+    "W": [
+        *_SCORING, "shot_accuracy", "xg_per_shot", *_CREATION,
+        "progressive_carries_p90", "carry_distance_p90", *_DRIBBLING,
+        "tackles_p90", "interceptions_p90", "ball_recoveries_p90",
+        *_RECEIVING, *_PRESSING, *_DISCIPLINE,
+    ],
+    "ST": [
+        *_SCORING, "shot_accuracy", "xg_per_shot", *_CREATION,
+        "progressive_carries_p90", "carry_distance_p90", *_DRIBBLING,
+        *_AERIAL, *_RECEIVING, *_PRESSING, *_DISCIPLINE,
     ],
     "GK": [
         "gk_save_pct", "gk_goals_prevented_p90", "gk_goals_conceded_p90",
@@ -80,7 +116,7 @@ def _fold(text_: str) -> str:
     return "".join(c for c in decomposed if not unicodedata.combining(c)).casefold()
 
 
-def _find_player(names: pd.DataFrame, query: str) -> pd.Series:
+def find_player(names: pd.DataFrame, query: str) -> pd.Series:
     """The one row of `names` (player_id, player_name, ...) matching `query`, or raise ValueError.
 
     An exact (accent- and case-insensitive) match wins; otherwise the query must be a substring of
@@ -160,7 +196,7 @@ def profile(
         else pd.DataFrame(columns=qualified.columns)
     )
     everyone = pd.concat([qualified, excluded], ignore_index=True)
-    row = _find_player(everyone, player_name)
+    row = find_player(everyone, player_name)
 
     base: dict[str, Any] = {
         "player_id": row["player_id"],
@@ -168,8 +204,9 @@ def profile(
         "team": row["team"],
         "season": season,
         "league": league,
-        "position_group": row["position_group"],
-        "position_group_share": row["position_group_share"],
+        "position_group": row["position_group"],  # coarse GK/DEF/MID/FWD, for reference
+        "position_group_fine": row["position_group_fine"],  # the group all ranking uses
+        "position_group_fine_share": row["position_group_fine_share"],
         "matches": int(row["matches"]),
         "minutes_total": round(float(row["minutes_total"]), 1),
     }
@@ -191,13 +228,14 @@ def profile(
     warnings: list[str] = []
     if rows["small_group"].any():
         warnings.append(
-            f"Only {int(rows['group_size'].iloc[0])} qualifying {row['position_group']} players "
+            f"Only {int(rows['group_size'].iloc[0])} qualifying {row['position_group_fine']} "
+            f"players "
             f"(< {MIN_GROUP_SIZE}): percentiles are coarse."
         )
-    if row["position_group_share"] < MIXED_ROLE_SHARE:
+    if row["position_group_fine_share"] < MIXED_ROLE_SHARE:
         warnings.append(
-            f"Mixed role: only {row['position_group_share']:.0%} of minutes as "
-            f"{row['position_group']}."
+            f"Mixed role: only {row['position_group_fine_share']:.0%} of minutes as "
+            f"{row['position_group_fine']}."
         )
     if row["n_teams"] > 1:
         warnings.append(
@@ -206,6 +244,6 @@ def profile(
     return {
         **base,
         "qualified": True,
-        **classify(rows, row["position_group"]),
+        **classify(rows, row["position_group_fine"]),
         "warnings": warnings,
     }

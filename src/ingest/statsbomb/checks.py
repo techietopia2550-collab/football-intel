@@ -10,7 +10,8 @@ Invariants:
      a dismissal (`Red Card` or `Second Yellow`) or a temporary `Player Off`, within
      TEAM_MINUTES_TOLERANCE.
   3. each team's goals (shots scored + `Own Goal For` events) equal its official score.
-  4. every player who played has a position_group (unmapped positions are violations).
+  4. every player who played has a position_group and a position_group_fine (unmapped
+     positions are violations).
   5. every team name normalizes to a club in the expected season list (when one is given).
 """
 
@@ -139,6 +140,10 @@ def check_match(
         if r.position_group is None:
             problems.append(
                 f"{r.player_name} ({r.team}) has no position_group ({r.position_played})"
+            )
+        if r.position_group_fine is None:
+            problems.append(
+                f"{r.player_name} ({r.team}) has no position_group_fine ({r.position_played})"
             )
 
     if known_teams is not None:

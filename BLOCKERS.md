@@ -307,20 +307,56 @@ Code: `src/analytics/metrics.py`, `src/transform/normalize.py`, `src/analytics/p
 - **Parser extended** (no network, re-run from the raw cache): `player_match_stats` gained `shots_on_target`,
   `assists`, `key_passes`, `xa` and six goalkeeper columns. Nothing else about ingest changed; the 6 failures,
   the 1 violation and the 58 corrections are identical to before.
-- **DEF pools centre-backs and full-backs** (60 CB / 58 FB-WB by main position played), because the spec asks for
-  four position groups. A centre-back's carrying and progression percentiles are therefore against full-backs too.
-  Checked on Wes Morgan: it did not change his result, but it will for others. Splitting DEF is the obvious next step.
-- **21 of 323 players have under 60% of their minutes in their position group** (e.g. Antonio, De Bruyne, Mata,
+- ~~**DEF pools centre-backs and full-backs.**~~ **Resolved in section 11:** 8 fine position groups.
+- **21 of 323 players have under 60% of their minutes in their (coarse) position group** (e.g. Antonio, De Bruyne, Mata,
   Lallana, Coutinho). `profile()` warns on these. Their percentiles are against the group they played most.
 - **`gk_goals_prevented_p90` is a proxy and is negative for every keeper** (about -0.4 to -1.1 per 90): pre-shot xG
   averages over all shots, so it understates the danger of on-target ones. Use it to rank keepers, never read its level.
-- **Aerial duels, PSxG and crosses-stopped are unavailable** in this data (see `metrics.UNAVAILABLE`), so aerial
-  centre-backs (Morgan, Huth) and shot-stoppers cannot be described on those.
+- ~~**Aerial duels ... unavailable**~~ **Wrong for aerials, corrected in section 11:** they are computable. PSxG and
+  crosses-stopped remain unavailable (see `metrics.UNAVAILABLE`).
+
+## 11. 8 position groups, advanced metrics, heatmaps, similarity: BUILT (2026-09-20)
+
+Code: `src/ingest/statsbomb/parse.py` (fine groups and new counts), `src/analytics/heatmaps.py`,
+`src/analytics/similarity.py`, `src/analytics/evaluate_similarity.py`, `src/utils/disk_bootstrap.py`. Decisions and
+labels are in `ANALYTICS_DECISIONS.md` sections 8-12. The raw cache was re-parsed with no network: 374/380 matches,
+the same 6 failures, the same 1 violation (Man City, section 9).
+
+What could NOT be done, and why (nothing was faked):
+
+- **`is_captain`: not in the data.** Lineup player records carry `player_id, player_name, player_nickname,
+  jersey_number, country, cards, positions` (all 13,678 of them). The string "captain" occurs in none of the 380
+  lineup files, 380 event files, the match files or `competitions.json`. Not added; listed in `metrics.UNAVAILABLE`.
+- **`last_line_events_p90`: not computable.** It needs teammate positions at each defensive action; the open data has
+  a freeze frame only on `Shot` events. Not added.
+- **Player age is unavailable, so `find_similar(max_age=...)` cannot work.** StatsBomb's open lineups have no birth
+  dates; `players.birth_year` is empty for all 1,111 players. The filter raises `AgeDataUnavailable` rather than
+  being ignored. It needs another source (none is ingested).
+- **Position group AM has only 14 qualifying players** (< 20). Percentiles and similarity there are coarse; Özil's
+  similar-player list is only meaningful at #1 and #2.
+
+Corrections to earlier statements:
+
+- **Aerials ARE computable.** The earlier "won aerials are not a full event" was wrong: the winner is flagged
+  `aerial_won` on his follow-up Pass/Clearance/Shot/Miscontrol, and wins equal losses (16,845 = 16,845 over all 380
+  cached matches). Aerial metrics are built (section 9 of `ANALYTICS_DECISIONS.md`).
+
+Caveats to carry forward:
+
+- **75 of 323 players are mixed-role** (under 60% of minutes in their fine group), 26 of them CM, against 21 under
+  the coarse groups. Each is ranked and matched only within his main group.
+- **The similarity model has no benchmark.** `docs/similarity_eval.md` has ten fixed players and written notes;
+  full-back and goalkeeper lists are weak (top scores 0.47 to 0.61 for the two full-backs).
+- **Three mypy errors remain and were there before this session:** `parse.py` carry-distance float/int,
+  `understat_positions.py` name redefinition, and the quarantined `_blocked/fbref.py`.
+
+Disk (C: writes): see `docs/DISK.md`.
 
 ## Next priority (future session)
 
-1. Similarity search (explicitly not started).
-2. Split DEF into CB and FB/WB (from `position_played`) before relying on defender profiles or similarity.
+1. UI (player profile page, radar/heatmap rendering, search, comparison). Nothing in `src/app` uses the
+   analytics yet.
+2. An age source, if `max_age` is wanted (StatsBomb has none).
 3. Optionally close the 6 excluded matches by ending a player's last lineup spell at his `Substitution`
    event (section 8), logged as a correction. And decide whether the unmatched-`Player Off` case (section 9)
    needs any handling (currently: no, it is correct).

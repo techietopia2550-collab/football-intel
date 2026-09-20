@@ -45,6 +45,7 @@ class PlayerMatchRecord(BaseModel):
     league: str
     position_played: str | None
     position_group: str | None = None  # GK/DEF/MID/FWD from the most minutes; None if unmapped
+    position_group_fine: str | None = None  # GK/CB/FB/DM/CM/AM/W/ST, same rule; None if unmapped
     minutes: float  # event-clock minutes times the match's minutes_scale_factor
 
     passes_attempted: int = 0
@@ -93,3 +94,14 @@ class PlayerMatchRecord(BaseModel):
     fouls_won: int = 0
     yellow_cards: int = 0
     red_cards: int = 0
+
+    # advanced counts (see parse.py `aggregate_extra_events`); several are proxies, not skills
+    aerials_won: int = 0
+    aerials_lost: int = 0
+    passes_received: int = 0
+    passes_received_under_pressure: int = 0
+    progressive_passes_received: int = 0
+    def_actions: int = 0
+    def_action_x_sum: float = 0.0
+    def_actions_own_box: int = 0
+    cross_clearances: int = 0

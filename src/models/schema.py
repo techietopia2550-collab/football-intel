@@ -7,6 +7,8 @@ opening their own SQLite connections.
 
 from __future__ import annotations
 
+from src.utils import disk_bootstrap  # isort: skip  # noqa: F401  (must be first)
+
 import argparse
 from datetime import date, datetime
 
@@ -182,6 +184,7 @@ class PlayerMatchStats(Base):
     league: Mapped[str] = mapped_column(String, nullable=False, index=True)
     position_played: Mapped[str | None] = mapped_column(String, nullable=True)
     position_group: Mapped[str | None] = mapped_column(String, nullable=True)
+    position_group_fine: Mapped[str | None] = mapped_column(String, nullable=True)
     minutes: Mapped[float] = mapped_column(Float, nullable=False)
 
     passes_attempted: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
@@ -221,6 +224,15 @@ class PlayerMatchStats(Base):
     fouls_won: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     yellow_cards: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     red_cards: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    aerials_won: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    aerials_lost: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    passes_received: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    passes_received_under_pressure: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    progressive_passes_received: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    def_actions: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    def_action_x_sum: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
+    def_actions_own_box: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    cross_clearances: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
 
 
 class IngestLog(Base):
@@ -274,6 +286,16 @@ _ADDED_COLUMNS: list[tuple[str, str, str, str | None]] = [
     ("player_match_stats", "gk_claims", "INTEGER NOT NULL DEFAULT 0", None),
     ("player_match_stats", "gk_punches", "INTEGER NOT NULL DEFAULT 0", None),
     ("player_match_stats", "gk_sweeper_actions", "INTEGER NOT NULL DEFAULT 0", None),
+    ("player_match_stats", "position_group_fine", "VARCHAR", None),
+    ("player_match_stats", "aerials_won", "INTEGER NOT NULL DEFAULT 0", None),
+    ("player_match_stats", "aerials_lost", "INTEGER NOT NULL DEFAULT 0", None),
+    ("player_match_stats", "passes_received", "INTEGER NOT NULL DEFAULT 0", None),
+    ("player_match_stats", "passes_received_under_pressure", "INTEGER NOT NULL DEFAULT 0", None),
+    ("player_match_stats", "progressive_passes_received", "INTEGER NOT NULL DEFAULT 0", None),
+    ("player_match_stats", "def_actions", "INTEGER NOT NULL DEFAULT 0", None),
+    ("player_match_stats", "def_action_x_sum", "FLOAT NOT NULL DEFAULT 0.0", None),
+    ("player_match_stats", "def_actions_own_box", "INTEGER NOT NULL DEFAULT 0", None),
+    ("player_match_stats", "cross_clearances", "INTEGER NOT NULL DEFAULT 0", None),
 ]
 
 

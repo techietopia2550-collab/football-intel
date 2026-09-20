@@ -12,6 +12,8 @@ Raw CSV bytes are cached to `/data/raw/football_data/<SSYY>/<code>.csv`.
 
 from __future__ import annotations
 
+from src.utils import disk_bootstrap  # isort: skip  # noqa: F401  (must be first)
+
 import argparse
 import io
 from datetime import UTC, datetime

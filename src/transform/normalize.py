@@ -11,17 +11,22 @@ Output tables (SQLite, plus Parquet/CSV in `data/processed/`):
 Rules:
   - Minutes and counts are summed over matches; ratios and per-90 rates are computed from those
     season totals, never averaged across matches.
-  - `position_group` is the group with the most minutes over the season, and `position_group_share`
-    is that group's share of the player's minutes (a low share means a mixed role).
+  - `position_group` (GK/DEF/MID/FWD) and `position_group_fine` (GK/CB/FB/DM/CM/AM/W/ST) are each
+    the group with the most minutes over the season; `position_group_share` and
+    `position_group_fine_share` are that group's share of the player's minutes (a low share means a
+    mixed role). Percentiles and similarity use the fine group; the coarse one is kept for
+    reference.
   - A player with more than one team gets the team with the most minutes, and the split is kept in
     `team_split` and written to `multi_team_players_<yy>_<yy>.csv`.
-  - Nothing is dropped silently: every player below the threshold, or without a position group, is
-    in `insufficient_sample` with a reason and logged.
+  - Nothing is dropped silently: every player below the threshold, or without a position group
+    (coarse or fine), is in `insufficient_sample` with a reason and logged.
   - The matches that failed ingest (`statsbomb_failures.csv`) are not in the input at all, so a
     player's `matches` and `minutes_total` can be a few games short. See BLOCKERS.md, section 8.
 """
 
 from __future__ import annotations
+
+from src.utils import disk_bootstrap  # isort: skip  # noqa: F401  (must be first)
 
 import argparse
 from dataclasses import dataclass
@@ -39,8 +44,6 @@ DEFAULT_SEASON = "2015"
 DEFAULT_LEAGUE = "ENG-Premier League"
 DEFAULT_MIN_MINUTES = 900.0
 INSUFFICIENT_TABLE = "insufficient_sample"
-
-_ID_COLUMNS = ["player_id", "player_name", "team", "position_group", "position_group_share"]
 
 
 def season_label(season: str) -> str:
@@ -96,6 +99,9 @@ def aggregate_player_seasons(match_df: pd.DataFrame) -> tuple[pd.DataFrame, pd.D
     groups = _primary(df, "position_group")
     primary_group = groups.drop_duplicates("player_id").set_index("player_id")
     group_minutes = groups.groupby("player_id")["minutes"].sum()
+    fine = _primary(df, "position_group_fine")
+    primary_fine = fine.drop_duplicates("player_id").set_index("player_id")
+    fine_minutes = fine.groupby("player_id")["minutes"].sum()
 
     latest = df.sort_values("match_id").drop_duplicates("player_id", keep="last")
     latest = latest.set_index("player_id")[["player_name", "season", "league", "source"]]
@@ -108,6 +114,8 @@ def aggregate_player_seasons(match_df: pd.DataFrame) -> tuple[pd.DataFrame, pd.D
     out["team_split"] = team_split
     out["position_group"] = primary_group["position_group"]
     out["position_group_share"] = (primary_group["minutes"] / group_minutes).round(3)
+    out["position_group_fine"] = primary_fine["position_group_fine"]
+    out["position_group_fine_share"] = (primary_fine["minutes"] / fine_minutes).round(3)
     out = out.reset_index()
 
     multi = out.loc[out["n_teams"] > 1, ["player_id", "player_name", "team", "team_split"]]
@@ -121,6 +129,8 @@ def split_by_minutes(totals: pd.DataFrame, min_minutes: float) -> tuple[pd.DataF
     reason[short] = totals.loc[short, "minutes_total"].map(
         lambda m: f"minutes_total {m:.1f} < {min_minutes:g}"
     )
+    no_fine = totals["position_group_fine"].isna()
+    reason[no_fine & (reason == "")] = "no position_group_fine"
     no_group = totals["position_group"].isna()
     reason[no_group & (reason == "")] = "no position_group"
     excluded = reason != ""
@@ -129,8 +139,9 @@ def split_by_minutes(totals: pd.DataFrame, min_minutes: float) -> tuple[pd.DataF
 
 def _column_order(df: pd.DataFrame) -> pd.DataFrame:
     front = [
-        "player_id", "player_name", "team", "position_group", "position_group_share", "season",
-        "league", "source", "matches", "minutes_total", "n_teams", "team_split",
+        "player_id", "player_name", "team", "position_group_fine", "position_group_fine_share",
+        "position_group", "position_group_share", "season", "league", "source", "matches",
+        "minutes_total", "n_teams", "team_split",
     ]  # fmt: skip
     return df[front + [c for c in df.columns if c not in front]]
 
@@ -146,16 +157,34 @@ def build_player_season_stats(
     )
     insufficient = _column_order(insufficient.drop(columns=["pressure_duration_total"]))
     return NormalizeResult(
-        qualifying.sort_values(["position_group", "minutes_total"], ascending=[True, False]),
+        qualifying.sort_values(["position_group_fine", "minutes_total"], ascending=[True, False]),
         insufficient.sort_values("minutes_total", ascending=False),
         multi,
     )
 
 
-def _replace_rows(engine: Engine, table: str, df: pd.DataFrame, season: str, league: str) -> None:
-    """Replace this season/league's rows in a table shared across seasons."""
+def _sql_type(dtype: object) -> str:
+    kind = getattr(dtype, "kind", "O")
+    return {"i": "INTEGER", "u": "INTEGER", "b": "INTEGER", "f": "FLOAT"}.get(kind, "VARCHAR")
+
+
+def replace_season_rows(
+    engine: Engine, table: str, df: pd.DataFrame, season: str, league: str
+) -> None:
+    """Replace this season/league's rows in a table shared across seasons.
+
+    A table written by an older version may lack columns `df` now has; they are added first
+    (idempotent), so a schema growth never fails halfway after the old rows were deleted.
+    """
     if inspect(engine).has_table(table):
+        existing = {c["name"] for c in inspect(engine).get_columns(table)}
         with engine.begin() as conn:
+            for column, dtype in df.dtypes.items():
+                if column not in existing:
+                    conn.execute(
+                        text(f"ALTER TABLE {table} ADD COLUMN {column} {_sql_type(dtype)}")
+                    )
+                    logger.info("Migrated: added {t}.{c}", t=table, c=column)
             conn.execute(
                 text(f"DELETE FROM {table} WHERE season = :s AND league = :l"),
                 {"s": season, "l": league},
@@ -178,7 +207,7 @@ def run(
 
     table, label = season_table_name(season), season_label(season)
     result.qualifying.to_sql(table, engine, if_exists="replace", index=False)
-    _replace_rows(engine, INSUFFICIENT_TABLE, result.insufficient, season, league)
+    replace_season_rows(engine, INSUFFICIENT_TABLE, result.insufficient, season, league)
 
     out = settings.processed_dir
     out.mkdir(parents=True, exist_ok=True)
@@ -189,7 +218,7 @@ def run(
     for row in result.insufficient.itertuples():
         logger.info(
             "Excluded {name} ({team}, {pos}): {reason}",
-            name=row.player_name, team=row.team, pos=row.position_group, reason=row.reason,
+            name=row.player_name, team=row.team, pos=row.position_group_fine, reason=row.reason,
         )  # fmt: skip
     for row in result.multi_team.itertuples():
         logger.warning(

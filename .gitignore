@@ -52,3 +52,6 @@ downloaded_files/
 
 # local scratch space (kept on D, never committed)
 .scratch/
+
+# Local caches (pip, pytest temp, tmp, huggingface, ...) — see src/utils/disk_bootstrap.py
+.cache/

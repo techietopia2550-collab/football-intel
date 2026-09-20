@@ -177,8 +177,9 @@ def test_missing_position_group_is_reported() -> None:
     events, lineups, match = build_full_match()
     lineups[0]["lineup"][2]["positions"][0]["position"] = "Sweeper"
     problems = _check(events, lineups, match)
-    assert len(problems) == 1
+    assert len(problems) == 2  # one per grouping: coarse and fine
     assert "has no position_group (Sweeper)" in problems[0]
+    assert "has no position_group_fine (Sweeper)" in problems[1]
 
 
 def test_unknown_team_is_reported_only_when_a_club_list_is_given() -> None:

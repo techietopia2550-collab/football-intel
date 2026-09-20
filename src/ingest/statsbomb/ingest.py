@@ -12,6 +12,8 @@ Each run is logged to `ingest_log` (source `statsbomb`) and every write is an id
 
 from __future__ import annotations
 
+from src.utils import disk_bootstrap  # isort: skip  # noqa: F401  (must be first)
+
 import argparse
 import time
 from dataclasses import dataclass, field

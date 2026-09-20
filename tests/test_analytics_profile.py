@@ -23,8 +23,8 @@ def engine(tmp_path_factory: pytest.TempPathFactory) -> Iterator[Engine]:
     patch.setattr(settings, "processed_dir", tmp_path / "processed")
     rows = league_rows()
     # one accented name, and one player under the threshold
-    rows.loc[rows["player_name"] == "Fwd 21", "player_name"] = "Zoë Kanté"
-    extra = pd.DataFrame(player_rows(900, "Bench Warmer", "Team 0", "FWD", matches=3, goals=1))
+    rows.loc[rows["player_name"] == "ST 21", "player_name"] = "Zoë Kanté"
+    extra = pd.DataFrame(player_rows(900, "Bench Warmer", "Team 0", "ST", matches=3, goals=1))
     eng = create_engine(f"sqlite:///{tmp_path / 'test.db'}")
     load_into(eng, pd.concat([rows, extra], ignore_index=True))
     normalize.run(SEASON, LEAGUE, engine=eng)
@@ -45,7 +45,7 @@ def test_relevant_metrics_exist_and_respect_scope() -> None:
 
 def test_best_forward_has_attacking_strengths(engine: Engine) -> None:
     p = profile("kante", SEASON, LEAGUE, engine)  # accent- and case-insensitive
-    assert (p["player_name"], p["position_group"], p["qualified"]) == ("Zoë Kanté", "FWD", True)
+    assert (p["player_name"], p["position_group_fine"], p["qualified"]) == ("Zoë Kanté", "ST", True)
     assert {"goals_p90", "xg_p90", "shots_p90"} <= set(_names(p["strengths"]))
     assert p["weaknesses"] == []
     scores = [i["score"] for i in p["strengths"]]
@@ -53,12 +53,12 @@ def test_best_forward_has_attacking_strengths(engine: Engine) -> None:
 
 
 def test_worst_forward_has_weaknesses(engine: Engine) -> None:
-    p = profile("Fwd 00", SEASON, LEAGUE, engine)
+    p = profile("ST 00", SEASON, LEAGUE, engine)
     assert "goals_p90" in _names(p["weaknesses"]) and p["strengths"] == []
 
 
 def test_irrelevant_metrics_are_never_judged(engine: Engine) -> None:
-    p = profile("Def 00", SEASON, LEAGUE, engine)  # the lowest key passes among defenders
+    p = profile("CB 00", SEASON, LEAGUE, engine)  # the lowest key passes among centre-backs
     judged = _names(p["strengths"] + p["weaknesses"] + p["neutral"] + p["unranked"])
     assert "key_passes_p90" not in judged and "goals_p90" not in judged
     assert not any(m.startswith("gk_") for m in judged)
@@ -88,7 +88,7 @@ def test_unranked_metric_is_reported_not_guessed() -> None:
         {"metric": ["shot_accuracy"], "value": [float("nan")], "percentile": [float("nan")],
          "sample_size": [20]}
     )  # fmt: skip
-    assert _names(classify(rows, "FWD")["unranked"]) == ["shot_accuracy"]
+    assert _names(classify(rows, "ST")["unranked"]) == ["shot_accuracy"]
 
 
 def test_player_under_the_minutes_threshold_is_not_profiled(engine: Engine) -> None:

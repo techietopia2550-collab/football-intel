@@ -65,9 +65,29 @@ Minutes: StatsBomb minutes are event-clock play time, about 97 for a full match 
 stoppage time is included. `parse_match(..., minutes_scale=s)` multiplies every player's
 minutes by `s`; `match_minutes_scale` returns 90 / match length so a full match is 90.0.
 
-Not computed: touches, aerial duels, and passes received are available in the events but not
-requested yet. Penalties are included in shots, goals and xG. Temporary `Player Off`/`Player On`
-(injury) events are ignored.
+Fine position groups (`position_group_fine`: GK, CB, FB, DM, CM, AM, W, ST): a finer split of the
+same lineup positions, chosen the same way (the group with the most minutes in the match, a tie
+going to the earliest spell). See FINE_POSITION_GROUPS. Coarse `position_group` is unchanged.
+
+Advanced counts (`aggregate_extra_events`). Checked against the 2015/16 raw events, not assumed:
+  aerials_won      events carrying `aerial_won` (only Pass, Clearance, Shot and Miscontrol have it):
+                   the winner's follow-up event. 16,845 flags across the 380 cached matches.
+  aerials_lost     `Duel` events of type `Aerial Lost`. 16,845 across the same matches, exactly one
+                   loser per winner, so the pair is complete.
+  passes_received  completed passes (no `pass.outcome`) whose `pass.recipient` is the player.
+  progressive_passes_received  the same passes, restricted to progressive ones (see above).
+  passes_received_under_pressure  `Ball Receipt*` events with no `ball_receipt.outcome` (a completed
+                   receipt) flagged `under_pressure`. Counted on the receipt because the pressure
+                   flag on the pass belongs to the passer.
+  def_actions      Tackle duels, Interceptions, Clearances and Blocks that carry a location.
+  def_action_x_sum sum of their x coordinates (own goal line x=0, opponent goal x=120), so the
+                   mean is `def_action_x_sum / def_actions`.
+  def_actions_own_box  those events inside the player's own penalty box (x <= 18, 18 <= y <= 62).
+  cross_clearances Clearances whose `related_events` include a cross Pass. Clearances with no
+                   related event (about 17%) cannot be classified: a lower bound.
+Not extracted: touches, freeze-frame based measures (only `Shot` events carry a freeze frame, so
+teammate positions at a defensive action are unknown). Penalties are included in shots, goals and
+xG. Temporary `Player Off`/`Player On` (injury) events are ignored.
 """
 
 from __future__ import annotations
@@ -127,6 +147,43 @@ POSITION_GROUPS: dict[str, str] = {
     "Left Center Forward": "FWD",  # 24
     "Secondary Striker": "FWD",  # 25
 }
+
+# StatsBomb position name -> fine position group (GK, CB, FB, DM, CM, AM, W, ST). The lineup
+# position string is never used directly downstream: everything goes through this table. Names
+# are StatsBomb's 25 positions. Choices: wing-backs -> FB with the full-backs; every "Midfield"
+# that is neither defensive nor attacking (including the wide Left/Right Midfield) -> CM, so 4-4-2
+# wide midfielders are CM; "Right/Left Attacking Midfield" -> AM (not W); only "Left/Right Wing"
+# -> W; the three forward slots and Secondary Striker -> ST (StatsBomb has no plain "Striker").
+FINE_POSITION_GROUPS: dict[str, str] = {
+    "Goalkeeper": "GK",
+    "Right Center Back": "CB",
+    "Center Back": "CB",
+    "Left Center Back": "CB",
+    "Right Back": "FB",
+    "Left Back": "FB",
+    "Right Wing Back": "FB",
+    "Left Wing Back": "FB",
+    "Right Defensive Midfield": "DM",
+    "Center Defensive Midfield": "DM",
+    "Left Defensive Midfield": "DM",
+    "Right Midfield": "CM",
+    "Right Center Midfield": "CM",
+    "Center Midfield": "CM",
+    "Left Center Midfield": "CM",
+    "Left Midfield": "CM",
+    "Right Attacking Midfield": "AM",
+    "Center Attacking Midfield": "AM",
+    "Left Attacking Midfield": "AM",
+    "Right Wing": "W",
+    "Left Wing": "W",
+    "Right Center Forward": "ST",
+    "Center Forward": "ST",
+    "Left Center Forward": "ST",
+    "Secondary Striker": "ST",
+}
+FINE_GROUPS: tuple[str, ...] = ("GK", "CB", "FB", "DM", "CM", "AM", "W", "ST")
+
+OWN_BOX_X_MAX = 18.0  # the player's own penalty box: x <= 18 and 18 <= y <= 62
 
 _TACKLE_WON = {"Won", "Success", "Success In Play", "Success Out"}
 _ON_TARGET = {"Goal", "Saved", "Saved to Post"}
@@ -260,6 +317,26 @@ def position_group(position: str) -> str | None:
             "Unmapped StatsBomb position {name!r}; position_group left NULL", name=position
         )
     return group
+
+
+def fine_position_group(position: str) -> str | None:
+    """Fine group for a StatsBomb position name; None if unmapped (`position_group` logs that)."""
+    return FINE_POSITION_GROUPS.get(position)
+
+
+def _top_fine_group(spells: list[tuple[str, float, float]]) -> str | None:
+    """The fine group with the most minutes; a tie goes to the earliest spell. None if unmapped."""
+    by_group: dict[str, float] = defaultdict(float)
+    for position, start, end in spells:
+        group = fine_position_group(position)
+        if group is not None:
+            by_group[group] += max(end - start, 0.0)
+    if not by_group:
+        return None
+    best = max(by_group.values())
+    return next(
+        g for pos, _, _ in spells if (g := fine_position_group(pos)) and by_group[g] == best
+    )
 
 
 def match_minutes_scale(events: list[dict[str, Any]], *, normalize: bool) -> float:
@@ -411,6 +488,58 @@ def aggregate_events(
     return stats, pressure_durations
 
 
+def _own_box(x: float, y: float) -> bool:
+    return x <= OWN_BOX_X_MAX and BOX_Y_MIN <= y <= BOX_Y_MAX
+
+
+def aggregate_extra_events(events: list[dict[str, Any]]) -> dict[int, Counter[str]]:
+    """Advanced counts per player id (definitions in the module docstring).
+
+    Kept apart from `aggregate_events` because a pass receiver is credited on someone else's
+    event, and a receiver with no actions of his own must not look like a player with events but
+    no minutes.
+    """
+    out: dict[int, Counter[str]] = defaultdict(_new_accumulator)
+    cross_ids = {
+        e["id"]
+        for e in events
+        if e["type"]["name"] == "Pass" and e["pass"].get("cross") and "id" in e
+    }
+    for e in events:
+        if e["period"] >= SHOOTOUT_PERIOD or "player" not in e:
+            continue
+        kind = e["type"]["name"]
+        pid = e["player"]["id"]
+        loc = e.get("location")
+
+        if kind == "Duel" and e["duel"]["type"]["name"] == "Aerial Lost":
+            out[pid]["aerials_lost"] += 1
+        for key in ("pass", "clearance", "shot", "miscontrol"):
+            if e.get(key, {}).get("aerial_won") and kind.lower() == key:
+                out[pid]["aerials_won"] += 1
+
+        if kind == "Pass":
+            p = e["pass"]
+            if "outcome" not in p and "recipient" in p:
+                receiver = out[p["recipient"]["id"]]
+                receiver["passes_received"] += 1
+                if _gain(e["location"], p["end_location"]) >= PROGRESSIVE_MIN_GAIN:
+                    receiver["progressive_passes_received"] += 1
+        elif kind == "Ball Receipt*":
+            if "outcome" not in e.get("ball_receipt", {}) and e.get("under_pressure"):
+                out[pid]["passes_received_under_pressure"] += 1
+
+        is_tackle = kind == "Duel" and e["duel"]["type"]["name"] == "Tackle"
+        if (is_tackle or kind in {"Interception", "Clearance", "Block"}) and loc:
+            out[pid]["def_actions"] += 1
+            out[pid]["def_action_x_sum"] += loc[0]
+            if _own_box(loc[0], loc[1]):
+                out[pid]["def_actions_own_box"] += 1
+        if kind == "Clearance" and cross_ids.intersection(e.get("related_events", [])):
+            out[pid]["cross_clearances"] += 1
+    return out
+
+
 def parse_match(
     events: list[dict[str, Any]],
     lineups: list[dict[str, Any]],
@@ -425,6 +554,7 @@ def parse_match(
     lengths = period_lengths(events)
     spells = player_spells(lineups, lengths, dismissal_times(events, lengths))
     stats, pressure_durations = aggregate_events(events)
+    extra = aggregate_extra_events(events)
 
     team_names = {t["team_id"]: normalize_team_name(t["team_name"]) for t in lineups}
     records: list[PlayerMatchRecord] = []
@@ -434,6 +564,7 @@ def parse_match(
         for player in team["lineup"]:
             pid = player["player_id"]
             minutes, position, group = _minutes_and_position(spells.get(pid, []))
+            fine_group = _top_fine_group(spells.get(pid, []))
             if minutes <= 0:
                 if pid in stats:
                     raise LineupError(
@@ -441,7 +572,8 @@ def parse_match(
                     )
                 continue  # unused substitute
 
-            s = stats.get(pid, Counter())
+            s = Counter(stats.get(pid, Counter()))
+            s.update(extra.get(pid, {}))
             attempted = s["passes_attempted"]
             durations = pressure_durations.get(pid, [])
             records.append(
@@ -457,6 +589,7 @@ def parse_match(
                     league=match.league,
                     position_played=position,
                     position_group=group,
+                    position_group_fine=fine_group,
                     minutes=round(minutes * minutes_scale, 2),
                     passes_attempted=attempted,
                     passes_completed=s["passes_completed"],
@@ -499,6 +632,15 @@ def parse_match(
                     fouls_won=s["fouls_won"],
                     yellow_cards=s["yellow_cards"],
                     red_cards=s["red_cards"],
+                    aerials_won=s["aerials_won"],
+                    aerials_lost=s["aerials_lost"],
+                    passes_received=s["passes_received"],
+                    passes_received_under_pressure=s["passes_received_under_pressure"],
+                    progressive_passes_received=s["progressive_passes_received"],
+                    def_actions=s["def_actions"],
+                    def_action_x_sum=round(s["def_action_x_sum"], 2),
+                    def_actions_own_box=s["def_actions_own_box"],
+                    cross_clearances=s["cross_clearances"],
                 )
             )
     return records
