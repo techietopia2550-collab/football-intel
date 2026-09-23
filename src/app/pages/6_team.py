@@ -53,7 +53,7 @@ def _hero(p: TeamProfile) -> None:
         left, right = st.columns([3, 2], vertical_alignment="center")
         with left:
             design.render(
-                f'<h1 class="fi-h1">{design.esc(p.team_name)}</h1>'
+                f'<h1 class="fi-h1">{shell.team_logo_img(p.team_name, 48)} {design.esc(p.team_name)}</h1>'
                 f'<div class="fi-body">{design.esc(shell.LEAGUE_SHORT.get(p.league, p.league))} · '
                 f"{data.SEASON_LABEL}</div>"
                 '<div class="fi-row" style="margin-top:8px">'

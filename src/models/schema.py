@@ -281,6 +281,21 @@ class PlayerArchetype(Base):
     distance_to_centroid: Mapped[float] = mapped_column(Float, nullable=False)
 
 
+class PlayerBio(Base):
+    """Birth date and nationality from Wikipedia/Wikidata, cached by the UI's background fetch.
+
+    A row with both fields NULL records "looked, found nothing", so the player is not asked
+    about again. See ANALYTICS_DECISIONS.md section 20.
+    """
+
+    __tablename__ = "player_bio"
+
+    player_id: Mapped[str] = mapped_column(String, primary_key=True)
+    birth_date: Mapped[date | None] = mapped_column(Date, nullable=True)
+    nationality: Mapped[str | None] = mapped_column(String, nullable=True)
+    fetched_at: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+
+
 def build_team_id(*, league: str, season: str, name: str) -> str:
     """Deterministic, source-independent team_id (`name` must be canonical).
 

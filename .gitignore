@@ -58,3 +58,4 @@ downloaded_files/
 
 # Wikipedia player photos cache (third-party images; not committed)
 data/player_images/**
+data/team_logos/**

@@ -30,6 +30,9 @@ class Settings(BaseSettings):
     player_images_dir: Path = Field(
         default=PROJECT_ROOT / "data" / "player_images", alias="PLAYER_IMAGES_DIR"
     )
+    team_logos_dir: Path = Field(
+        default=PROJECT_ROOT / "data" / "team_logos", alias="TEAM_LOGOS_DIR"
+    )
     # StatsBomb minutes are event-clock (about 97 for a full match). When True they are scaled so
     # a full match is 90.0; the factor is stored per match in matches.minutes_scale_factor.
     minutes_normalize: bool = Field(default=True, alias="MINUTES_NORMALIZE")

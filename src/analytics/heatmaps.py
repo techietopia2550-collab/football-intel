@@ -53,7 +53,12 @@ import numpy as np
 import pandas as pd
 from sqlalchemy import Engine, text
 
-from src.ingest.statsbomb.fetch import fetch_match_events
+from src.ingest.statsbomb.fetch import (
+    CorruptCacheError,
+    events_cache_path,
+    fetch_match_events,
+    load_cached_json,
+)
 from src.models.schema import get_engine, init_db
 from src.transform.normalize import (
     DEFAULT_SEASON,
@@ -144,6 +149,24 @@ def accumulate(events: Iterable[dict[str, Any]], grids: Grids | None = None) -> 
 def _grid_json(grid: np.ndarray, decimals: int | None = None) -> str:
     values = grid if decimals is None else grid.round(decimals)
     return json.dumps(values.tolist() if decimals else values.astype(int).tolist())
+
+
+def match_heatmaps(match_id: int, statsbomb_player_id: int) -> dict[str, np.ndarray] | None:
+    """The 7 heatmap grids of one player in ONE match, computed on demand from the cached raw
+    StatsBomb events (same 12 x 8 grid and types as the season heatmaps). Nothing is stored.
+
+    Returns None when the match's events are not cached (this never touches the network).
+    """
+    path = events_cache_path(match_id)
+    if not path.exists():
+        return None
+    try:
+        events = load_cached_json(path, list)
+    except (OSError, ValueError, CorruptCacheError):
+        return None
+    grids = accumulate(e for e in events if e.get("player", {}).get("id") == statsbomb_player_id)
+    empty = np.zeros((GRID_ROWS, GRID_COLS))
+    return {t: grids.get((statsbomb_player_id, t), empty) for t in HEATMAP_TYPES}
 
 
 def build_heatmaps(

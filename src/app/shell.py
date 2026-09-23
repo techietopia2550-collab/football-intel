@@ -87,14 +87,38 @@ def open_team(team_name: str) -> None:
     st.switch_page("pages/6_team.py")
 
 
+def open_match(player_id: str, match_id: int) -> None:
+    st.session_state["selected_player"] = player_id
+    st.session_state["selected_match"] = match_id
+    st.switch_page("pages/7_match.py")
+
+
+def team_logo_uri(team_name: str, px: int) -> str:
+    """Data URI of the club's logo (a generic badge while it is fetched, or if there is none)."""
+    return player_images.team_logo_uri(team_name, px)
+
+
+def team_logo_img(team_name: str, px: int) -> str:
+    """Inline <img> of the club's logo, decorative (the club name is always written next to it)."""
+    uri = team_logo_uri(team_name, px)
+    if not uri:
+        return ""
+    return (
+        f'<img src="{uri}" width="{px}" height="{px}" alt="" '
+        f'style="vertical-align:middle;object-fit:contain">'
+    )
+
+
 def open_compare(player_ids: list[str]) -> None:
     st.session_state["compare_ids"] = player_ids[:5]
     st.switch_page("pages/3_compare.py")
 
 
-def photo_uri(player_id: str, name: str, px: int) -> str:
+def photo_uri(player_id: str, name: str, px: int, want_bio: bool = False) -> str:
     """Data URI of the player's photo (silhouette until the background fetch finishes)."""
-    return player_images.avatar_data_uri(player_images.photo_path(player_id, name), px)
+    return player_images.avatar_data_uri(
+        player_images.photo_path(player_id, name, want_bio), px
+    )
 
 
 def has_photo(player_id: str) -> bool:

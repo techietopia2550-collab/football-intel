@@ -10,6 +10,12 @@ For local or portfolio use this is fine; commercial use needs a per-image licenc
 
 Safeguard against a wrong-person photo: the page's intro must call the subject a footballer, so a
 disambiguation page or an unrelated namesake is rejected and the silhouette is shown instead.
+
+Also from Wikipedia/Wikidata, cached the same way: a player's birth date and nationality (table
+`player_bio`, written in the same background fetch) and a club's logo (`fetch_team_logo`, cached to
+`data/team_logos/<slug>.png` with attribution in that folder's `credits.json`). A club logo is only
+kept when the page's intro says it is a football club. Logos are trademarks: fine for local or
+portfolio use, per-image licence check needed for anything commercial (section 20).
 """
 
 from __future__ import annotations
@@ -22,13 +28,17 @@ import json
 import re
 import threading
 import time
+import unicodedata
 from concurrent.futures import ThreadPoolExecutor
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 from pathlib import Path
+from typing import Any
 
 import requests
 from PIL import Image, ImageDraw
+from sqlalchemy import text
 
+from src.models.schema import get_engine, init_db
 from src.utils.config import settings
 from src.utils.logging import logger
 from src.utils.ratelimit import rate_limited
@@ -43,6 +53,33 @@ CREDITS_FILE = "credits.json"
 REQUEST_DELAY_SECONDS = 0.5
 FAILURE_COOLDOWN_SECONDS = 300.0  # after a network failure, do not ask again for a while
 _FOOTBALL_INTRO = re.compile(r"football|soccer", re.IGNORECASE)
+_CLUB_INTRO = re.compile(r"football club|soccer club|association football|sports club|football team", re.IGNORECASE)
+_LOGO_NAME = re.compile(r"logo|crest|badge|emblem|shield|coat", re.IGNORECASE)
+WIKIDATA_URL = "https://www.wikidata.org/w/api.php"
+TEAM_LOGO_PX = 96
+TEAM_PLACEHOLDER_PATH = STATIC_DIR / "team_placeholder.png"
+LOGO_CREDIT_LINE = "Logo: Wikipedia (club trademark)"
+# Wikipedia titles that differ from the dataset's club names
+_TEAM_TITLES = {
+    "Barcelona": ["FC Barcelona"], "Athletic Club": ["Athletic Bilbao"],
+    "Atlético Madrid": ["Atlético Madrid"], "Real Madrid": ["Real Madrid CF"],
+    "Inter Milan": ["Inter Milan"], "AC Milan": ["AC Milan"], "AS Roma": ["AS Roma"],
+    "Lyon": ["Olympique Lyonnais"], "Marseille": ["Olympique de Marseille"],
+    "Monaco": ["AS Monaco FC"], "Nice": ["OGC Nice"], "Lille": ["Lille OSC"],
+    "Paris Saint-Germain": ["Paris Saint-Germain F.C."], "Manchester United": ["Manchester United F.C."],
+    "Manchester City": ["Manchester City F.C."], "Leicester City": ["Leicester City F.C."],
+    "Tottenham Hotspur": ["Tottenham Hotspur F.C."], "Newcastle United": ["Newcastle United F.C."],
+    "West Ham United": ["West Ham United F.C."], "Swansea City": ["Swansea City A.F.C."],
+    "Norwich City": ["Norwich City F.C."], "Stoke City": ["Stoke City F.C."],
+    "Bournemouth": ["A.F.C. Bournemouth"], "Celta Vigo": ["RC Celta de Vigo"],
+    "Real Sociedad": ["Real Sociedad"], "Real Betis": ["Real Betis"],
+    "Deportivo La Coruña": ["Deportivo de La Coruña"], "Juventus": ["Juventus F.C."],
+    "Napoli": ["S.S.C. Napoli"], "Lazio": ["S.S. Lazio"], "Torino": ["Torino F.C."],
+    "Chievo": ["A.C. ChievoVerona"], "Hellas Verona": ["Hellas Verona F.C."],
+    "Sampdoria": ["U.C. Sampdoria"], "Udinese": ["Udinese Calcio"], "Bologna": ["Bologna F.C. 1909"],
+    "Reims": ["Stade de Reims"], "Rennes": ["Stade Rennais F.C."],
+    "Saint-Étienne": ["AS Saint-Étienne"], "Nantes": ["FC Nantes"],
+}  # fmt: skip
 
 _lock = threading.Lock()
 _pending: set[str] = set()
@@ -111,7 +148,7 @@ def _query_page(title: str) -> dict[str, object] | None:
     resp = requests.get(
         API_URL,
         params={
-            "action": "query", "titles": title, "prop": "pageimages|extracts|info",
+            "action": "query", "titles": title, "prop": "pageimages|extracts|info|pageprops",
             "inprop": "url", "format": "json", "pithumbsize": THUMB_PX, "redirects": 1,
             "exintro": 1, "explaintext": 1, "exchars": 300,
         },
@@ -133,31 +170,127 @@ def _download(url: str) -> bytes:
     return resp.content
 
 
-def find_page_image(name: str) -> tuple[str, dict[str, object]] | None:
-    """(thumbnail URL, page) of the footballer's Wikipedia page, or None if there is no usable
-    image. Tries the plain name, then 'Name (footballer)'."""
+def find_player_page(name: str) -> dict[str, object] | None:
+    """The footballer's Wikipedia page (its intro must call him a footballer), or None."""
     for title in (name, f"{name} (footballer)"):
         page = _query_page(title)
-        if not page:
-            continue
-        intro = str(page.get("extract", ""))
-        thumb = page.get("thumbnail")
-        if _FOOTBALL_INTRO.search(intro) and isinstance(thumb, dict) and thumb.get("source"):
-            return str(thumb["source"]), page
+        if page and _FOOTBALL_INTRO.search(str(page.get("extract", ""))):
+            return page
     return None
 
 
-def _fetch_one(player_id: str, name: str) -> None:
+def find_page_image(name: str) -> tuple[str, dict[str, object]] | None:
+    """(thumbnail URL, page) of the footballer's Wikipedia page, or None if there is no usable
+    image. Tries the plain name, then 'Name (footballer)'."""
+    page = find_player_page(name)
+    thumb = page.get("thumbnail") if page else None
+    if page and isinstance(thumb, dict) and thumb.get("source"):
+        return str(thumb["source"]), page
+    return None
+
+
+# ---- bio: birth date and nationality (Wikidata) ----------------------------------------------
+
+
+@rate_limited(REQUEST_DELAY_SECONDS, max_retries=2)
+def _wikidata_entity(qid: str, props: str) -> dict[str, Any]:
+    resp = requests.get(
+        WIKIDATA_URL,
+        params={"action": "wbgetentities", "ids": qid, "props": props, "languages": "en",
+                "format": "json"},
+        headers={"User-Agent": USER_AGENT}, timeout=10,
+    )  # fmt: skip
+    resp.raise_for_status()
+    return resp.json().get("entities", {}).get(qid, {})  # type: ignore[no-any-return]
+
+
+def parse_birth_date(claims: dict[str, Any]) -> date | None:
+    """P569 as a date, only when Wikidata knows the exact day (precision 11)."""
+    for claim in claims.get("P569", []):
+        value = claim.get("mainsnak", {}).get("datavalue", {}).get("value", {})
+        if value.get("precision") == 11:
+            try:
+                return date.fromisoformat(str(value["time"]).lstrip("+")[:10])
+            except ValueError:
+                continue
+    return None
+
+
+def parse_nationality_qid(claims: dict[str, Any]) -> str | None:
+    """First P27 (citizenship) claim that has no end date."""
+    for claim in claims.get("P27", []):
+        if "P582" in claim.get("qualifiers", {}):
+            continue
+        qid = claim.get("mainsnak", {}).get("datavalue", {}).get("value", {}).get("id")
+        if qid:
+            return str(qid)
+    return None
+
+
+def fetch_bio(page: dict[str, object]) -> tuple[date | None, str | None]:
+    """(birth date, nationality) of the Wikidata item behind a Wikipedia page."""
+    props = page.get("pageprops")
+    qid = props.get("wikibase_item") if isinstance(props, dict) else None
+    if not qid:
+        return None, None
+    claims = _wikidata_entity(str(qid), "claims").get("claims", {})
+    country = parse_nationality_qid(claims)
+    label = None
+    if country:
+        label = _wikidata_entity(country, "labels").get("labels", {}).get("en", {}).get("value")
+    return parse_birth_date(claims), label
+
+
+def load_bio(player_id: str) -> tuple[date | None, str | None, bool]:
+    """(birth date, nationality, looked_up) from `player_bio`. `looked_up` is False when the
+    player has not been fetched yet. Never raises."""
+    try:
+        engine = init_db(get_engine())
+        with engine.connect() as conn:
+            row = conn.execute(
+                text("SELECT birth_date, nationality FROM player_bio WHERE player_id = :p"),
+                {"p": player_id},
+            ).fetchone()
+    except Exception:  # noqa: BLE001 - a missing bio must never break the page
+        return None, None, False
+    if row is None:
+        return None, None, False
+    return (date.fromisoformat(str(row[0])[:10]) if row[0] else None), row[1], True
+
+
+def _save_bio(player_id: str, born: date | None, nationality: str | None) -> None:
+    engine = init_db(get_engine())
+    with _lock, engine.begin() as conn:
+        conn.execute(
+            text(
+                "INSERT INTO player_bio (player_id, birth_date, nationality, fetched_at) "
+                "VALUES (:p, :b, :n, :t) ON CONFLICT(player_id) DO UPDATE SET "
+                "birth_date = :b, nationality = :n, fetched_at = :t"
+            ),
+            {
+                "p": player_id, "b": born, "n": nationality,
+                "t": datetime.now(UTC).replace(tzinfo=None),
+            },
+        )  # fmt: skip
+
+
+def _fetch_one(player_id: str, name: str, need_photo: bool, need_bio: bool) -> None:
     global _cooldown_until
     try:
-        found = find_page_image(name)
-        if found is None:
+        page = find_player_page(name)
+        if need_bio:
+            born, nationality = fetch_bio(page) if page else (None, None)
+            _save_bio(player_id, born, nationality)
+        if not need_photo:
+            return
+        thumb = page.get("thumbnail") if page else None
+        if page is None or not (isinstance(thumb, dict) and thumb.get("source")):
             _save_credit(
                 player_id,
                 {"status": "missing", "name": name, "checked": datetime.now(UTC).isoformat()},
             )
             return
-        url, page = found
+        url = str(thumb["source"])
         raw = _download(url)
         img = Image.open(io.BytesIO(raw)).convert("RGB")
         img.thumbnail((THUMB_PX, THUMB_PX))
@@ -171,7 +304,7 @@ def _fetch_one(player_id: str, name: str) -> None:
             },
         )  # fmt: skip
     except Exception as exc:  # noqa: BLE001 - a photo failure must never surface in the UI
-        logger.warning("Photo fetch failed for {n}: {e}", n=name, e=exc)
+        logger.warning("Photo/bio fetch failed for {n}: {e}", n=name, e=exc)
         _cooldown_until = time.monotonic() + FAILURE_COOLDOWN_SECONDS
     finally:
         with _lock:
@@ -185,20 +318,171 @@ def _pool() -> ThreadPoolExecutor:
     return _executor
 
 
-def photo_path(player_id: str, name: str) -> Path | None:
-    """The cached photo, or None. When it is not cached yet, a background fetch is started
-    (unless the player is known to have none, or the network recently failed). Never blocks."""
+def photo_path(player_id: str, name: str, want_bio: bool = False) -> Path | None:
+    """The cached photo, or None. When the photo is not cached yet, a background fetch is started
+    (unless the player is known to have none, or the network recently failed). `want_bio` (set
+    only by the profile hero, never by list avatars) also fetches birth date and nationality.
+    Never blocks."""
     path = image_file(player_id)
-    if path.exists():
-        return path
-    if load_credits().get(player_id, {}).get("status") == "missing":
-        return None
+    have_photo = path.exists()
+    need_photo = not have_photo and load_credits().get(player_id, {}).get("status") != "missing"
+    need_bio = want_bio and not load_bio(player_id)[2]
+    if not (need_photo or need_bio):
+        return path if have_photo else None
     with _lock:
         if player_id in _pending or time.monotonic() < _cooldown_until:
-            return None
+            return path if have_photo else None
         _pending.add(player_id)
-    _pool().submit(_fetch_one, player_id, name)
+    _pool().submit(_fetch_one, player_id, name, need_photo, need_bio)
+    return path if have_photo else None
+
+
+# ---- team logos ------------------------------------------------------------------------------
+
+
+def team_slug(team_name: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "-", unicodedata.normalize("NFKD", team_name).encode(
+        "ascii", "ignore").decode().lower()).strip("-")
+
+
+def logos_dir() -> Path:
+    path = settings.team_logos_dir
+    path.mkdir(parents=True, exist_ok=True)
+    return path
+
+
+def logo_file(team_name: str) -> Path:
+    return logos_dir() / f"{team_slug(team_name)}.png"
+
+
+def load_logo_credits() -> dict[str, dict[str, str]]:
+    try:
+        data = json.loads((logos_dir() / CREDITS_FILE).read_text(encoding="utf-8"))
+        return data if isinstance(data, dict) else {}
+    except (OSError, ValueError):
+        return {}
+
+
+def _save_logo_credit(team_name: str, entry: dict[str, str]) -> None:
+    with _lock:
+        credits = load_logo_credits()
+        credits[team_name] = entry
+        path = logos_dir() / CREDITS_FILE
+        tmp = path.with_suffix(".json.tmp")
+        tmp.write_text(json.dumps(credits, indent=2, ensure_ascii=False), encoding="utf-8")
+        tmp.replace(path)
+
+
+def _team_titles(team_name: str) -> list[str]:
+    plain = [team_name, f"{team_name} F.C.", f"{team_name} FC", f"FC {team_name}"]
+    return [*_TEAM_TITLES.get(team_name, []), *plain]
+
+
+def find_team_logo(team_name: str) -> tuple[str, dict[str, object]] | None:
+    """(logo URL, page) from the club's Wikipedia page, or None. The page's lead image is used
+    when its file name says logo / crest / badge; otherwise nothing is shown. A page whose intro
+    does not describe a football club is rejected (wrong-page safeguard)."""
+    for title in _team_titles(team_name):
+        page = _query_page(title)
+        if not page or not _CLUB_INTRO.search(str(page.get("extract", ""))):
+            continue
+        thumb = page.get("thumbnail")
+        if isinstance(thumb, dict) and thumb.get("source") and _LOGO_NAME.search(
+            str(page.get("pageimage", ""))
+        ):
+            return str(thumb["source"]), page
     return None
+
+
+def _fetch_logo(team_name: str) -> None:
+    global _cooldown_until
+    key = f"logo:{team_name}"
+    try:
+        found = find_team_logo(team_name)
+        if found is None:
+            _save_logo_credit(
+                team_name, {"status": "missing", "checked": datetime.now(UTC).isoformat()}
+            )
+            return
+        url, page = found
+        img = Image.open(io.BytesIO(_download(url))).convert("RGBA")
+        img.thumbnail((TEAM_LOGO_PX * 2, TEAM_LOGO_PX * 2))
+        img.save(logo_file(team_name), format="PNG")
+        _save_logo_credit(
+            team_name,
+            {
+                "status": "ok", "title": str(page.get("title", "")),
+                "page_url": str(page.get("fullurl", "")), "image_url": url,
+                "file": str(page.get("pageimage", "")), "attribution": LOGO_CREDIT_LINE,
+                "fetched": datetime.now(UTC).isoformat(),
+            },
+        )  # fmt: skip
+    except Exception as exc:  # noqa: BLE001 - a logo failure must never surface in the UI
+        logger.warning("Logo fetch failed for {n}: {e}", n=team_name, e=exc)
+        _cooldown_until = time.monotonic() + FAILURE_COOLDOWN_SECONDS
+    finally:
+        with _lock:
+            _pending.discard(key)
+
+
+def fetch_team_logo(team_name: str) -> Path | None:
+    """Fetch (blocking) and cache a club's logo; the cached file, or None if Wikipedia has no
+    trustworthy one. Use `team_logo_path` from the UI, which never blocks."""
+    if not logo_file(team_name).exists():
+        _fetch_logo(team_name)
+    path = logo_file(team_name)
+    return path if path.exists() else None
+
+
+def team_logo_path(team_name: str) -> Path | None:
+    """The cached logo, or None while a background fetch runs (or when there is none)."""
+    path = logo_file(team_name)
+    if path.exists():
+        return path
+    if load_logo_credits().get(team_name, {}).get("status") == "missing":
+        return None
+    key = f"logo:{team_name}"
+    with _lock:
+        if key in _pending or time.monotonic() < _cooldown_until:
+            return None
+        _pending.add(key)
+    _pool().submit(_fetch_logo, team_name)
+    return None
+
+
+def make_team_placeholder(path: Path = TEAM_PLACEHOLDER_PATH, size: int = 256) -> Path:
+    """Draw the generic shield used when a club has no logo."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    w, top, bottom = size * 0.72, size * 0.08, size * 0.92
+    left, right = (size - w) / 2, (size + w) / 2
+    outline = [(left, top), (right, top), (right, size * 0.55), (size / 2, bottom), (left, size * 0.55)]
+    d.polygon(outline, fill=(37, 41, 50, 255), outline=(95, 99, 104, 255), width=max(2, size // 40))
+    img.save(path, format="PNG")
+    return path
+
+
+def team_logo_uri(team_name: str, px: int) -> str:
+    """A PNG data URI of the club's logo sized `px` (x2 for high-density screens), or the
+    placeholder badge. Never raises."""
+    try:
+        path = team_logo_path(team_name)
+        if path is None:
+            if not TEAM_PLACEHOLDER_PATH.exists():
+                make_team_placeholder()
+            path = TEAM_PLACEHOLDER_PATH
+        img = Image.open(path).convert("RGBA")
+        img.thumbnail((px * 2, px * 2))
+        buf = io.BytesIO()
+        img.save(buf, format="PNG")
+        return "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode("ascii")
+    except Exception:  # noqa: BLE001 - a corrupt file must fall back, not break the page
+        return ""
+
+
+def has_team_logo(team_name: str) -> bool:
+    return logo_file(team_name).exists()
 
 
 def fetches_pending() -> bool:

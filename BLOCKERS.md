@@ -429,3 +429,10 @@ Neither is fixed: k is accepted and the clusters are not re-run.
   from the real one. The team page shows a note when a team has fewer than 38 fixtures.
 - **Set-piece and transition axes are noisy proxies** (penalties count as set pieces; transition speed only sees
   possessions that end in a shot).
+
+## 18. Trophies, career history and personal achievements are NOT available
+
+No loaded source provides them (StatsBomb Open Data has match events only; Transfermarkt is out of
+scope). The profile shows none and invents none; the "Career context" card stays a placeholder. Bio
+is limited to birth date and nationality from Wikipedia/Wikidata, and is absent for players whose
+page is missing or ambiguous.

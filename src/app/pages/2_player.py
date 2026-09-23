@@ -4,14 +4,19 @@ from __future__ import annotations
 
 from src.utils import disk_bootstrap  # isort: skip  # noqa: F401  (must be first)
 
+from datetime import date
+
 import pandas as pd
 import streamlit as st
 
 from src.analytics import directory as analytics_dir
+from src.analytics import games as games_mod
 from src.app import data, design, player_images, shell
 from src.app.labels import metric_description, metric_label
+from src.models.match import GameCard, SeasonGameStats
 
 SIMILAR_N = 10
+SEASON_START = date(2015, 8, 1)  # age is quoted at the start of 2015/16
 
 
 def _selected_id(directory: pd.DataFrame) -> str | None:
@@ -35,27 +40,67 @@ def _pick_player(directory: pd.DataFrame) -> None:
             shell.open_player(row["player_id"])
 
 
-def _hero(row: pd.Series, table: pd.DataFrame) -> None:
-    pid, name, group = row["player_id"], row["player_name"], row["position_group_fine"]
-    photo = shell.photo_uri(pid, name, 128)
-    credit = player_images.CREDIT_LINE if shell.has_photo(pid) else "No photo available"
-    arch = row["archetype_label"] if isinstance(row["archetype_label"], str) else None
+def _hero_stats(
+    row: pd.Series, table: pd.DataFrame, gs: SeasonGameStats | None
+) -> list[tuple[str, str]]:
+    """The position-aware tiles, most important first. A stat that is unavailable gets no tile."""
+    group = row["position_group_fine"]
 
-    def headline(metric: str) -> tuple[str, str]:
+    def headline(metric: str) -> tuple[str, str] | None:
         hit = table[table["metric"] == metric]
         if hit.empty:
-            return metric_label(metric), "–"
+            return None
         r = hit.iloc[0]
         val = r["per90"] if r["per90"] is not None and not pd.isna(r["per90"]) else r["value"]
+        if val is None or pd.isna(val):
+            return None
         pct = "" if r["percentile"] is None or pd.isna(r["percentile"]) else f" · {design.ordinal(r['percentile'])}"
         suffix = "%" if r["unit"] else ""
         label = metric_label(metric) + ("" if r["unit"] else " /90")
         return label, f"{design.fmt_value(val, suffix)}{pct}"
 
-    primary = headline(analytics_dir.PRIMARY_METRIC[group])
-    secondary = headline(analytics_dir.SECONDARY_METRIC[group])
+    minutes = ("Minutes", f"{row['minutes_total']:,.0f}")
+    games = None if gs is None else ("Games", str(gs.games))
+    if group == "GK":
+        tiles: list[tuple[str, str] | None] = [
+            minutes, games,
+            None if gs is None or gs.clean_sheets is None else ("Clean sheets", str(gs.clean_sheets)),
+            None if gs is None or gs.saves is None else ("Saves", str(gs.saves)),
+            None if gs is None or gs.save_pct is None else ("Save %", design.fmt_value(gs.save_pct, "%")),
+            None if gs is None or gs.goals_conceded is None else ("Goals conceded", str(gs.goals_conceded)),
+        ]  # fmt: skip
+    else:
+        tiles = [
+            minutes, games,
+            None if gs is None or gs.goals is None else ("Goals", str(gs.goals)),
+            None if gs is None or gs.assists is None else ("Assists", str(gs.assists)),
+            headline(analytics_dir.PRIMARY_METRIC[group]),
+            headline(analytics_dir.SECONDARY_METRIC[group]),
+        ]  # fmt: skip
+    return [t for t in tiles if t is not None]
+
+
+def _bio_line(pid: str) -> str:
+    """Age on 1 Aug 2015 and nationality (text), or "" when Wikipedia has neither."""
+    born, nationality, _ = player_images.load_bio(pid)
+    age = games_mod.age_on(born, SEASON_START)
+    parts = []
+    if age is not None and born is not None:
+        parts.append(f'Age {age} <span class="fi-muted">(born {born:%d %b %Y})</span>')
+    if nationality:
+        parts.append(design.badge(nationality, "neutral", "Nationality (Wikidata)"))
+    return " · ".join(parts)
+
+
+def _hero(row: pd.Series, table: pd.DataFrame) -> None:
+    pid, name, group = row["player_id"], row["player_name"], row["position_group_fine"]
+    photo = shell.photo_uri(pid, name, 128, want_bio=True)
+    credit = player_images.CREDIT_LINE if shell.has_photo(pid) else "No photo available"
+    arch = row["archetype_label"] if isinstance(row["archetype_label"], str) else None
+    tiles = _hero_stats(row, table, data.season_game_stats(pid, group))
+    bio = _bio_line(pid)
     with st.container(key="ficard_hero"):
-        left, mid, right = st.columns([1.1, 3, 2.2], vertical_alignment="center")
+        left, mid = st.columns([1.1, 5.2], vertical_alignment="center")
         with left:
             design.render(
                 f'<div class="fi-col" style="align-items:center">'
@@ -69,20 +114,78 @@ def _hero(row: pd.Series, table: pd.DataFrame) -> None:
                 f"{design.position_badge(group)}"
                 + (design.badge(f"Archetype: {arch}", "highlight") if arch else "")
                 + "</div>"
-                f'<div class="fi-body">{design.esc(row["team"])} · '
+                f'<div class="fi-body">{shell.team_logo_img(row["team"], 24)} '
+                f'{design.esc(row["team"])} · '
                 f"{design.esc(shell.LEAGUE_SHORT[row['league']])} · {data.SEASON_LABEL}</div>"
+                + (f'<div class="fi-body" style="margin-top:{design.SP_XS}px">{bio}</div>' if bio else "")
             )
             if st.button(f"Plays for → {row['team']}", key=f"team_link_{pid}"):
                 shell.open_team(row["team"])
-        with right:
-            design.render(
-                '<div class="fi-row" style="justify-content:flex-end">'
-                + design.big_stat("Minutes", f"{row['minutes_total']:,.0f}")
-                + design.big_stat(*primary)
-                + design.big_stat(*secondary)
+        design.render(
+            f'<div class="fi-row" style="justify-content:space-between;margin-top:{design.SP_S}px">'
+            + "".join(design.big_stat(label, value) for label, value in tiles)
+            + "</div>"
+        )
+        design.render(design.link_button("Find similar players", "#similar-players"))
+
+
+# ---- B2. longest / best / worst game ---------------------------------------------------------
+
+
+def _fmt_component(label: str, value: float) -> str:
+    if label == "Save %":
+        return f"{value * 100:.0f}%"
+    return f"{value:g}" if float(value).is_integer() else f"{value:.2f}"
+
+
+def _game_card(kind: str, symbol: str, card: GameCard | None, pid: str) -> None:
+    with st.container(key=f"ficard_game_{kind}_{pid}"):
+        if card is None:
+            design.render(design.empty_state(f"No {kind} game", "Needs a match of 45+ minutes."))
+            return
+        venue = "home" if card.home else "away"
+        body = (
+            f'<div class="fi-card-title">{symbol} {design.esc(kind.title())} game</div>'
+            f'<div class="fi-name">vs {design.esc(card.opponent)}</div>'
+            f'<div class="fi-muted">{card.match_date:%d %b %Y} · {venue} · result '
+            f"{design.esc(card.score)} · {card.minutes:.0f} min · "
+            f"{design.esc(card.position_played or '-')}</div>"
+        )
+        if card.rating is not None:
+            body += (
+                f'<div class="fi-row" style="margin-top:{design.SP_S}px">'
+                + design.big_stat("Rating", f"{card.rating:.1f}")
+                + "".join(
+                    design.big_stat(label, _fmt_component(label, v)) for label, v in card.components
+                )
                 + "</div>"
             )
-        design.render(design.link_button("Find similar players", "#similar-players"))
+        design.render(body)
+        if st.button("View match", key=f"view_match_{kind}_{pid}"):
+            shell.open_match(pid, card.match_id)
+
+
+def _games_section(row: pd.Series) -> None:
+    pid, group = row["player_id"], row["position_group_fine"]
+    pg = data.player_games(pid, group)
+    if pg.best is None:
+        return
+    design.render(
+        design.section_header(
+            "Standout games", f"Longest, best and worst of his {data.SEASON_LABEL} matches"
+        )
+    )
+    a, b, c = st.columns(3)
+    with a:
+        _game_card("longest", "●", pg.longest, pid)
+    with b:
+        _game_card("best", "▲", pg.best, pid)
+    with c:
+        _game_card("worst", "▼", pg.worst, pid)
+    st.caption(
+        "Rating is a simple count for his position, comparing his own matches with each other "
+        "(see Methodology). The worst game must have 45+ minutes."
+    )
 
 
 # ---- B. radar --------------------------------------------------------------------------------
@@ -302,6 +405,22 @@ def _similar_section(row: pd.Series) -> None:
                 shell.open_player(s.player_id)
     if st.button("Compare with these players", key=f"cmp_{pid}"):
         shell.open_compare([pid, *(s.player_id for s in res.similar[:2])])
+    top = res.similar[0]
+    with st.container(key=f"ficard_closest_{pid}"):
+        c_img, c_txt, c_btn = st.columns([0.6, 5, 1.6], vertical_alignment="center")
+        with c_img:
+            design.render(
+                design.player_avatar(
+                    top.player_name, 48, shell.photo_uri(top.player_id, top.player_name, 48)
+                )
+            )
+        with c_txt:
+            design.render(
+                f'<div class="fi-name">Closest profile match: {design.esc(top.player_name)} '
+                f"({design.esc(top.team)}) &mdash; {design.fmt_match_pct(top.similarity)} match</div>"
+            )
+        if c_btn.button("View profile", key=f"closest_open_{pid}_{top.player_id}"):
+            shell.open_player(top.player_id)
     st.caption(
         f"Pool: {res.group_size} players in the '{res.archetype_label}' archetype, "
         f"{res.candidates_considered} after filters. Match % shows how close the playing profile is: 100% would be an identical profile."
@@ -372,6 +491,7 @@ except Exception:  # noqa: BLE001 - a clear message, not a traceback
 
 _hero(row, table)
 _radar_section(row, table)
+_games_section(row)
 _strengths_weaknesses(row)
 _heatmap_section(row)
 _stats_table(row, table)

@@ -22,6 +22,7 @@ pages = [
     st.Page("pages/2_player.py", title="Player profile", icon="👤", url_path="player"),
     st.Page("pages/3_compare.py", title="Compare", icon="⚖️", url_path="compare"),
     st.Page("pages/4_archetypes.py", title="Archetype explorer", icon="🧭", url_path="archetypes"),
+    st.Page("pages/7_match.py", title="Match", icon="📋", url_path="match"),
     st.Page("pages/6_team.py", title="Team fingerprint", icon="🛡️", url_path="team"),
     st.Page("pages/5_methodology.py", title="Methodology", icon="📖", url_path="methodology"),
 ]

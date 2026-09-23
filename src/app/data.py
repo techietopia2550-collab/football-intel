@@ -11,10 +11,13 @@ import streamlit as st
 from sqlalchemy import Engine
 
 from src.analytics import directory as analytics_dir
+from src.analytics import games as games_mod
+from src.analytics import heatmaps as heatmaps_mod
 from src.analytics import team_profile as team_profile_mod
 from src.analytics.profile import classify
 from src.analytics.similarity import find_similar
 from src.analytics.team_similarity import find_similar_teams
+from src.models.match import PlayerGames, SeasonGameStats
 from src.models.schema import get_engine
 from src.models.similarity import SimilarityResult
 from src.models.team import KeyPlayer, SimilarTeamsResult, TeamProfile
@@ -155,3 +158,29 @@ def similar_teams(team_name: str, n: int = 10) -> SimilarTeamsResult:
 @st.cache_data(show_spinner=False)
 def team_key_players(team_name: str, league: str) -> tuple[list[KeyPlayer], str]:
     return team_profile_mod.key_players(team_name, league, SEASON, engine())
+
+
+# ---- matches (src.analytics.games / heatmaps) -------------------------------------------------
+
+
+@st.cache_data(show_spinner=False)
+def player_matches(player_id: str) -> pd.DataFrame:
+    return games_mod.load_player_matches(player_id, SEASON, engine())
+
+
+@st.cache_data(show_spinner=False)
+def match_heatmaps(match_id: int, player_id: str) -> dict[str, np.ndarray] | None:
+    """The seven heatmap grids of one player in one match, computed on demand from the cached raw
+    events (None when they are not cached or the player has no StatsBomb id)."""
+    sb_id = games_mod.statsbomb_player_id(player_id, engine())
+    return None if sb_id is None else heatmaps_mod.match_heatmaps(match_id, sb_id)
+
+
+@st.cache_data(show_spinner=False)
+def season_game_stats(player_id: str, group: str) -> SeasonGameStats:
+    return games_mod.season_game_stats(player_matches(player_id), group)
+
+
+@st.cache_data(show_spinner=False)
+def player_games(player_id: str, group: str) -> PlayerGames:
+    return games_mod.player_games(player_matches(player_id), group)

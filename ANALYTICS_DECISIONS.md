@@ -544,3 +544,51 @@ Exact neighbours are in the session report, not repeated here because they are a
 
 **Key players.** The five players with most minutes for the team (from `player_archetypes` and the season stats), with
 the archetype mix of those five (goalkeepers show their own keeper archetype).
+
+## 19. Match ratings: longest, best and worst game (`src/analytics/games.py`)
+
+A player's matches are ranked against **each other** only (never against other players), using a
+plain count for his season position group (`position_group_fine`). No weighting is fitted; the
+numbers are what StatsBomb events give.
+
+| Group | Rating = |
+|---|---|
+| ST, W, AM | goals + assists + xG + xA |
+| CM, DM | progressive passes + tackles + key passes |
+| CB, FB | tackles + interceptions + clearances |
+| GK | saves + 3 x clean sheet + 2 x save % (save % = saves / (saves + goals conceded), 0 when no shot was faced) |
+
+- Goals/assists are added to xG/xA on purpose: a goal is the outcome, xG the chance quality, so a
+  game with both scores highest. Goalkeeper weights (3 for a clean sheet, 2 for save %) are judgement
+  calls, not fitted.
+- **Clean sheet** = the player's team conceded 0 in a match he played. The score comes from `matches`
+  (StatsBomb); the football-data `match_results` table has no rows for these matches. A goalkeeper who
+  played only part of a clean-sheet match still gets the credit.
+- **Longest** = most minutes (ties: earlier date). **Best** = highest rating (ties: more minutes, then
+  earlier). **Worst** = lowest rating among matches with **45+ minutes** (ties: more minutes).
+- Known limits: the defender formula ignores attacking output, so a full-back known for assists
+  (Jordi Alba) has a best game chosen for defending; ratings are counts, so a 90-minute game beats a
+  short cameo; the numbers are not comparable between players or positions.
+- Hero stats: games = distinct matches in `player_match_stats`; a tile is hidden when its value is
+  unavailable. Per-match heatmaps are computed on demand from the cached raw events with the same
+  12 x 8 grid and 7 types as section 10, cached in memory only, and show "Heatmap unavailable" if the
+  match's events are not on disk.
+- Numbering: there is no section 18 in this file; 19 and 20 follow the request that asked for them.
+
+## 20. Wikipedia bio, team logos and licences (`src/app/player_images.py`)
+
+- **Bio.** Birth date (P569, only when Wikidata knows the exact day) and first citizenship without an
+  end date (P27, English label) are read from the Wikidata item behind the player's Wikipedia page,
+  which must call him a footballer. Stored in `player_bio(player_id, birth_date, nationality,
+  fetched_at)`, created idempotently by `init_db`. A row with NULLs means "looked, nothing found".
+  It is fetched only for the profile hero, in the background, never for list avatars. Age is
+  quoted on 2015-08-01. Nationality is Wikidata citizenship, which can differ from the sporting
+  nationality; it is shown as text, not a flag emoji.
+- **Team logos.** `fetch_team_logo` uses the club page's lead image only when its file name contains
+  logo/crest/badge/emblem/shield and the intro says football club; otherwise the placeholder
+  (`src/app/static/team_placeholder.png`) shows. Cached to `data/team_logos/<slug>.png`, attribution
+  in `data/team_logos/credits.json`. Some dataset club names need a Wikipedia title map; unmapped
+  ones may fall back to the placeholder.
+- **Licences.** Player photos are CC-licensed per image; club logos are trademarks, usually fair-use
+  files on Wikipedia. Fine for local/portfolio use; any commercial use needs a per-image licence
+  check. Nothing is scraped from Transfermarkt or any other source.
