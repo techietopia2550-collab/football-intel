@@ -7,8 +7,7 @@ player-club fit. Free data sources only, men's football first.
 **Project state:** foundation plus three data sources (Understat, football-data.co.uk,
 StatsBomb Open Data). The StatsBomb ingest covers **four leagues, 2015/16: EPL, La Liga, Serie A
 and Ligue 1** (1,507 of 1,517 matches). Percentiles and similarity are **pooled across the four
-leagues** within each of 8 position groups (1,337 players with 900+ minutes). The Streamlit app is
-still a stub. See
+leagues** within each of 8 position groups (1,337 players with 900+ minutes). The Streamlit app (search, player profile, compare, archetype explorer, methodology) is built: `streamlit run src/app/main.py`. See
 [CLAUDE.md](./CLAUDE.md) for the conventions every change should follow.
 
 ## Data attribution

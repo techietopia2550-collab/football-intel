@@ -55,3 +55,6 @@ downloaded_files/
 
 # Local caches (pip, pytest temp, tmp, huggingface, ...) — see src/utils/disk_bootstrap.py
 .cache/
+
+# Wikipedia player photos cache (third-party images; not committed)
+data/player_images/**

@@ -461,3 +461,30 @@ One N for all archetypes keeps the rule simple and untuned.
 **Limits:** the selection uses |difference|, so "low" features count; centroid distance is measured in z-units of the
 whole outfield pool, so a broad archetype (full-back) always has smaller distances than a narrow one (Target man);
 one N for all; 34 features are usable, not the 38 defined; one season. Nothing here was tuned to any player.
+
+## 16. Streamlit UI and player photos (2026-09-23)
+
+The UI (`src/app`) renders what `src/analytics` computes. New read-side code lives in `src/analytics/directory.py`
+(directory, search, radar items, stats table, heatmap grids, archetype rosters and scatter); nothing is re-tuned.
+
+- **Radar metrics** are a fixed list per position group (`RADAR_METRICS`), all ranked within the group. A metric
+  where lower is better (goals conceded) is plotted flipped so outward always means better. Axes with no
+  percentile (ratio under its sample guard) are dropped. "Raw values" mode draws each axis as a share of the
+  group maximum; the hover shows the raw number.
+- **Heatmaps** are drawn in StatsBomb yards (120 x 80, 10-yard cells) rather than 105 x 68 metres, because that is what
+  the stored grid is; the team attacks left to right. Only the 323 Premier League players have heatmaps (the
+  heatmap job was run for the EPL only, and no new data was ingested for this UI); everyone else sees "No data for
+  this heatmap type".
+- **Search** ranks exact name, whole-word, prefix, substring, then a difflib fuzzy match (cutoff 0.72), accent-blind.
+- **Pairwise similarity (Compare)** reuses `find_similar` in both modes; a pair outside one pool shows a dash.
+- **Lineup corrections per player** are counted from `data/processed/statsbomb_corrections.csv` by the name written
+  in the report, so a lineup spelling that differs from the canonical name is undercounted.
+- **Theme:** `.streamlit/config.toml` repeats the four theme colours from `design.py` (Streamlit reads it before any
+  Python runs); `tests/test_app_design.py` checks they match.
+- **Player photos** (`src/app/player_images.py`): Wikipedia `pageimages` API, fetched by a background thread pool (the
+  UI never waits; the silhouette shows until the file exists), cached at `data/player_images/<player_id>.jpg`
+  (`:` replaced by `_`, illegal on Windows), attribution per image in `credits.json`. The page intro must call the
+  subject a footballer, or the image is rejected (guards against namesakes and disambiguation pages); a miss is
+  remembered. Third-party images are gitignored. **For local or portfolio use this is fine; commercial use needs a
+  per-image licence check** (the credit line "Photo: Wikipedia / CC-BY-SA" is a generic label, not a verified
+  licence for each file).

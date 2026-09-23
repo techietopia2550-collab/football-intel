@@ -1,0 +1,14 @@
+# The [theme] colours mirror the tokens in src/app/design.py (tests/test_app_design.py checks this).
+[theme]
+base = "dark"
+primaryColor = "#58A6FF"
+backgroundColor = "#0E1117"
+secondaryBackgroundColor = "#1A1D23"
+textColor = "#E8EAED"
+font = "sans serif"
+
+[server]
+headless = true
+
+[browser]
+gatherUsageStats = false
