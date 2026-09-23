@@ -4,7 +4,8 @@
 first N matches, for a smoke test). The season loop is resumable, because raw files are cached
 and a re-run only re-downloads what is missing, and loud: a match that fails is logged with its
 id and error, collected, written to `data/processed/statsbomb_failures.csv` and left out of the
-database. It is never skipped silently. Invariant violations are reported the same way, in
+database. It is never skipped silently. A league-season with more than `MAX_FAILURES` failed
+matches stops early and says so. Invariant violations are reported the same way, in
 `data/processed/statsbomb_violations.csv`; the match is still stored so nothing is hidden.
 
 Each run is logged to `ingest_log` (source `statsbomb`) and every write is an idempotent upsert.
@@ -30,13 +31,16 @@ from src.ingest.statsbomb.discovery import list_available
 from src.ingest.statsbomb.fetch import fetch_match_events, fetch_match_lineups
 from src.ingest.statsbomb.identity import resolve_players
 from src.ingest.statsbomb.parse import (
+    DISMISSAL_CUT,
     SOURCE,
+    SUBSTITUTION_CUT,
+    Correction,
     check_against_substitutions,
     find_corrections,
     match_minutes_scale,
     parse_match,
 )
-from src.ingest.team_identity import EPL_2015_16
+from src.ingest.team_identity import CLUBS_2015_16
 from src.models.schema import IngestLog, Match, PlayerMatchStats, get_session_factory, init_db
 from src.models.statsbomb import PlayerMatchRecord, StatsBombMatch
 from src.utils.config import settings
@@ -47,8 +51,10 @@ _STATS_KEYS = {"source", "match_id", "player_id"}
 
 # (canonical league, season) -> the clubs expected in it, for the team-name invariant.
 _EXPECTED_TEAMS: dict[tuple[str, str], frozenset[str]] = {
-    ("ENG-Premier League", "2015"): EPL_2015_16,
+    (league, "2015"): clubs for league, clubs in CLUBS_2015_16.items()
 }
+
+MAX_FAILURES = 15  # a league-season with more failed matches than this stops and reports
 
 
 @dataclass
@@ -58,7 +64,7 @@ class ProcessedMatch:
     match: StatsBombMatch  # with minutes_scale_factor set
     records: list[PlayerMatchRecord]
     violations: list[str]
-    corrections: list[str]  # lineup data flaws we corrected (e.g. minutes after a red card)
+    corrections: list[Correction]  # lineup flaws corrected (red-card and substitution cuts)
 
 
 @dataclass
@@ -69,9 +75,10 @@ class SeasonResult:
     stored: list[int] = field(default_factory=list)
     failed: dict[int, str] = field(default_factory=dict)  # match_id -> error
     violations: dict[int, list[str]] = field(default_factory=dict)  # match_id -> messages
-    corrections: dict[int, list[str]] = field(default_factory=dict)  # match_id -> messages
+    corrections: dict[int, list[Correction]] = field(default_factory=dict)  # by match_id
     player_rows: int = 0
     seconds: float = 0.0
+    aborted: bool = False  # stopped early: more than `max_failures` matches failed
 
 
 def process_match(
@@ -193,7 +200,7 @@ def ingest_match(league: str, match_id: int, season: int = 2015, *, force: bool 
             events, lineups, matches[match_id], normalize=settings.minutes_normalize
         )
         for c in processed.corrections:
-            logger.warning("Match {m} lineup correction: {c}", m=match_id, c=c)
+            logger.warning("Match {m} lineup correction: {c}", m=match_id, c=c.message)
         for v in processed.violations:
             logger.warning("Match {m} invariant violation: {v}", m=match_id, v=v)
         with session_factory() as session:
@@ -213,43 +220,97 @@ def ingest_match(league: str, match_id: int, season: int = 2015, *, force: bool 
     return rows
 
 
-def _write_reports(result: SeasonResult) -> tuple[Path, Path, Path]:
-    """Write failures, violations and corrections to `data/processed/` so they cannot be missed."""
+_LEGACY_LEAGUE, _LEGACY_SEASON = "ENG-Premier League", "2015"  # files written before leagues
+
+
+def _replace_report_rows(
+    path: Path, rows: list[dict[str, Any]], columns: list[str], league: str, season: int,
+    kinds: tuple[str, ...] | None = None,
+) -> None:  # fmt: skip
+    """Replace this league-season's rows in a report shared by every league.
+
+    Rows of other leagues are kept. A file written before reports carried a league is read as
+    Premier League 2015/16 (the only league ingested then). `kinds` (corrections only) limit the
+    replacement to those kinds of row, so a re-ingest does not erase the pre-flight rows.
+    """
+    front = ["league", "season"]
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if path.exists():
+        old = pd.read_csv(path)
+        if "league" not in old.columns:
+            old.insert(0, "league", _LEGACY_LEAGUE)
+            old.insert(1, "season", _LEGACY_SEASON)
+        if "kind" in columns:
+            if "kind" not in old.columns:
+                old["kind"] = DISMISSAL_CUT  # the only kind written before kinds existed
+            old["kind"] = old["kind"].replace({"lineup_cut": DISMISSAL_CUT})  # earlier name
+        same = (old["league"] == league) & (old["season"].astype(str) == str(season))
+        if kinds is not None:
+            same &= old["kind"].isin(kinds)
+        old = old[~same]
+    else:
+        old = pd.DataFrame(columns=[*front, *columns])
+    new = pd.DataFrame(
+        [{"league": league, "season": str(season), **r} for r in rows], columns=[*front, *columns]
+    )
+    pd.concat([old.astype(object), new.astype(object)], ignore_index=True)[
+        [*front, *columns]
+    ].to_csv(path, index=False)
+
+
+def _write_reports(
+    result: SeasonResult, league: str = _LEGACY_LEAGUE, season: int = 2015
+) -> tuple[Path, Path, Path]:
+    """Write failures, violations and corrections to `data/processed/` so they cannot be missed.
+
+    One file per report for all leagues, with `league` and `season` columns; a run replaces only
+    its own league-season's rows.
+    """
     out = settings.processed_dir
     out.mkdir(parents=True, exist_ok=True)
     failures = out / "statsbomb_failures.csv"
     violations = out / "statsbomb_violations.csv"
     corrections = out / "statsbomb_corrections.csv"
-    pd.DataFrame(
+    _replace_report_rows(
+        failures,
         [{"match_id": m, "error": e} for m, e in sorted(result.failed.items())],
-        columns=["match_id", "error"],
-    ).to_csv(failures, index=False)
-    pd.DataFrame(
+        ["match_id", "error"], league, season,
+    )  # fmt: skip
+    _replace_report_rows(
+        violations,
         [
             {"match_id": m, "violation": v}
             for m, vs in sorted(result.violations.items())
             for v in vs
         ],
-        columns=["match_id", "violation"],
-    ).to_csv(violations, index=False)
-    pd.DataFrame(
+        ["match_id", "violation"], league, season,
+    )  # fmt: skip
+    _replace_report_rows(
+        corrections,
         [
-            {"match_id": m, "correction": c}
+            {"match_id": m, "kind": c.kind, "correction": c.message}
             for m, cs in sorted(result.corrections.items())
             for c in cs
         ],
-        columns=["match_id", "correction"],
-    ).to_csv(corrections, index=False)
+        ["match_id", "kind", "correction"], league, season, kinds=(DISMISSAL_CUT, SUBSTITUTION_CUT),
+    )  # fmt: skip
     return failures, violations, corrections
 
 
 def ingest_season(
-    league: str, season: int = 2015, *, limit: int | None = None, force: bool = False
+    league: str,
+    season: int = 2015,
+    *,
+    limit: int | None = None,
+    force: bool = False,
+    max_failures: int | None = MAX_FAILURES,
 ) -> SeasonResult:
     """Ingest a league-season, or its first `limit` matches by date. Resumable and loud.
 
     Never raises for a single bad match: the failure is logged with its match id, recorded in
-    the result and in `statsbomb_failures.csv`, and the loop continues. The run is logged to
+    the result and in `statsbomb_failures.csv`, and the loop continues, unless more than
+    `max_failures` matches have failed: then the run stops, `result.aborted` is set and the
+    caller must report it. The run is logged to
     `ingest_log` as `success` (no failures) or `partial`.
     """
     init_db()
@@ -276,12 +337,22 @@ def ingest_season(
                 "FAILED match {m} ({home} v {away}): {exc}",
                 m=match.match_id, home=match.home_team, away=match.away_team, exc=exc,
             )  # fmt: skip
+            if max_failures is not None and len(result.failed) > max_failures:
+                result.aborted = True
+                logger.error(
+                    "STOPPING {lg}: {n} matches failed (limit {m}) after {i}/{t} matches",
+                    lg=league_name, n=len(result.failed), m=max_failures, i=i, t=len(matches),
+                )  # fmt: skip
+                break
             continue
         result.stored.append(match.match_id)
         if processed.corrections:
             result.corrections[match.match_id] = processed.corrections
             for c in processed.corrections:
-                logger.warning("Match {m} lineup correction: {c}", m=match.match_id, c=c)
+                logger.warning(
+                    "Match {m} lineup correction ({k}): {c}",
+                    m=match.match_id, k=c.kind, c=c.message,
+                )  # fmt: skip
         if processed.violations:
             result.violations[match.match_id] = processed.violations
             for v in processed.violations:
@@ -293,7 +364,7 @@ def ingest_season(
             )  # fmt: skip
 
     result.seconds = time.monotonic() - t0
-    failures_path, violations_path, corrections_path = _write_reports(result)
+    failures_path, violations_path, corrections_path = _write_reports(result, league_name, season)
     status = "partial" if result.failed else "success"
     error = None
     if result.failed:
@@ -314,7 +385,9 @@ def ingest_season(
 
 def _main() -> None:
     parser = argparse.ArgumentParser(description="Ingest StatsBomb match(es).")
-    parser.add_argument("--league", required=True, help="EPL, LALIGA, SERIEA or LIGUE1.")
+    parser.add_argument(
+        "--league", required=True, help="EPL, LALIGA, SERIEA, BUNDESLIGA or LIGUE1."
+    )
     parser.add_argument(
         "--season", type=int, default=2015, help="Season start year (default 2015)."
     )
@@ -323,6 +396,10 @@ def _main() -> None:
     what.add_argument("--limit", type=int, help="Ingest the first N matches by date (smoke test).")
     what.add_argument("--all", action="store_true", help="Ingest the whole league-season.")
     parser.add_argument("--force", action="store_true", help="Re-download even if cached.")
+    parser.add_argument(
+        "--max-failures", type=int, default=MAX_FAILURES,
+        help=f"Stop a league-season after more than this many failed matches ({MAX_FAILURES}).",
+    )  # fmt: skip
     args = parser.parse_args()
 
     if args.match_id is not None:
@@ -331,7 +408,11 @@ def _main() -> None:
         return
 
     result = ingest_season(
-        args.league, args.season, limit=args.limit if not args.all else None, force=args.force
+        args.league,
+        args.season,
+        limit=args.limit if not args.all else None,
+        force=args.force,
+        max_failures=args.max_failures,
     )
     print(
         f"stored {len(result.stored)}/{result.attempted} matches, "
@@ -339,6 +420,8 @@ def _main() -> None:
         f"{len(result.violations)} with violations, {len(result.corrections)} with corrections, "
         f"{result.seconds:.0f}s"
     )
+    if result.aborted:
+        raise SystemExit(f"ABORTED after {len(result.failed)} failed matches: {result.failed}")
     if result.failed:
         raise SystemExit(f"FAILED matches: {result.failed}")
 

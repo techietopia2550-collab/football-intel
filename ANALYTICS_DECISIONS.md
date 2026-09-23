@@ -6,6 +6,8 @@ Code: `src/analytics/metrics.py` (definitions), `src/transform/normalize.py` (se
 `src/analytics/percentiles.py`, `src/analytics/profile.py`, `src/analytics/heatmaps.py`,
 `src/analytics/similarity.py`. Everything describes **2015/16 only**.
 
+**Section 13 (4 leagues pooled) supersedes every "EPL only" / "323 players" / per-league-season statement below.**
+
 **Sections 8-12 were added when position groups went from 4 to 8 and the advanced metrics, heatmaps and
 similarity were built. Where they contradict sections 3-7, they win:** sections 3-7 were written for the
 4-group scheme (GK/DEF/MID/FWD) and are kept as history, with the superseded lines marked.
@@ -319,3 +321,61 @@ Compared with section 7 (4 groups). None of the five broke; the changes are what
   (33rd), 5.7 box-zone defensive actions per 90 (74th), cross-clearance share 25% (77th), passes received 13 per 90
   (2nd), progressive passes received 1.4 (8th). Those say Leicester's back line defended deep and did not build through
   him; they are not judged and are not strengths. No metric was added or changed to improve his profile.
+
+## 13. Four leagues pooled: percentiles and similarity (2026-09-23)
+
+Data: StatsBomb 2015/16, EPL + La Liga + Serie A + Ligue 1 (1,507 of 1,517 matches; BLOCKERS.md section 12).
+
+**Decision: percentiles and similarity are POOLED across the four leagues, grouped by `position_group_fine`.**
+Percentiles are not computed per league. (The v1 code was already league-agnostic; what made v1 EPL-only was the
+data. `percentiles.run(league=None)` and `normalize.run(league=None)` pool by default; a league name restricts
+the pool and is kept only to reproduce v1.)
+
+Why per-league would be wrong for similarity:
+- **A cosine between two players is only meaningful if both were z-scored against the same reference.** Per-league
+  z-scores put every league on its own zero: a "+1.0 tackles" Serie A midfielder and a "+1.0" EPL midfielder would
+  look identical while their raw rates differ, and the PCA axes would differ per league, so vectors from two
+  leagues would not live in one space. Cross-league comparison would be impossible by construction.
+- **The pool is too thin per league.** After the 900-minute cut a league has 8 to 27 players in the smallest groups
+  (AM: 14, 11, 11, 8; GK 22-27). Pooled, no group is under 30 (AM 44).
+- **The cost is stated, not hidden:** pooling assumes the leagues are one population (pace, tagging, and league
+  strength are not modelled). A player's percentile now means "among these 4 leagues", not "in his league".
+
+Rules kept: 900-minute minimum; multi-team players use the team (and league) with most minutes, and their stats
+sum across both; ranking, z-scoring and PCA only within `position_group_fine`; z-scored per-90 rates only, no raw
+volume. Nothing was tuned.
+
+**Pooled season table:** 1,337 qualifying players (1,337 unique ids), 836 in `insufficient_sample`, no overlap. 74
+qualifying players played for more than one club, 30 of them in more than one league.
+
+| Group | EPL | La Liga | Serie A | Ligue 1 | Pooled |
+|---|---|---|---|---|---|
+| GK | 27 | 23 | 22 | 26 | 98 |
+| CB | 58 | 62 | 68 | 66 | 254 |
+| FB | 59 | 66 | 61 | 66 | 252 |
+| DM | 41 | 53 | 46 | 48 | 188 |
+| CM | 45 | 37 | 54 | 43 | 179 |
+| AM | 14 | 11 | 8 | 11 | 44 |
+| W | 41 | 46 | 26 | 38 | 151 |
+| ST | 39 | 42 | 52 | 38 | 171 |
+
+No pooled group is under 30; the smallest is AM (44), still well under the 98 to 254 of the others, so AM percentiles are
+coarser. 239 of 1,337 players (18%) are mixed-role (under 60% of minutes in their group), against 23% before.
+
+**The five validation players under the pooled percentiles** (compare section 12; none broke):
+- Kanté: still CM (57%). Tackles, interceptions 99.7th, ball recoveries 99.2nd; dribble success 98.4th is new;
+  pressures 85th. Weak on xG (3rd), shots (8th), fouls won (13th).
+- Mahrez: CM (91%). Goals and xG 99.7th, dribbles 98th, xA 97.5th, shots 94th. **No weakness now** (pass completion
+  17th before is no longer at or below 20th).
+- Vardy: ST. xG 96th, goals 94th, shots 87th, xG per shot 85th. Weak on fouls won (7th), counterpressures (14th).
+- Özil: AM (100%), group of 44. Assists, xA, key passes, box passes 98.9th; progressive passes 97th. Weak on tackles,
+  pressures, shots.
+- Wes Morgan: CB. **One strength that was not there before: blocks, 80.1st percentile** (right at the line of 80).
+  Weaknesses unchanged in kind: progressive passes 0.6th, carries 1.0th, final-third passes 6.5th, ball recoveries 6.5th.
+  That is a threshold effect of a bigger pool, not new evidence about him.
+
+**Similarity v2** is evaluated in `docs/similarity_eval_v2.md` against v1 (Premier League only). v1 was recomputed
+on today's data because the stored file predates the repair of 6 EPL matches; running the v1 code on the pre-repair
+database reproduces the stored scores exactly. The verdict rule (top score and top-10 mean both move 0.05) was
+fixed before the run; the reviewer notes there say where it misleads. A larger pool raises scores by itself, so a
+score rise is weak evidence.

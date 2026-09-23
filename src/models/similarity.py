@@ -51,10 +51,11 @@ class SimilarityResult(BaseModel):
     target_name: str
     target_team: str
     season: str
-    league: str
+    league: str  # the target's own league
+    pool_leagues: list[str]  # the leagues the position group was pooled from
     position_group_fine: str
     position_group_fine_share: float
-    group_size: int  # qualifying players in the position group (target included)
+    group_size: int  # qualifying players in the (pooled) position group, target included
     candidates_considered: int  # after filters, target excluded
     features_used: list[str]
     features_dropped: dict[str, str]  # metric -> why it was left out for this group

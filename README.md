@@ -5,8 +5,10 @@ weaknesses, find similar players, analyse squad needs, and evaluate
 player-club fit. Free data sources only, men's football first.
 
 **Project state:** foundation plus three data sources (Understat, football-data.co.uk,
-StatsBomb Open Data). The StatsBomb ingest now covers the **full 2015/16 EPL season**
-(374/380 matches; see below). Analytics and the Streamlit app are still stubs. See
+StatsBomb Open Data). The StatsBomb ingest covers **four leagues, 2015/16: EPL, La Liga, Serie A
+and Ligue 1** (1,507 of 1,517 matches). Percentiles and similarity are **pooled across the four
+leagues** within each of 8 position groups (1,337 players with 900+ minutes). The Streamlit app is
+still a stub. See
 [CLAUDE.md](./CLAUDE.md) for the conventions every change should follow.
 
 ## Data attribution
@@ -28,7 +30,7 @@ and are not yet linked to one another.
 |---|---|---|---|---|
 | Understat | `player_season_stats` | **2024/25** EPL ingested (top-5 leagues supported) | xG, xA, shots, key passes, xG chain/buildup, minutes, derived position group. Attacking output only. | Working |
 | football-data.co.uk | `match_results` | **2024/25** EPL ingested | Match results: goals, shots, corners, cards | Working |
-| StatsBomb Open Data | `matches`, `player_match_stats` | **2015/16 EPL ingested (374/380 matches)**; La Liga, Serie A, Ligue 1 available, not yet ingested | Full event-derived metrics: passing, progressive passes/carries, pressures, tackles, interceptions, blocks, clearances, recoveries, dribbles, xG | Working (EPL) |
+| StatsBomb Open Data | `matches`, `player_match_stats` | **2015/16 EPL 380/380, La Liga 372/380, Serie A 379/380, Ligue 1 376/377** (Bundesliga: Leverkusen only, not ingested; Eredivisie: no free source) | Full event-derived metrics: passing, progressive passes/carries, pressures, tackles, interceptions, blocks, clearances, recoveries, dribbles, xG | Working (4 leagues) |
 | FBref | – | – | – | **Dead** (see below) |
 
 **Honest note: no free current-season defensive data exists.** The only source with defensive
@@ -86,8 +88,8 @@ python -m src.ingest.statsbomb.fetch --match-id 3754290
 # Fetch, parse and store one match (Manchester City 1-3 Leicester City, 2016-02-06)
 python -m src.ingest.statsbomb.ingest --league EPL --match-id 3754290
 
-# Fetch, parse and store a whole league-season (resumable from cache, ~25 min for EPL)
-python -m src.ingest.statsbomb.ingest --league EPL --all
+# Fetch, parse and store a whole league-season (resumable from cache, ~25 min per league)
+python -m src.ingest.statsbomb.ingest --league EPL --all   # also LALIGA, SERIEA, LIGUE1
 ```
 
 Leagues: `EPL`, `LALIGA`, `SERIEA`, `LIGUE1`. Competition and season ids are read from
@@ -108,10 +110,10 @@ threshold, final third, box, etc.) are documented at the top of `src/ingest/stat
 Run in this order after the ingest above (each step re-runs safely; all offline):
 
 ```bash
-python -m src.transform.normalize          # season table, 900+ minutes, fine position groups
-python -m src.analytics.percentiles        # within-position percentiles (8 groups)
+python -m src.transform.normalize          # season table, all leagues pooled, 900+ minutes, fine groups
+python -m src.analytics.percentiles        # percentiles within position group, pooled across leagues
 python -m src.analytics.heatmaps           # player_heatmaps: 12x8 grid JSON per player and type
-python -m src.analytics.evaluate_similarity  # writes docs/similarity_eval.md
+python -m src.analytics.evaluate_similarity --version v2  # writes docs/similarity_eval_v2.md (vs v1)
 ```
 
 ```python
@@ -157,19 +159,17 @@ The app is a placeholder; no analytics are wired in yet.
 Full details in [BLOCKERS.md](./BLOCKERS.md). Headlines:
 
 - **No current-season defensive data** (see the honest note above).
-- **StatsBomb EPL 2015/16 is ingested (374/380 matches).** 6 matches failed on a lineup/
-  substitution-time mismatch and are not in the database; 1 stored match has an unresolved
-  minutes violation (an injured player left the pitch with no substitute available). Full
-  detail, exact match ids and root causes are in [BLOCKERS.md](./BLOCKERS.md) section 7.
-  La Liga, Serie A and Ligue 1 2015/16 are available from the same source but not yet ingested.
+- **StatsBomb 2015/16 is ingested for four leagues (1,507 of 1,517 matches).** 10 matches are
+  unfixable StatsBomb lineup flaws and 6 stored matches carry small (0.6-3.5 min) minutes
+  violations: 16 of 1,517 (1.05%), all documented in [BLOCKERS.md](./BLOCKERS.md) sections 7-12.
+  Bundesliga is not ingested (Leverkusen only) and no Eredivisie source exists.
 - `position_group` (GK/DEF/MID/FWD) on Understat players comes from per-match Understat rosters
   (most starter minutes wins). It is NULL for 70 substitute-only players (reasons in
   `data/processed/position_nulls.csv`); exclude those from position-based analysis and apply a
   minutes threshold. StatsBomb players get `position_group` (GK/DEF/MID/FWD) and `position_group_fine`
-  (GK/CB/FB/DM/CM/AM/W/ST) mapped from the on-pitch `position_played`; 0 of the 10,302 stored
+  (GK/CB/FB/DM/CM/AM/W/ST) mapped from the on-pitch `position_played`; 0 of the 41,816 stored
   player-match rows have a NULL value in either. Ranking and similarity use the fine group.
-- Team names are normalized for 26 clubs across both the EPL 2024/25 and 2015/16 seasons
-  (`src/ingest/team_identity.py`); other leagues, and clubs outside those two seasons, pass
-  through unchanged.
+- Team names are normalized for the EPL 2024/25 and the four 2015/16 leagues
+  (`src/ingest/team_identity.py`); clubs outside those pass through unchanged.
 - No player identity resolution across sources. Understat (2024/25) and StatsBomb (2015/16)
   players are separate id spaces.

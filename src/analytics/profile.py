@@ -29,7 +29,6 @@ from src.analytics.metrics import METRICS_BY_NAME
 from src.analytics.percentiles import MIN_GROUP_SIZE, PERCENTILES_TABLE
 from src.models.schema import get_engine
 from src.transform.normalize import (
-    DEFAULT_LEAGUE,
     INSUFFICIENT_TABLE,
     season_table_name,
 )
@@ -174,21 +173,24 @@ def classify(rows: pd.DataFrame, group: str) -> dict[str, list[dict[str, Any]]]:
 def profile(
     player_name: str,
     season: str = "2015",
-    league: str = DEFAULT_LEAGUE,
+    league: str | None = None,
     engine: Engine | None = None,
 ) -> dict[str, Any]:
     """Strengths, weaknesses and neutral metrics for a player-season. Raises ValueError if the
     name matches no player or more than one."""
     engine = engine or get_engine()
     insp = inspect(engine)
-    params = {"s": season, "l": league}
+    params: dict[str, Any] = {"s": season}
+    where = "season = :s"
+    if league is not None:  # None: search every league in the pool
+        params["l"] = league
+        where += " AND league = :l"
     qualified = pd.read_sql(
-        text(f"SELECT * FROM {season_table_name(season)} WHERE league = :l AND season = :s"),
-        engine, params=params,
+        text(f"SELECT * FROM {season_table_name(season)} WHERE {where}"), engine, params=params,
     )  # fmt: skip
     excluded = (
         pd.read_sql(
-            text(f"SELECT * FROM {INSUFFICIENT_TABLE} WHERE league = :l AND season = :s"),
+            text(f"SELECT * FROM {INSUFFICIENT_TABLE} WHERE {where}"),
             engine,
             params=params,
         )  # fmt: skip
@@ -203,7 +205,7 @@ def profile(
         "player_name": row["player_name"],
         "team": row["team"],
         "season": season,
-        "league": league,
+        "league": row["league"],
         "position_group": row["position_group"],  # coarse GK/DEF/MID/FWD, for reference
         "position_group_fine": row["position_group_fine"],  # the group all ranking uses
         "position_group_fine_share": row["position_group_fine_share"],
@@ -219,11 +221,8 @@ def profile(
         }  # fmt: skip
 
     rows = pd.read_sql(
-        text(
-            f"SELECT * FROM {PERCENTILES_TABLE} "
-            "WHERE player_id = :p AND season = :s AND league = :l"
-        ),
-        engine, params={**params, "p": row["player_id"]},
+        text(f"SELECT * FROM {PERCENTILES_TABLE} WHERE player_id = :p AND season = :s"),
+        engine, params={"s": season, "p": row["player_id"]},
     )  # fmt: skip
     warnings: list[str] = []
     if rows["small_group"].any():

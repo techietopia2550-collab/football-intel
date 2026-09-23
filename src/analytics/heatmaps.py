@@ -56,7 +56,6 @@ from sqlalchemy import Engine, text
 from src.ingest.statsbomb.fetch import fetch_match_events
 from src.models.schema import get_engine, init_db
 from src.transform.normalize import (
-    DEFAULT_LEAGUE,
     DEFAULT_SEASON,
     SOURCE,
     replace_season_rows,
@@ -219,31 +218,37 @@ def load_statsbomb_ids(engine: Engine) -> dict[int, str]:
 
 def run(
     season: str = DEFAULT_SEASON,
-    league: str = DEFAULT_LEAGUE,
+    league: str | None = None,
     engine: Engine | None = None,
     load_events: Callable[[int], list[dict[str, Any]]] = fetch_match_events,
 ) -> pd.DataFrame:
-    """Build and store `player_heatmaps` for a league-season (replacing its earlier rows).
+    """Build and store `player_heatmaps` for a season (replacing its earlier rows).
 
-    Reads the cached StatsBomb event files for the matches that were ingested (so the events
-    cover the same games as the minutes). Only qualifying players get rows.
+    `league=None` covers every ingested league. Reads the cached StatsBomb event files for the
+    matches that were ingested (so the events cover the same games as the minutes). Only
+    qualifying players get rows.
     """
     engine = engine or init_db(get_engine())
+    params: dict[str, str] = {"s": season}
+    league_sql = ""
+    if league is not None:
+        params["l"] = league
+        league_sql = " AND league = :l"
     stats = pd.read_sql(
-        text(f"SELECT * FROM {season_table_name(season)} WHERE league = :l AND season = :s"),
+        text(f"SELECT * FROM {season_table_name(season)} WHERE season = :s{league_sql}"),
         engine,
-        params={"l": league, "s": season},
+        params=params,
     )
     match_ids = pd.read_sql(
         text(
-            "SELECT match_id FROM matches WHERE source = :src AND season = :s AND league = :l "
-            "ORDER BY match_id"
+            "SELECT match_id FROM matches WHERE source = :src AND season = :s"
+            f"{league_sql} ORDER BY match_id"
         ),
         engine,
-        params={"src": SOURCE, "s": season, "l": league},
+        params={"src": SOURCE, **params},
     )["match_id"].tolist()
     if not match_ids:
-        raise LookupError(f"No stored {SOURCE} matches for {league} {season}")
+        raise LookupError(f"No stored {SOURCE} matches for {league or 'any league'} {season}")
 
     grids: Grids = defaultdict(lambda: np.zeros((GRID_ROWS, GRID_COLS)))
     for i, match_id in enumerate(match_ids, start=1):
@@ -263,7 +268,7 @@ def run(
 def _main() -> None:
     parser = argparse.ArgumentParser(description="Compute per-player heatmap grids.")
     parser.add_argument("--season", default=DEFAULT_SEASON)
-    parser.add_argument("--league", default=DEFAULT_LEAGUE)
+    parser.add_argument("--league", default=None, help="Default: every ingested league.")
     args = parser.parse_args()
     result = run(args.season, args.league)
     print(f"{len(result)} rows, {result['player_id'].nunique()} players")

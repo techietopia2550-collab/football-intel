@@ -352,14 +352,47 @@ Caveats to carry forward:
 
 Disk (C: writes): see `docs/DISK.md`.
 
+## 12. Four-league 2015/16 dataset: INGESTED (2026-09-22)
+
+| League | Matches stored | Failed | Violations |
+|---|---|---|---|
+| EPL | 380 / 380 | 0 | 0 |
+| La Liga | 372 / 380 | 8 | 0 |
+| Serie A | 379 / 380 | 1 | 3 |
+| Ligue 1 | 376 / 377 | 1 | 3 |
+| **Total** | **1,507 / 1,517** | **10** | **6** |
+
+The 6 EPL matches of section 8 are no longer excluded: the substitution-spell defect below was repaired.
+`player_match_stats` covers all 1,507 matches (41,816 rows, 2,173 players). Position groups use the 8-group
+schema in `position_group_fine`.
+
+StatsBomb lineup clock: three distinct flaw patterns across the 4-league dataset — (1) substitution spell left
+open until final whistle (repaired), (2) player with events but no lineup position and no substitution event
+(10 matches, unfixable), (3) short Player Off/Player On absences counted inconsistently at half-time boundary or
+overlapping spells (6 matches, 0.6–3.5 min each, benign). Total impact: 16 of 1,517 matches (1.05%). Documented,
+not hidden.
+
+## 13. Coverage that is NOT in the dataset, and known labelling limits
+
+- **Bundesliga: not ingested.** StatsBomb's only Bundesliga 2015/16 matches are 34 Bayer Leverkusen games; a
+  league-wide pool cannot be built from one club.
+- **Eredivisie: unavailable.** It does not exist in any free event-data source we can use.
+- **FBref: dead** (section 1). **WhoScored / Sofascore:** blocked (Selenium). **Kaggle FBref mirrors:** rejected on
+  legal grounds (section 5).
+- **Kanté is CM, not DM, in the data.** Position group comes only from StatsBomb's lineup position strings, taken
+  by minutes: Kanté has 57% of his minutes in slots mapped to CM and the rest DM, so he is a CM (flagged mixed
+  role). The same limitation puts Mata and Eriksen in W, Cazorla in DM, and James Rodríguez, Pjanić and Hamšík
+  in CM, so the attacking-midfield neighbourhood one would expect around Özil (AM, 44 players pooled) is never
+  compared with him (`docs/similarity_eval_v2.md`). No role model beyond the position string exists.
+- **A cross-league player is one row.** 30 of the 1,337 qualifying players played in more than one league in
+  2015/16 (winter moves): their stats are summed across leagues, `league` and `team` are the main one (most
+  minutes) and the split is in `team_split` / `data/processed/multi_team_players_2015_16.csv`.
+- **Leagues are treated as one population.** Whether a Ligue 1 winger's numbers are comparable with a La Liga
+  winger's (pace of play, StatsBomb tagging by competition) has not been checked.
+
 ## Next priority (future session)
 
 1. UI (player profile page, radar/heatmap rendering, search, comparison). Nothing in `src/app` uses the
    analytics yet.
 2. An age source, if `max_age` is wanted (StatsBomb has none).
-3. Optionally close the 6 excluded matches by ending a player's last lineup spell at his `Substitution`
-   event (section 8), logged as a correction. And decide whether the unmatched-`Player Off` case (section 9)
-   needs any handling (currently: no, it is correct).
-4. La Liga, Serie A and Ligue 1 2015/16 follow the same path (`ingest_season` already supports them via
-   `--league LALIGA/SERIEA/LIGUE1`); each needs its own team-name and position pre-flight pass. Percentiles are
-   per league-season; cross-league comparison needs a decision first.
+3. Decide whether a role model beyond StatsBomb's position string is needed (Kanté/Özil neighbours above).

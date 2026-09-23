@@ -14,6 +14,10 @@ Rules:
     every qualifying player in the group. `small_group` is True when `group_size` < MIN_GROUP_SIZE,
     which means percentiles there are coarse and must not be quoted as precise.
 
+The pool is whatever the season table holds: with several leagues ingested it is POOLED across
+them (`league=None`), not per league; `pool` records which leagues were pooled and `league` stays
+the player's own league. A league name restricts the pool to that league.
+
 Output table `player_percentiles`: one row per qualifying player per applicable metric.
 """
 
@@ -29,7 +33,6 @@ from sqlalchemy import Engine, text
 from src.analytics.metrics import GK, METRICS, POSITION_GROUPS, Metric
 from src.models.schema import get_engine, init_db
 from src.transform.normalize import (
-    DEFAULT_LEAGUE,
     DEFAULT_SEASON,
     replace_season_rows,
     season_table_name,
@@ -42,6 +45,7 @@ MIN_GROUP_SIZE = 20
 _COLUMNS = [
     "player_id", "player_name", "team", "season", "league", "source", "position_group_fine",
     "metric", "metric_group", "value", "percentile", "sample_size", "group_size", "small_group",
+    "pool",
 ]  # fmt: skip
 
 
@@ -77,16 +81,22 @@ def compute_percentiles(stats: pd.DataFrame) -> pd.DataFrame:
             )
     if not frames:
         return pd.DataFrame(columns=_COLUMNS)
-    return pd.concat(frames, ignore_index=True)[_COLUMNS]
+    pool = "|".join(sorted(stats["league"].unique()))
+    return pd.concat(frames, ignore_index=True).assign(pool=pool)[_COLUMNS]
 
 
 def run(
-    season: str = DEFAULT_SEASON, league: str = DEFAULT_LEAGUE, engine: Engine | None = None
+    season: str = DEFAULT_SEASON, league: str | None = None, engine: Engine | None = None
 ) -> pd.DataFrame:
-    """Compute and store `player_percentiles` for a league-season (replacing its earlier rows)."""
+    """Compute and store `player_percentiles` for a season (replacing its earlier rows).
+
+    `league=None` ranks every player of the season table against everyone in his position group,
+    across leagues; a league name ranks within that league only.
+    """
     engine = engine or init_db(get_engine())
     stats = pd.read_sql(text(f"SELECT * FROM {season_table_name(season)}"), engine)
-    stats = stats[stats["league"] == league]
+    if league is not None:
+        stats = stats[stats["league"] == league]
     result = compute_percentiles(stats)
 
     replace_season_rows(engine, PERCENTILES_TABLE, result, season, league)
@@ -111,7 +121,9 @@ def run(
 def _main() -> None:
     parser = argparse.ArgumentParser(description="Compute within-position percentiles.")
     parser.add_argument("--season", default=DEFAULT_SEASON)
-    parser.add_argument("--league", default=DEFAULT_LEAGUE)
+    parser.add_argument(
+        "--league", default=None, help="Rank within one league (default: pool every league)."
+    )
     args = parser.parse_args()
     result = run(args.season, args.league)
     print(f"{len(result)} rows, {result['player_id'].nunique()} players")

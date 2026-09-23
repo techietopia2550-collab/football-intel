@@ -12,7 +12,14 @@ length (the last event of that period). Substitutions are reflected in the spell
 `check_against_substitutions` cross-checks them. Red cards are NOT reliably reflected:
 StatsBomb can leave a sent-off player's last spell open until the final whistle (Courtois in
 Chelsea v Swansea 2015/16), so spells are cut at the dismissal event (`dismissal_times`) and each
-cut is reported by `find_corrections`. Temporary `Player Off`/`Player On` breaks are already
+cut is reported by `find_corrections`. The lineup can ALSO leave a substituted-off player's last
+spell open to the final whistle (8 of the 16 La Liga matches that failed, 6 of the EPL's): his
+spell is then cut at his `Substitution` event (`substitution_cuts`), reported as
+`spell_cut_at_substitution`. The cut is made only when the lineup overshoots the substitution by
+more than a minute AND the player has no event after it, so a wrong substitution time cannot
+silently shorten a real spell (that match still fails, loudly). Players never substituted off,
+and correctly closed spells, are untouched; a replacement's spell start is untouched. Temporary
+`Player Off`/`Player On` breaks are already
 gaps in the spells.
 
 Metric definitions (all count every match event of that type for the player,
@@ -94,7 +101,7 @@ from __future__ import annotations
 
 import math
 from collections import Counter, defaultdict
-from typing import Any
+from typing import Any, NamedTuple
 
 from src.ingest.team_identity import normalize_team_name
 from src.models.statsbomb import PlayerMatchRecord, StatsBombMatch
@@ -193,6 +200,21 @@ _YELLOW = {"Yellow Card", "Second Yellow"}
 _RED = {"Red Card", "Second Yellow"}
 
 
+DISMISSAL_CUT = "dismissal_cut"
+SUBSTITUTION_CUT = "spell_cut_at_substitution"
+SUBSTITUTION_TOLERANCE = 1.0  # minutes: the lineup and the Substitution event may differ by this
+SUBSTITUTION_EVENT_TOLERANCE = 0.5  # minutes: a player's last event may follow his substitution
+NOMINAL_RETURN = 0.25  # minutes: a `Player On` this close before the player's own `Substitution`
+# is StatsBomb's formality (the injured player 'returns' only to be replaced), not a real return
+
+
+class Correction(NamedTuple):
+    """A lineup flaw that was corrected: `kind` is DISMISSAL_CUT or SUBSTITUTION_CUT."""
+
+    kind: str
+    message: str
+
+
 class LineupError(ValueError):
     """The lineup data cannot be turned into minutes (e.g. a played-in player has no positions)."""
 
@@ -248,23 +270,151 @@ def dismissal_times(events: list[dict[str, Any]], lengths: dict[int, float]) -> 
     return out
 
 
+def substitution_times(events: list[dict[str, Any]], lengths: dict[int, float]) -> dict[int, float]:
+    """Player id -> elapsed minute at which he was substituted OFF (his `Substitution` event)."""
+    out: dict[int, float] = {}
+    for e in events:
+        if e["period"] >= SHOOTOUT_PERIOD or e["type"]["name"] != "Substitution":
+            continue
+        if "player" in e:
+            out.setdefault(e["player"]["id"], elapsed_minutes(e["period"], _clock(e), lengths))
+    return out
+
+
+def is_nominal_return(when: float, substituted_at: float | None) -> bool:
+    """True if a `Player On` at `when` is the formality before the player's own substitution."""
+    return substituted_at is not None and 0.0 <= substituted_at - when <= NOMINAL_RETURN
+
+
+def unmatched_player_off(
+    events: list[dict[str, Any]], lengths: dict[int, float]
+) -> dict[int, float]:
+    """Player id -> elapsed minute of a `Player Off` that no later real `Player On` undid.
+
+    An injured player who leaves and is then substituted has one of these: he left the pitch at
+    the `Player Off`, and the replacement came on later, at the `Substitution`. StatsBomb records
+    a `Player On` right at the substitution for him; that formality (`is_nominal_return`) is not
+    a return.
+    """
+    subs = substitution_times(events, lengths)
+    off: dict[int, float] = {}
+    for e in events:
+        if e["period"] >= SHOOTOUT_PERIOD or "player" not in e:
+            continue
+        kind, pid = e["type"]["name"], e["player"]["id"]
+        when = elapsed_minutes(e["period"], _clock(e), lengths)
+        if kind == "Player Off":
+            off[pid] = when
+        elif kind == "Player On" and not is_nominal_return(when, subs.get(pid)):
+            off.pop(pid, None)
+    return off
+
+
+def _last_event_times(events: list[dict[str, Any]], lengths: dict[int, float]) -> dict[int, float]:
+    """Player id -> elapsed minute of his last event (shoot-out excluded)."""
+    out: dict[int, float] = {}
+    for e in events:
+        if e["period"] >= SHOOTOUT_PERIOD or "player" not in e:
+            continue
+        when = elapsed_minutes(e["period"], _clock(e), lengths)
+        pid = e["player"]["id"]
+        out[pid] = max(out.get(pid, 0.0), when)
+    return out
+
+
+def substitution_cuts(
+    events: list[dict[str, Any]], lineups: list[dict[str, Any]], lengths: dict[int, float]
+) -> dict[int, float]:
+    """Player id -> the minute at which to end a substituted-off player's lineup spells.
+
+    The flaw: for an injured player the lineup opens a phantom spell at (about) his `Substitution`
+    event, either running to the final whistle (he is credited with the rest of the match) or a
+    few seconds long (StatsBomb's nominal `Player On`). Cutting at the substitution removes that
+    spell; an earlier spell that ended at a `Player Off` (the injured player leaving before the
+    replacement came on) is left as it is.
+
+    Applies when the lineup runs on past the substitution by more than SUBSTITUTION_TOLERANCE, or
+    when the player left at a `Player Off` and has a spell starting within NOMINAL_RETURN of the
+    substitution. In both cases the player must have no event later than
+    SUBSTITUTION_EVENT_TOLERANCE after the substitution; otherwise the substitution time is not
+    trusted, nothing is cut, and the match check reports the mismatch.
+    """
+    raw = player_spells(lineups, lengths)
+    last_event = _last_event_times(events, lengths)
+    left = unmatched_player_off(events, lengths)
+    cuts: dict[int, float] = {}
+    for pid, when in substitution_times(events, lengths).items():
+        spells = raw.get(pid)
+        if not spells:
+            continue
+        runs_on = max(e for _, _, e in spells) - when > SUBSTITUTION_TOLERANCE
+        sliver = pid in left and any(st >= when - NOMINAL_RETURN for _, st, _ in spells)
+        if not (runs_on or sliver):
+            continue  # the lineup already closes the spell at the substitution
+        if last_event.get(pid, 0.0) > when + SUBSTITUTION_EVENT_TOLERANCE:
+            logger.warning(
+                "Substitution cut skipped for player {p}: events until {t:.1f} min, after his "
+                "substitution at {w:.1f} min",
+                p=pid, t=last_event[pid], w=when,
+            )  # fmt: skip
+            continue
+        cuts[pid] = when
+    return cuts
+
+
+def departure_gaps(
+    events: list[dict[str, Any]],
+    lineups: list[dict[str, Any]],
+    lengths: dict[int, float],
+    spells: dict[int, list[tuple[str, float, float]]],
+) -> dict[int, float]:
+    """Team id -> minutes it played short because a player left (`Player Off`) and was not undone.
+
+    An injured player leaves at his `Player Off`. If a replacement follows (`Substitution`) the
+    team is short until the replacement comes on; if not, until the final whistle (the team
+    finishes a man down: La Liga 3825667, Villarreal, after all three substitutions were used).
+    Counted only where the lineup spells really end at the `Player Off` (within
+    SUBSTITUTION_TOLERANCE), so a lineup that kept the player on does not also lose the gap.
+    """
+    left = unmatched_player_off(events, lengths)
+    subs = substitution_times(events, lengths)
+    total = sum(lengths.values())
+    team_of = {p["player_id"]: t["team_id"] for t in lineups for p in t["lineup"]}
+    gaps: dict[int, float] = {}
+    for pid, off_at in left.items():
+        end = max((e for _, _, e in spells.get(pid, [])), default=None)
+        if pid not in team_of or end is None or abs(end - off_at) > SUBSTITUTION_TOLERANCE:
+            continue
+        until = subs[pid] if pid in subs and subs[pid] >= off_at else total
+        if until > end:
+            gaps[team_of[pid]] = gaps.get(team_of[pid], 0.0) + (until - end)
+    return gaps
+
+
 def player_spells(
     lineups: list[dict[str, Any]],
     lengths: dict[int, float],
     dismissals: dict[int, float] | None = None,
+    substitutions: dict[int, float] | None = None,
 ) -> dict[int, list[tuple[str, float, float]]]:
     """Map player id -> [(position, start_elapsed, end_elapsed)] from the lineup files.
 
     If `dismissals` is given, a player's spells are cut at his dismissal time: a sent-off
     player cannot play on, and StatsBomb's lineup can leave his last spell open until the
     final whistle (seen in Chelsea v Swansea 2015/16, where Courtois is sent off).
+
+    `substitutions` (from `substitution_cuts`) cuts a substituted-off player's spells at his
+    substitution. A phantom spell may start up to SUBSTITUTION_TOLERANCE BEFORE the substitution
+    time (the lineup and the event use different clocks), so any spell starting that close to it,
+    or after it, is dropped.
     """
     total = sum(lengths.values())
     spells: dict[int, list[tuple[str, float, float]]] = {}
     for team in lineups:
         for player in team["lineup"]:
             player_spells_: list[tuple[str, float, float]] = []
-            cutoff = (dismissals or {}).get(player["player_id"])
+            dismissed = (dismissals or {}).get(player["player_id"])
+            substituted = (substitutions or {}).get(player["player_id"])
             for pos in player.get("positions") or []:
                 start = elapsed_minutes(pos["from_period"], _parse_clock(pos["from"]), lengths)
                 if pos.get("to") is None:
@@ -272,41 +422,65 @@ def player_spells(
                 else:
                     end = elapsed_minutes(pos["to_period"], _parse_clock(pos["to"]), lengths)
                 end = min(end, total)
-                if cutoff is not None:
-                    if start >= cutoff:
+                if dismissed is not None:
+                    if start >= dismissed:
                         continue
-                    end = min(end, cutoff)
+                    end = min(end, dismissed)
+                if substituted is not None:
+                    if start >= substituted - SUBSTITUTION_TOLERANCE:
+                        continue
+                    end = min(end, substituted)
                 player_spells_.append((pos["position"], start, end))
             spells[player["player_id"]] = player_spells_
     return spells
 
 
-def find_corrections(events: list[dict[str, Any]], lineups: list[dict[str, Any]]) -> list[str]:
-    """Describe every player whose lineup minutes were cut back to his dismissal time.
+def find_corrections(
+    events: list[dict[str, Any]], lineups: list[dict[str, Any]]
+) -> list[Correction]:
+    """Describe every player whose lineup minutes were cut back, and why.
 
-    Only reports cuts larger than 0.1 minutes; a lineup that already ends the spell at the
-    dismissal needs no correction and produces no message.
+    `DISMISSAL_CUT`: cut at his dismissal (only cuts over 0.1 minute are reported).
+    `SUBSTITUTION_CUT`: cut at his substitution (every cut is reported). A lineup that already
+    ends the spell at the event needs no correction and produces no message.
     """
     lengths = period_lengths(events)
     dismissals = dismissal_times(events, lengths)
+    subs = substitution_cuts(events, lineups, lengths)
     raw = player_spells(lineups, lengths)
-    cut = player_spells(lineups, lengths, dismissals)
+    after_dismissal = player_spells(lineups, lengths, dismissals)
+    after_both = player_spells(lineups, lengths, dismissals, subs)
     names = {
         p["player_id"]: p.get("player_nickname") or p["player_name"]
         for t in lineups
         for p in t["lineup"]
     }
-    messages = []
+
+    def span(spells: dict[int, list[tuple[str, float, float]]], pid: int) -> float:
+        return sum(e - s for _, s, e in spells.get(pid, []))
+
+    out: list[Correction] = []
     for pid, when in dismissals.items():
-        removed = sum(e - s for _, s, e in raw.get(pid, [])) - sum(
-            e - s for _, s, e in cut.get(pid, [])
-        )
+        removed = span(raw, pid) - span(after_dismissal, pid)
         if removed > 0.1:
-            messages.append(
-                f"{names.get(pid, pid)}: {removed:.1f} min of lineup spells after his "
-                f"dismissal at {when:.1f} min removed"
+            out.append(
+                Correction(
+                    DISMISSAL_CUT,
+                    f"{names.get(pid, pid)}: {removed:.1f} min of lineup spells after his "
+                    f"dismissal at {when:.1f} min removed",
+                )
             )
-    return messages
+    for pid, when in subs.items():
+        removed = span(after_dismissal, pid) - span(after_both, pid)
+        if removed > 0.005:  # every substitution cut is logged, even a few seconds
+            out.append(
+                Correction(
+                    SUBSTITUTION_CUT,
+                    f"{names.get(pid, pid)}: {removed:.2f} min of lineup spell after his "
+                    f"substitution at {when:.1f} min removed",
+                )
+            )
+    return out
 
 
 def position_group(position: str) -> str | None:
@@ -552,7 +726,10 @@ def parse_match(
     Every player's minutes are multiplied by `minutes_scale` (see `match_minutes_scale`).
     """
     lengths = period_lengths(events)
-    spells = player_spells(lineups, lengths, dismissal_times(events, lengths))
+    spells = player_spells(
+        lineups, lengths, dismissal_times(events, lengths),
+        substitution_cuts(events, lineups, lengths),
+    )  # fmt: skip
     stats, pressure_durations = aggregate_events(events)
     extra = aggregate_extra_events(events)
 
@@ -652,10 +829,15 @@ def check_against_substitutions(
     """Cross-check lineup minutes against `Substitution` events; return discrepancy messages.
 
     For each substitution the player coming off must end (and the replacement start) within
-    a minute of the event time in the lineup spells. An empty list means they agree.
+    a minute of the event time in the lineup spells, or the player coming off must have ended at
+    an earlier `Player Off` (an injured player leaving before his replacement). An empty list
+    means they agree.
     """
     lengths = period_lengths(events)
-    spells = player_spells(lineups, lengths)
+    spells = player_spells(
+        lineups, lengths, substitutions=substitution_cuts(events, lineups, lengths)
+    )
+    left = unmatched_player_off(events, lengths)
     problems: list[str] = []
     for e in events:
         if e["type"]["name"] != "Substitution":
@@ -665,7 +847,14 @@ def check_against_substitutions(
         on = e["substitution"]["replacement"]["id"]
         off_end = max((end for _, _, end in spells.get(off, [])), default=None)
         on_start = min((start for _, start, _ in spells.get(on, [])), default=None)
-        if off_end is None or abs(off_end - when) > 1.0:
+        # an injured player may have left (`Player Off`) a little before his replacement came on
+        left_first = (
+            off in left
+            and off_end is not None
+            and left[off] <= when
+            and abs(off_end - left[off]) <= SUBSTITUTION_TOLERANCE
+        )
+        if off_end is None or (abs(off_end - when) > 1.0 and not left_first):
             problems.append(f"player {off} off at {off_end}, substitution event at {when:.2f}")
         if on_start is None or abs(on_start - when) > 1.0:
             problems.append(f"player {on} on at {on_start}, substitution event at {when:.2f}")

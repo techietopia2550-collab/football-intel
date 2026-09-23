@@ -23,7 +23,7 @@ COARSE_GROUP = {
 
 def player_rows(
     pid: int, name: str, team: str, group: str, *, matches: int = 10, minutes: float = 90.0,
-    first_match: int = 1, pressure_avg: float | None = 1.5, **counts: float,
+    first_match: int = 1, pressure_avg: float | None = 1.5, league: str = LEAGUE, **counts: float,
 ) -> list[dict[str, object]]:  # fmt: skip
     """`matches` identical match rows for one player; `group` is a FINE position group and
     `counts` are per-match values."""
@@ -32,7 +32,7 @@ def player_rows(
         row: dict[str, object] = {
             "source": "statsbomb", "match_id": first_match + k, "player_id": f"statsbomb:{pid}",
             "player_name": name, "team": team, "opponent": "Opp", "season": SEASON,
-            "league": LEAGUE, "position_played": group, "position_group": COARSE_GROUP[group],
+            "league": league, "position_played": group, "position_group": COARSE_GROUP[group],
             "position_group_fine": group, "minutes": minutes, "pass_completion_pct": None,
             "pressure_duration_avg": pressure_avg,
         }  # fmt: skip

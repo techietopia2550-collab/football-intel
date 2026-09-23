@@ -69,6 +69,18 @@ def test_league_aliases(name: str) -> None:
     assert discovery.resolve_league(name)[:2] == ("EPL", "ENG-Premier League")
 
 
+@pytest.mark.parametrize(
+    ("name", "canonical"),
+    [
+        ("LALIGA", "ESP-La Liga"), ("La Liga", "ESP-La Liga"), ("SERIEA", "ITA-Serie A"),
+        ("BUNDESLIGA", "GER-Bundesliga"), ("1. Bundesliga", "GER-Bundesliga"),
+        ("ger-bundesliga", "GER-Bundesliga"), ("LIGUE1", "FRA-Ligue 1"),
+    ],
+)  # fmt: skip
+def test_all_five_leagues_resolve(name: str, canonical: str) -> None:
+    assert discovery.resolve_league(name)[1] == canonical
+
+
 def test_unsupported_league() -> None:
     with pytest.raises(ValueError, match="Unsupported league"):
         discovery.resolve_league("Eredivisie")

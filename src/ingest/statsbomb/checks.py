@@ -21,10 +21,14 @@ from typing import Any
 
 from src.ingest.statsbomb.parse import (
     SHOOTOUT_PERIOD,
+    departure_gaps,
     dismissal_times,
     elapsed_minutes,
+    is_nominal_return,
     period_lengths,
     player_spells,
+    substitution_cuts,
+    substitution_times,
 )
 from src.ingest.team_identity import normalize_team_name
 from src.models.statsbomb import PlayerMatchRecord, StatsBombMatch
@@ -37,8 +41,11 @@ def temporary_absences(events: list[dict[str, Any]], lengths: dict[int, float]) 
     """Team id -> minutes it played short because a player was temporarily off the pitch.
 
     A `Player Off` event followed by a `Player On` for the same player is an injury or
-    treatment break (the lineup file leaves a matching gap in his spells).
+    treatment break (the lineup file leaves a matching gap in his spells). A `Player On` that is
+    only the formality before that player's own substitution is not a return: the gap up to the
+    replacement is `departure_gaps`.
     """
+    subs = substitution_times(events, lengths)
     off: dict[int, float] = {}
     gaps: dict[int, float] = {}
     for e in events:
@@ -51,7 +58,7 @@ def temporary_absences(events: list[dict[str, Any]], lengths: dict[int, float]) 
         pid = e["player"]["id"]
         if kind == "Player Off":
             off[pid] = when
-        elif pid in off:
+        elif pid in off and not is_nominal_return(when, subs.get(pid)):
             team = e["team"]["id"]
             gaps[team] = gaps.get(team, 0.0) + max(when - off.pop(pid), 0.0)
     return gaps
@@ -62,15 +69,19 @@ def team_minutes(
 ) -> dict[int, tuple[float, float]]:
     """Per team id: (minutes from lineup spells, expected minutes), both unscaled and unrounded.
 
-    Actual uses spells cut at dismissals (as `parse_match` does). Expected is 11 x match length,
+    Actual uses spells cut at dismissals and repaired substitutions (as `parse_match` does).
+    Expected is 11 x match length,
     minus the time left after each dismissal of a player who was on the pitch, minus the time
-    lost to temporary `Player Off`/`Player On` breaks.
+    lost to temporary `Player Off`/`Player On` breaks and to the time after an injured player's
+    `Player Off` until his replacement came on (or the final whistle if none did).
     """
     lengths = period_lengths(events)
     total = sum(lengths.values())
     dismissals = dismissal_times(events, lengths)
     raw_spells = player_spells(lineups, lengths)
-    spells = player_spells(lineups, lengths, dismissals)
+    spells = player_spells(
+        lineups, lengths, dismissals, substitution_cuts(events, lineups, lengths)
+    )
     team_of = {p["player_id"]: t["team_id"] for t in lineups for p in t["lineup"]}
 
     expected = {t["team_id"]: 11 * total for t in lineups}
@@ -80,6 +91,9 @@ def team_minutes(
             expected[team_of[pid]] -= max(total - when, 0.0)
     for team_id, gap in temporary_absences(events, lengths).items():
         if team_id in expected:
+            expected[team_id] -= gap
+    for team_id, gap in departure_gaps(events, lineups, lengths, spells).items():
+        if team_id in expected:  # an injured player left and the team played short
             expected[team_id] -= gap
 
     actual = {

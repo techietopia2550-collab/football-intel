@@ -19,6 +19,7 @@ STATSBOMB_LEAGUES: dict[str, tuple[str, str, str]] = {
     "EPL": ("ENG-Premier League", "Premier League", "England"),
     "LALIGA": ("ESP-La Liga", "La Liga", "Spain"),
     "SERIEA": ("ITA-Serie A", "Serie A", "Italy"),
+    "BUNDESLIGA": ("GER-Bundesliga", "1. Bundesliga", "Germany"),
     "LIGUE1": ("FRA-Ligue 1", "Ligue 1", "France"),
 }
 
@@ -27,6 +28,7 @@ EXPECTED_IDS_2015: dict[str, tuple[int, int]] = {
     "EPL": (2, 27),
     "LALIGA": (11, 27),
     "SERIEA": (12, 27),
+    "BUNDESLIGA": (9, 27),
     "LIGUE1": (7, 27),
 }
 

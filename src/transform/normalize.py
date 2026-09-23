@@ -9,6 +9,10 @@ Output tables (SQLite, plus Parquet/CSV in `data/processed/`):
                                  a few hundred minutes is not something to rank on.
 
 Rules:
+  - **Pooled by default:** with no `league` every league of the season is aggregated together, one
+    row per player. A player who played in more than one league gets his main league (most
+    minutes) in `league`, and `n_leagues` says how many he played in. Percentiles and similarity
+    then compare players across leagues (see ANALYTICS_DECISIONS.md section 13).
   - Minutes and counts are summed over matches; ratios and per-90 rates are computed from those
     season totals, never averaged across matches.
   - `position_group` (GK/DEF/MID/FWD) and `position_group_fine` (GK/CB/FB/DM/CM/AM/W/ST) are each
@@ -63,14 +67,15 @@ class NormalizeResult:
 
 
 def load_match_stats(
-    engine: Engine, season: str, league: str, source: str = SOURCE
+    engine: Engine, season: str, league: str | None = None, source: str = SOURCE
 ) -> pd.DataFrame:
-    """Read one league-season of `player_match_stats`."""
-    query = text(
-        "SELECT * FROM player_match_stats WHERE source = :source AND season = :season "
-        "AND league = :league"
-    )
-    return pd.read_sql(query, engine, params={"source": source, "season": season, "league": league})
+    """Read a season of `player_match_stats`: one league, or every league when `league` is None."""
+    sql = "SELECT * FROM player_match_stats WHERE source = :source AND season = :season"
+    params = {"source": source, "season": season}
+    if league is not None:
+        sql += " AND league = :league"
+        params["league"] = league
+    return pd.read_sql(text(sql), engine, params=params)
 
 
 def _primary(df: pd.DataFrame, key: str) -> pd.DataFrame:
@@ -104,13 +109,18 @@ def aggregate_player_seasons(match_df: pd.DataFrame) -> tuple[pd.DataFrame, pd.D
     fine_minutes = fine.groupby("player_id")["minutes"].sum()
 
     latest = df.sort_values("match_id").drop_duplicates("player_id", keep="last")
-    latest = latest.set_index("player_id")[["player_name", "season", "league", "source"]]
+    latest = latest.set_index("player_id")[["player_name", "season", "source"]]
+    leagues = _primary(df, "league")
+    primary_league = leagues.drop_duplicates("player_id").set_index("player_id")["league"]
+    n_leagues = leagues.groupby("player_id").size()
 
     sums = df.groupby("player_id")[["minutes", "pressure_duration_total", *COUNT_COLUMNS]].sum()
     out = latest.join(sums.rename(columns={"minutes": "minutes_total"}))
     out["matches"] = df.groupby("player_id").size()
     out["team"] = primary_team
     out["n_teams"] = n_teams
+    out["league"] = primary_league
+    out["n_leagues"] = n_leagues
     out["team_split"] = team_split
     out["position_group"] = primary_group["position_group"]
     out["position_group_share"] = (primary_group["minutes"] / group_minutes).round(3)
@@ -118,7 +128,10 @@ def aggregate_player_seasons(match_df: pd.DataFrame) -> tuple[pd.DataFrame, pd.D
     out["position_group_fine_share"] = (primary_fine["minutes"] / fine_minutes).round(3)
     out = out.reset_index()
 
-    multi = out.loc[out["n_teams"] > 1, ["player_id", "player_name", "team", "team_split"]]
+    multi = out.loc[
+        out["n_teams"] > 1,
+        ["player_id", "player_name", "team", "team_split", "league", "n_leagues"],
+    ]
     return out, multi.reset_index(drop=True)
 
 
@@ -141,7 +154,7 @@ def _column_order(df: pd.DataFrame) -> pd.DataFrame:
     front = [
         "player_id", "player_name", "team", "position_group_fine", "position_group_fine_share",
         "position_group", "position_group_share", "season", "league", "source", "matches",
-        "minutes_total", "n_teams", "team_split",
+        "minutes_total", "n_teams", "n_leagues", "team_split",
     ]  # fmt: skip
     return df[front + [c for c in df.columns if c not in front]]
 
@@ -169,9 +182,9 @@ def _sql_type(dtype: object) -> str:
 
 
 def replace_season_rows(
-    engine: Engine, table: str, df: pd.DataFrame, season: str, league: str
+    engine: Engine, table: str, df: pd.DataFrame, season: str, league: str | None = None
 ) -> None:
-    """Replace this season/league's rows in a table shared across seasons.
+    """Replace this season's rows (this league's only, if `league` is given) in a shared table.
 
     A table written by an older version may lack columns `df` now has; they are added first
     (idempotent), so a schema growth never fails halfway after the old rows were deleted.
@@ -185,24 +198,31 @@ def replace_season_rows(
                         text(f"ALTER TABLE {table} ADD COLUMN {column} {_sql_type(dtype)}")
                     )
                     logger.info("Migrated: added {t}.{c}", t=table, c=column)
-            conn.execute(
-                text(f"DELETE FROM {table} WHERE season = :s AND league = :l"),
-                {"s": season, "l": league},
-            )
+            if league is None:
+                conn.execute(text(f"DELETE FROM {table} WHERE season = :s"), {"s": season})
+            else:
+                conn.execute(
+                    text(f"DELETE FROM {table} WHERE season = :s AND league = :l"),
+                    {"s": season, "l": league},
+                )
     df.to_sql(table, engine, if_exists="append", index=False)
 
 
 def run(
     season: str = DEFAULT_SEASON,
-    league: str = DEFAULT_LEAGUE,
+    league: str | None = None,
     min_minutes: float = DEFAULT_MIN_MINUTES,
     engine: Engine | None = None,
 ) -> NormalizeResult:
-    """Build and store the season table and the insufficient-sample table."""
+    """Build and store the season table and the insufficient-sample table.
+
+    `league=None` (default) pools every ingested league of the season; a league name restricts
+    the input to that league (and REPLACES the season table with only that league's players).
+    """
     engine = engine or init_db(get_engine())
     match_df = load_match_stats(engine, season, league)
     if match_df.empty:
-        raise LookupError(f"No {SOURCE} player_match_stats for {league} {season}")
+        raise LookupError(f"No {SOURCE} player_match_stats for {league or 'any league'} {season}")
     result = build_player_season_stats(match_df, min_minutes)
 
     table, label = season_table_name(season), season_label(season)
@@ -236,7 +256,9 @@ def run(
 def _main() -> None:
     parser = argparse.ArgumentParser(description="Build player season stats from match stats.")
     parser.add_argument("--season", default=DEFAULT_SEASON)
-    parser.add_argument("--league", default=DEFAULT_LEAGUE)
+    parser.add_argument(
+        "--league", default=None, help="Restrict to one league (default: pool every league)."
+    )
     parser.add_argument("--min-minutes", type=float, default=DEFAULT_MIN_MINUTES)
     args = parser.parse_args()
     result = run(args.season, args.league, args.min_minutes)

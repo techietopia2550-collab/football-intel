@@ -1,10 +1,17 @@
-"""Run `find_similar` for fixed well-known 2015/16 players and write docs/similarity_eval.md.
+"""Run `find_similar` for fixed well-known 2015/16 players; write the v1 and v2 evaluations.
 
 This is a look-at-the-output check, not a benchmark: there is no ground truth for "similar
 player", so the document shows the lists and their explanations. The player set is fixed in
 advance (`EVAL_PLAYERS`) and the algorithm is not tuned to any of them.
 
-Run: `python -m src.analytics.evaluate_similarity`
+Two documents:
+  v1  docs/similarity_eval.md      the Premier League alone (pool restricted to that league)
+  v2  docs/similarity_eval_v2.md   every ingested league pooled, compared directly with v1
+
+Run: `python -m src.analytics.evaluate_similarity --version v1|v2` (default v2).
+
+v1 is reproduced by restricting the pool to the Premier League, which is exactly what the engine
+did when only that league was ingested; `check_v1_reproduces` compares it with the stored v1 file.
 """
 
 from __future__ import annotations
@@ -12,20 +19,39 @@ from __future__ import annotations
 from src.utils import disk_bootstrap  # isort: skip  # noqa: F401  (must be first)
 
 import argparse
+import re
+from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
 
+import numpy as np
+import pandas as pd
+from sqlalchemy import Engine
+
+from src.analytics.metrics import POSITION_GROUPS
+from src.analytics.profile import find_player
 from src.analytics.similarity import (
     EXCLUDED_FEATURES,
     VARIANCE_TARGET,
     find_similar,
+    fit_group,
+    load_tables,
 )
+from src.models.schema import get_engine
 from src.models.similarity import SimilarityResult, SimilarPlayer
-from src.transform.normalize import DEFAULT_LEAGUE, DEFAULT_SEASON
+from src.transform.normalize import DEFAULT_SEASON
 from src.utils.config import PROJECT_ROOT
 from src.utils.logging import logger
 
-OUTPUT = PROJECT_ROOT / "docs" / "similarity_eval.md"
+OUTPUT = PROJECT_ROOT / "docs" / "similarity_eval.md"  # v1: Premier League only
+OUTPUT_V2 = PROJECT_ROOT / "docs" / "similarity_eval_v2.md"
+V1_LEAGUE = "ENG-Premier League"
+
+# The creators the brief expects around Özil, checked in v2 (a check, not a tuning target).
+NEIGHBOURS: tuple[str, ...] = (
+    "David Silva", "Juan Mata", "Santi Cazorla", "Christian Eriksen", "James Rodríguez",
+    "Miralem Pjanić", "Marek Hamšík",
+)  # fmt: skip
 
 # (name to look up, position group the brief expected). The brief's labels are expectations, not
 # inputs: the group actually used is the one in the data (`position_group_fine`).
@@ -124,10 +150,12 @@ def _notes_text() -> str:
     return notes.read_text(encoding="utf-8") if notes.exists() else ""
 
 
-def run(season: str = DEFAULT_SEASON, league: str = DEFAULT_LEAGUE) -> Path:
+def run(season: str = DEFAULT_SEASON, league: str | None = V1_LEAGUE) -> Path:
+    """Write the v1 evaluation (default: the Premier League as the whole pool)."""
+    engine = get_engine()
     entries = []
     for query, expected in EVAL_PLAYERS:
-        result = find_similar(query, season=season, n=10, league=league)
+        result = find_similar(query, season=season, n=10, league=league, engine=engine)
         entries.append((query, expected, result))
         logger.info(
             "{q}: {g}, top match {m} ({s:.3f})", q=query, g=result.position_group_fine,
@@ -138,12 +166,290 @@ def run(season: str = DEFAULT_SEASON, league: str = DEFAULT_LEAGUE) -> Path:
     return OUTPUT
 
 
+# --------------------------------------------------------------------------- v2
+
+# The verdict rule is fixed here, before looking at any result. Cosine scores are not comparable
+# across pools (a bigger pool always has a nearer nearest neighbour), so the score verdict is weak
+# evidence; the reviewer notes say where it misleads.
+VERDICT_DELTA = 0.05
+
+
+@dataclass(frozen=True)
+class GroupSummary:
+    group: str
+    size: int
+    features: int
+    components: int
+    variance: float
+
+
+def group_summaries(engine: Engine, season: str, league: str | None) -> dict[str, GroupSummary]:
+    """Size, feature count, PCA components and variance kept for each position group of a pool."""
+    qualified, _ = load_tables(engine, season, league)
+    out: dict[str, GroupSummary] = {}
+    for group in POSITION_GROUPS:
+        members = qualified[qualified["position_group_fine"] == group]
+        if len(members) < 3:
+            continue
+        model = fit_group(members, group)
+        out[group] = GroupSummary(
+            group, len(members), len(model.features), int(model.pca.n_components_),
+            model.explained_variance,
+        )  # fmt: skip
+    return out
+
+
+def top10_mean(result: SimilarityResult) -> float:
+    return float(np.mean([p.similarity for p in result.similar]))
+
+
+def verdict(v1: SimilarityResult, v2: SimilarityResult) -> str:
+    """improved / worse when the top-1 AND the top-10 mean move by at least VERDICT_DELTA the same
+    way; otherwise same."""
+    d1 = v2.similar[0].similarity - v1.similar[0].similarity
+    d10 = top10_mean(v2) - top10_mean(v1)
+    if d1 >= VERDICT_DELTA and d10 >= VERDICT_DELTA:
+        return "improved"
+    if d1 <= -VERDICT_DELTA and d10 <= -VERDICT_DELTA:
+        return "worse"
+    return "same"
+
+
+def stored_v1_top_scores(path: Path = OUTPUT) -> dict[str, float]:
+    """Top-match similarity per player, read from the stored v1 markdown."""
+    scores: dict[str, float] = {}
+    name = None
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if m := re.match(r"## (.+?) \(.+\), [A-Z]+$", line):
+            name = m.group(1)
+        elif name and (row := re.match(r"\| 1 \| .+? \| .+? \| (-?\d\.\d{3}) \|", line)):
+            scores[name] = float(row.group(1))
+            name = None
+    return scores
+
+
+def check_v1_reproduces(v1: dict[str, SimilarityResult], path: Path = OUTPUT) -> list[str]:
+    """Differences between the recomputed v1 top scores and the stored v1 file (empty = same)."""
+    if not path.exists():
+        return ["stored v1 file not found"]
+    stored = stored_v1_top_scores(path)
+    out = []
+    for name, result in v1.items():
+        got = result.similar[0].similarity
+        if name not in stored or abs(stored[name] - got) > 0.0006:
+            out.append(f"{name}: stored {stored.get(name)} vs recomputed {got:.3f}")
+    return out
+
+
+def neighbourhood(engine: Engine, season: str) -> tuple[SimilarityResult, list[dict[str, object]]]:
+    """Where each name in NEIGHBOURS sits in Özil's pooled ranking (or why he is not comparable)."""
+    ozil = find_similar("Mesut Özil", season=season, n=1000, engine=engine)
+    ranked = {p.player_id: p for p in ozil.similar}
+    qualified, excluded = load_tables(engine, season, None)
+    everyone = pd.concat([qualified, excluded], ignore_index=True)
+    rows: list[dict[str, object]] = []
+    for name in NEIGHBOURS:
+        try:
+            row = find_player(everyone, name)
+        except ValueError as exc:
+            rows.append({"name": name, "status": f"not found ({exc})"})
+            continue
+        if row["player_id"] not in set(qualified["player_id"]):
+            rows.append(
+                {"name": row["player_name"], "status": f"below 900 minutes ({row.get('reason')})"}
+            )
+        elif row["player_id"] in ranked:
+            hit = ranked[row["player_id"]]
+            rows.append(
+                {
+                    "name": row["player_name"],
+                    "status": f"rank {hit.rank} of {len(ranked)}, similarity {hit.similarity:.3f}",
+                    "team": row["team"],
+                }
+            )
+        else:
+            rows.append(
+                {
+                    "name": row["player_name"],
+                    "status": f"played mostly as {row['position_group_fine']}, not "
+                    f"{ozil.position_group_fine}: not compared",
+                    "team": row["team"],
+                }
+            )
+    return ozil, rows
+
+
+V2_HEADER = """# Similarity engine v2: {n_leagues} leagues pooled vs v1 (Premier League only)
+
+Generated by `python -m src.analytics.evaluate_similarity --version v2` on {today}. Data: StatsBomb
+Open Data 2015/16, {leagues}. v1 is `similarity_eval.md`.
+
+## What changed, and what did not
+
+Only the pool changed. v1 compared a player with the Premier League players of his position group;
+v2 compares him with every qualifying player (900+ minutes) of that group in {n_leagues} leagues.
+The method, the features, the 85% PCA target, the exclusions and the players are the same, and
+nothing was tuned.
+
+**Two v1 baselines.** `similarity_eval.md` was generated when the Premier League held 374 of 380
+matches; since then the 6 excluded matches were repaired (BLOCKERS.md), so today's Premier League
+holds 380 and 324 qualifying players (323 then). The verdicts below compare v2 with v1 *recomputed
+on today's data* (Premier League only), which isolates the effect of pooling. The stored file's top
+score is shown too. {v1_check}
+
+The brief asked for the ten v1 players plus Özil, Čech, Fuchs and Walker "that failed before"; those
+four are already among the ten, so there are ten distinct players, all shown.
+
+## Reading the comparison
+
+- **Verdict** is a fixed rule: `improved` when the top match's similarity AND the mean of the top 10
+  both rise by at least {delta:.2f}; `worse` when both fall by at least {delta:.2f}; otherwise
+  `same`.
+- **Cosine scores are not comparable across pools.** A larger pool nearly always contains a nearer
+  neighbour, so a rising score is weak evidence of a better list. The reviewer notes at the end
+  judge the lists themselves and say where the verdict misleads.
+- **Group sizes and PCA variance** are per position group of the whole pool, not only the players
+  shown.
+"""
+
+
+def render_v2(
+    v1: dict[str, SimilarityResult],
+    v2: dict[str, SimilarityResult],
+    g1: dict[str, GroupSummary],
+    g2: dict[str, GroupSummary],
+    v1_diffs: list[str],
+    oz: tuple[SimilarityResult, list[dict[str, object]]],
+    notes: str,
+    leagues: list[str],
+    league_of: dict[str, str],
+) -> str:
+    """The markdown for the v2 comparison."""
+    check = (
+        "The recomputed v1 matches the stored file."
+        if not v1_diffs
+        else f"The recomputed v1 top score differs from the stored file for {len(v1_diffs)} of "
+        f"{len(v1)} players ({'; '.join(v1_diffs)})."
+    )
+    header = V2_HEADER.format(
+        today=date.today().isoformat(), leagues=", ".join(leagues), n_leagues=len(leagues),
+        v1_check=check, delta=VERDICT_DELTA,
+    )  # fmt: skip
+    parts = [header]
+    parts.append("## Position groups: size and PCA, before vs after\n")
+    parts.append(
+        "| Group | Players v1 | Players v2 | Features v1 / v2 | PCA components v1 -> v2 | "
+        "Variance kept v1 -> v2 |"
+    )
+    parts.append("|---|---|---|---|---|---|")
+    for g in POSITION_GROUPS:
+        a, b = g1.get(g), g2.get(g)
+        if not a or not b:
+            continue
+        parts.append(
+            f"| {g} | {a.size} | {b.size} | {a.features} / {b.features} | "
+            f"{a.components} -> {b.components} | {a.variance:.1%} -> {b.variance:.1%} |"
+        )
+    parts.append(
+        "\nGroups under 30 players in v2: "
+        + (", ".join(g for g, x in g2.items() if x.size < 30) or "none")
+        + ".\n"
+    )
+
+    parts.append("## Per-player comparison\n")
+    stored = stored_v1_top_scores() if OUTPUT.exists() else {}
+    parts.append(
+        "| Player | Group | Group size v1 -> v2 | Stored v1 top score | Top match v1, same data "
+        "(score) | Top match v2 (score) | Top-10 mean v1 -> v2 | Verdict |"
+    )
+    parts.append("|---|---|---|---|---|---|---|---|")
+    for name, r2 in v2.items():
+        r1 = v1[name]
+        t1, t2 = r1.similar[0], r2.similar[0]
+        old = f"{stored[name]:.3f}" if name in stored else "n/a"
+        parts.append(
+            f"| {r2.target_name} | {r2.position_group_fine} | {r1.group_size} -> {r2.group_size} | "
+            f"{old} | {t1.player_name} ({t1.similarity:.3f}) | {t2.player_name} "
+            f"({t2.similarity:.3f}) | {top10_mean(r1):.3f} -> {top10_mean(r2):.3f} | "
+            f"**{verdict(r1, r2)}** |"
+        )
+    parts.append("")
+
+    ozil, rows = oz
+    parts.append("## Özil: does the neighbourhood the brief expected show up?\n")
+    parts.append(
+        f"Özil is {ozil.position_group_fine} ({ozil.position_group_fine_share:.0%} of minutes); "
+        f"pooled group of {ozil.group_size}.\n"
+    )
+    parts.append("| Expected neighbour | Result in Özil's v2 ranking |")
+    parts.append("|---|---|")
+    parts += [f"| {r['name']} ({r.get('team', '')}) | {r['status']} |" for r in rows]
+    parts.append("")
+
+    for name, r2 in v2.items():
+        r1 = v1[name]
+        parts.append(f"## {r2.target_name} ({r2.target_team}), {r2.position_group_fine}\n")
+        for w in r2.warnings:
+            parts.append(f"> {w}\n")
+        parts.append("**v2 top 10**\n")
+        parts.append("| # | Player | Team | League | Similarity | Shared (top 3) | Differs most |")
+        parts.append("|---|---|---|---|---|---|---|")
+        for sp in r2.similar:
+            diff = sp.differing_metrics[0]
+            shared = ", ".join(
+                f"{m.metric} (z {m.target_z:+.1f} / {m.candidate_z:+.1f})"
+                for m in sp.shared_metrics
+            )
+            parts.append(
+                f"| {sp.rank} | {sp.player_name} | {sp.team} | {league_of.get(sp.player_id, '')} | "
+                f"{sp.similarity:.3f} | {shared} | "
+                f"{diff.metric} ({diff.target_value} vs {diff.candidate_value}) |"
+            )
+        parts.append("")
+        parts.append(
+            "v1 top 3 for reference: "
+            + "; ".join(f"{p.player_name} ({p.similarity:.3f})" for p in r1.similar[:3])
+            + "\n"
+        )
+    parts.append(notes)
+    return "\n".join(parts)
+
+
+def run_v2(season: str = DEFAULT_SEASON) -> Path:
+    """Write docs/similarity_eval_v2.md: the pooled evaluation compared directly with v1."""
+    engine = get_engine()
+    qualified, _ = load_tables(engine, season, None)
+    league_of = dict(zip(qualified["player_id"], qualified["league"], strict=True))
+    leagues = sorted(qualified["league"].unique())
+
+    v1: dict[str, SimilarityResult] = {}
+    v2: dict[str, SimilarityResult] = {}
+    for query, _ in EVAL_PLAYERS:
+        r1 = find_similar(query, season=season, n=10, league=V1_LEAGUE, engine=engine)
+        r2 = find_similar(query, season=season, n=10, engine=engine)
+        v1[r1.target_name], v2[r2.target_name] = r1, r2
+        logger.info(
+            "{q}: v1 {a:.3f} ({an}) -> v2 {b:.3f} ({bn}) [{v}]", q=query,
+            a=r1.similar[0].similarity, an=r1.similar[0].player_name,
+            b=r2.similar[0].similarity, bn=r2.similar[0].player_name, v=verdict(r1, r2),
+        )  # fmt: skip
+    notes_path = OUTPUT_V2.with_name("similarity_eval_v2_notes.md")
+    notes = notes_path.read_text(encoding="utf-8") if notes_path.exists() else ""
+    text = render_v2(
+        v1, v2, group_summaries(engine, season, V1_LEAGUE), group_summaries(engine, season, None),
+        check_v1_reproduces(v1), neighbourhood(engine, season), notes, leagues, league_of,
+    )  # fmt: skip
+    OUTPUT_V2.write_text(text, encoding="utf-8", newline="\n")
+    return OUTPUT_V2
+
+
 def _main() -> None:
-    parser = argparse.ArgumentParser(description="Write docs/similarity_eval.md.")
+    parser = argparse.ArgumentParser(description="Write the similarity evaluation documents.")
     parser.add_argument("--season", default=DEFAULT_SEASON)
-    parser.add_argument("--league", default=DEFAULT_LEAGUE)
+    parser.add_argument("--version", choices=["v1", "v2"], default="v2")
     args = parser.parse_args()
-    print(f"wrote {run(args.season, args.league)}")
+    out = run(args.season) if args.version == "v1" else run_v2(args.season)
+    print(f"wrote {out}")
 
 
 if __name__ == "__main__":

@@ -17,6 +17,10 @@
 Only players of the same `position_group_fine` are ever compared. Everyone in the group is used to
 fit the scaling and the PCA; filters only narrow which candidates are ranked.
 
+The pool is every qualifying player of the season table, so with several leagues ingested the
+group is POOLED across leagues (`league=None`, the default). Passing a league name restricts the
+pool to that league, which reproduces the single-league (EPL-only) results exactly.
+
 Explainability. With `W` the PCA loadings (components x features), `P = W^T W` projects a z-score
 vector onto the retained subspace, and the cosine numerator is `sum_j z_t[j] * (P z_c)[j]`, so
   shared_metrics     feature j's term of that sum, divided by the two vector norms: the terms add
@@ -56,11 +60,7 @@ from src.models.similarity import (
     SimilarityResult,
     SimilarPlayer,
 )
-from src.transform.normalize import (
-    DEFAULT_LEAGUE,
-    INSUFFICIENT_TABLE,
-    season_table_name,
-)
+from src.transform.normalize import INSUFFICIENT_TABLE, season_table_name
 
 VARIANCE_TARGET = 0.85
 MAX_MISSING_SHARE = 0.30
@@ -189,16 +189,20 @@ def explain(
     return build(shared, np.argsort(-shared)), build(differing, np.argsort(-np.abs(differing)))
 
 
-def _load_tables(engine: Engine, season: str, league: str) -> tuple[pd.DataFrame, pd.DataFrame]:
-    params = {"l": league, "s": season}
+def load_tables(
+    engine: Engine, season: str, league: str | None
+) -> tuple[pd.DataFrame, pd.DataFrame]:
+    params: dict[str, str] = {"s": season}
+    where = "season = :s"
+    if league is not None:
+        params["l"] = league
+        where += " AND league = :l"
     qualified = pd.read_sql(
-        text(f"SELECT * FROM {season_table_name(season)} WHERE league = :l AND season = :s"),
-        engine,
-        params=params,
+        text(f"SELECT * FROM {season_table_name(season)} WHERE {where}"), engine, params=params
     )
     if inspect(engine).has_table(INSUFFICIENT_TABLE):
         excluded = pd.read_sql(
-            text(f"SELECT * FROM {INSUFFICIENT_TABLE} WHERE league = :l AND season = :s"),
+            text(f"SELECT * FROM {INSUFFICIENT_TABLE} WHERE {where}"),
             engine,
             params=params,
         )
@@ -244,7 +248,7 @@ def find_similar(
     season: str = "2015",
     n: int = 10,
     filters: SimilarityFilters | dict[str, object] | None = None,
-    league: str = DEFAULT_LEAGUE,
+    league: str | None = None,
     engine: Engine | None = None,
 ) -> SimilarityResult:
     """The `n` players most similar to `player_name` in `season`, within his position group.
@@ -261,7 +265,7 @@ def find_similar(
         else SimilarityFilters.model_validate(filters or {})
     )
     engine = engine or get_engine()
-    qualified, excluded = _load_tables(engine, season, league)
+    qualified, excluded = load_tables(engine, season, league)
     everyone = pd.concat([qualified, excluded], ignore_index=True)
     target = find_player(everyone, player_name)
     if target["player_id"] not in set(qualified["player_id"]):
@@ -316,7 +320,8 @@ def find_similar(
         target_name=target["player_name"],
         target_team=target["team"],
         season=season,
-        league=league,
+        league=str(target["league"]),
+        pool_leagues=sorted(members["league"].unique()),
         position_group_fine=group,
         position_group_fine_share=float(target["position_group_fine_share"]),
         group_size=len(members),

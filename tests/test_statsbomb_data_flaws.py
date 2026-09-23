@@ -53,8 +53,9 @@ def test_minutes_after_a_dismissal_are_removed_and_reported() -> None:
 
     corrections = find_corrections(events, lineups)
     assert len(corrections) == 1
-    assert "P211" in corrections[0]
-    assert "20.0 min" in corrections[0]
+    assert corrections[0].kind == "dismissal_cut"
+    assert "P211" in corrections[0].message
+    assert "20.0 min" in corrections[0].message
 
     records = {r.statsbomb_player_id: r for r in parse_match(events, lineups, match)}
     assert records[211].minutes == pytest.approx(70.5)
@@ -83,8 +84,8 @@ def test_a_lineup_spell_that_starts_after_the_dismissal_is_dropped() -> None:
     lengths = period_lengths(events)
     spells = player_spells(lineups, lengths, dismissal_times(events, lengths))[211]
     assert spells == [("Goalkeeper", 0.0, pytest.approx(70.5))]  # the second spell is gone
-    (message,) = find_corrections(events, lineups)
-    assert "P211" in message
+    (correction,) = find_corrections(events, lineups)
+    assert correction.kind == "dismissal_cut" and "P211" in correction.message
 
 
 def _bench_player_sent_off(events: list[dict[str, Any]], lineups: list[dict[str, Any]]) -> None:
