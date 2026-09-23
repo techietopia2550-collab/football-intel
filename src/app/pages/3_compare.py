@@ -141,7 +141,7 @@ def _heatmaps(directory: pd.DataFrame, ids: list[str]) -> None:
 
 
 def _matrix(directory: pd.DataFrame, ids: list[str]) -> None:
-    design.render(design.section_header("Pairwise similarity", "Cosine similarity of the PCA-reduced profiles (heuristic)"))
+    design.render(design.section_header("Pairwise similarity", "How close two players' profiles are, as a match % (heuristic)"))
     names = tuple(analytics_dir.player_row(directory, i)["player_name"] for i in ids)
     tab_a, tab_b = st.tabs(["Archetype-weighted", "Position group"])
     for tab, arch in ((tab_a, True), (tab_b, False)):
@@ -151,7 +151,7 @@ def _matrix(directory: pd.DataFrame, ids: list[str]) -> None:
             except ValueError as exc:
                 st.write(str(exc))
                 continue
-            shown = mat.map(lambda v: "–" if pd.isna(v) else f"{v:.2f}")
+            shown = mat.map(lambda v: design.fmt_match_pct(v))
             st.dataframe(shown, use_container_width=True)
             st.caption(
                 "A dash means the two are not in the same "

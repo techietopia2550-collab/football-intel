@@ -208,6 +208,13 @@ def band_word(score: float | None) -> str:
     return {"positive": "Strong", "negative": "Weak", "neutral": "Average"}[tone_for(score)]
 
 
+def fmt_match_pct(similarity: float | None) -> str:
+    """A cosine similarity (0-1) as a whole-number percentage for non-technical readers."""
+    if similarity is None or np.isnan(similarity):
+        return "–"
+    return f"{min(max(similarity, 0.0), 1.0) * 100:.0f}%"
+
+
 def fmt_value(value: float | None, unit: str = "") -> str:
     if value is None or (isinstance(value, float) and np.isnan(value)):
         return "–"

@@ -294,7 +294,7 @@ def _similar_section(row: pd.Series) -> None:
                 f'<span class="fi-muted">{design.position_badge(s.position_group_fine)} '
                 f"{design.esc(s.team)} · {design.esc(league)}</span></div>"
                 f'<div class="fi-stat" style="min-width:64px"><div class="fi-num" style="font-size:{design.SIZE_H3}px">'
-                f'{s.similarity:.2f}</div><div class="fi-stat-label">similarity</div></div></div>'
+                f'{design.fmt_match_pct(s.similarity)}</div><div class="fi-stat-label">match</div></div></div>'
             )
             if st.button("Open profile", key=f"sim_open_{pid}_{s.player_id}", help=why):
                 shell.open_player(s.player_id)
@@ -302,7 +302,7 @@ def _similar_section(row: pd.Series) -> None:
         shell.open_compare([pid, *(s.player_id for s in res.similar[:2])])
     st.caption(
         f"Pool: {res.group_size} players in the '{res.archetype_label}' archetype, "
-        f"{res.candidates_considered} after filters. Score is cosine similarity, 0 to 1 here."
+        f"{res.candidates_considered} after filters. Match % shows how close the playing profile is: 100% would be an identical profile."
     )
 
 
