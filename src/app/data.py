@@ -13,11 +13,13 @@ from sqlalchemy import Engine
 from src.analytics import directory as analytics_dir
 from src.analytics import games as games_mod
 from src.analytics import heatmaps as heatmaps_mod
+from src.analytics import match_report as match_report_mod
 from src.analytics import team_profile as team_profile_mod
 from src.analytics.profile import classify
 from src.analytics.similarity import find_similar
 from src.analytics.team_similarity import find_similar_teams
 from src.models.match import PlayerGames, SeasonGameStats
+from src.models.match_report import MatchReport
 from src.models.schema import get_engine
 from src.models.similarity import SimilarityResult
 from src.models.team import KeyPlayer, SimilarTeamsResult, TeamProfile
@@ -174,6 +176,12 @@ def match_heatmaps(match_id: int, player_id: str) -> dict[str, np.ndarray] | Non
     events (None when they are not cached or the player has no StatsBomb id)."""
     sb_id = games_mod.statsbomb_player_id(player_id, engine())
     return None if sb_id is None else heatmaps_mod.match_heatmaps(match_id, sb_id)
+
+
+@st.cache_data(show_spinner=False)
+def match_report(match_id: int) -> MatchReport | None:
+    """Events, lineups and team totals of one match from the cached raw StatsBomb files."""
+    return match_report_mod.load_match_report(match_id, engine())
 
 
 @st.cache_data(show_spinner=False)

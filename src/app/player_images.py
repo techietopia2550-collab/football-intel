@@ -13,7 +13,8 @@ disambiguation page or an unrelated namesake is rejected and the silhouette is s
 
 Also from Wikipedia/Wikidata, cached the same way: a player's birth date and nationality (table
 `player_bio`, written in the same background fetch) and a club's logo (`fetch_team_logo`, cached to
-`data/team_logos/<slug>.png` with attribution in that folder's `credits.json`). A club logo is only
+`data/team_logos/<slug>.png` with attribution in that folder's `credits.json`; filled ahead of time
+by `python -m src.app.preload_logos`, and the UI only ever reads the cache). A club logo is only
 kept when the page's intro says it is a football club. Logos are trademarks: fine for local or
 portfolio use, per-image licence check needed for anything commercial (section 20).
 """
@@ -31,6 +32,7 @@ import time
 import unicodedata
 from concurrent.futures import ThreadPoolExecutor
 from datetime import UTC, date, datetime
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
@@ -79,6 +81,10 @@ _TEAM_TITLES = {
     "Sampdoria": ["U.C. Sampdoria"], "Udinese": ["Udinese Calcio"], "Bologna": ["Bologna F.C. 1909"],
     "Reims": ["Stade de Reims"], "Rennes": ["Stade Rennais F.C."],
     "Saint-Étienne": ["AS Saint-Étienne"], "Nantes": ["FC Nantes"],
+    "Angers": ["Angers SCO"], "Aston Villa": ["Aston Villa F.C."], "Atalanta": ["Atalanta B.C."],
+    "Caen": ["Stade Malherbe Caen"], "Carpi": ["Carpi F.C. 1909"], "Eibar": ["SD Eibar"],
+    "Genoa": ["Genoa C.F.C."], "Las Palmas": ["UD Las Palmas"], "Sassuolo": ["U.S. Sassuolo Calcio"],
+    "Troyes": ["ES Troyes AC"], "Villarreal": ["Villarreal CF"], "Watford": ["Watford F.C."],
 }  # fmt: skip
 
 _lock = threading.Lock()
@@ -150,7 +156,7 @@ def _query_page(title: str) -> dict[str, object] | None:
         params={
             "action": "query", "titles": title, "prop": "pageimages|extracts|info|pageprops",
             "inprop": "url", "format": "json", "pithumbsize": THUMB_PX, "redirects": 1,
-            "exintro": 1, "explaintext": 1, "exchars": 300,
+            "exintro": 1, "explaintext": 1, "exchars": 500,
         },
         headers={"User-Agent": USER_AGENT},
         timeout=10,
@@ -378,10 +384,40 @@ def _team_titles(team_name: str) -> list[str]:
     return [*_TEAM_TITLES.get(team_name, []), *plain]
 
 
+_INFOBOX_IMAGE = re.compile(r"\|\s*(?:image|logo)\s*=\s*(?:\[\[)?(?:File:|Image:)?([^\n|\]]+\.(?:svg|png))", re.IGNORECASE)
+
+
+@rate_limited(REQUEST_DELAY_SECONDS, max_retries=2)
+def _infobox_logo(title: str) -> tuple[str, str] | None:
+    """(thumbnail URL, file name) of the crest named in the page's football-club infobox. Many
+    crests are non-free files that the page-image API does not return, but the infobox names them."""
+    headers = {"User-Agent": USER_AGENT}
+    parsed = requests.get(
+        API_URL, params={"action": "parse", "page": title, "prop": "wikitext", "section": 0,
+                         "redirects": 1, "format": "json"}, headers=headers, timeout=10,
+    )  # fmt: skip
+    parsed.raise_for_status()
+    wikitext = str(parsed.json().get("parse", {}).get("wikitext", {}).get("*", ""))
+    found = _INFOBOX_IMAGE.search(wikitext)
+    if not found:
+        return None
+    name = found.group(1).strip()
+    info = requests.get(
+        API_URL, params={"action": "query", "titles": f"File:{name}", "prop": "imageinfo",
+                         "iiprop": "url", "iiurlwidth": THUMB_PX, "format": "json"},
+        headers=headers, timeout=10,
+    )  # fmt: skip
+    info.raise_for_status()
+    page = next(iter(info.json().get("query", {}).get("pages", {}).values()), {})
+    infos = page.get("imageinfo") or []
+    url = (infos[0].get("thumburl") or infos[0].get("url")) if infos else None
+    return (str(url), name) if url else None
+
+
 def find_team_logo(team_name: str) -> tuple[str, dict[str, object]] | None:
     """(logo URL, page) from the club's Wikipedia page, or None. The page's lead image is used
-    when its file name says logo / crest / badge; otherwise nothing is shown. A page whose intro
-    does not describe a football club is rejected (wrong-page safeguard)."""
+    when its file name says logo / crest / badge; otherwise the crest named in the club infobox.
+    A page whose intro does not describe a football club is rejected (wrong-page safeguard)."""
     for title in _team_titles(team_name):
         page = _query_page(title)
         if not page or not _CLUB_INTRO.search(str(page.get("extract", ""))):
@@ -391,6 +427,9 @@ def find_team_logo(team_name: str) -> tuple[str, dict[str, object]] | None:
             str(page.get("pageimage", ""))
         ):
             return str(thumb["source"]), page
+        boxed = _infobox_logo(str(page.get("title", title)))
+        if boxed:
+            return boxed[0], {**page, "pageimage": boxed[1]}
     return None
 
 
@@ -435,19 +474,22 @@ def fetch_team_logo(team_name: str) -> Path | None:
 
 
 def team_logo_path(team_name: str) -> Path | None:
-    """The cached logo, or None while a background fetch runs (or when there is none)."""
+    """The cached logo, or None. Cache only: this never touches the network, so the UI can call
+    it during render. Logos are filled by `python -m src.app.preload_logos` or `fetch_missing_logos`."""
     path = logo_file(team_name)
-    if path.exists():
-        return path
-    if load_logo_credits().get(team_name, {}).get("status") == "missing":
-        return None
-    key = f"logo:{team_name}"
-    with _lock:
-        if key in _pending or time.monotonic() < _cooldown_until:
-            return None
-        _pending.add(key)
-    _pool().submit(_fetch_logo, team_name)
-    return None
+    return path if path.exists() else None
+
+
+def fetch_missing_logos(team_names: list[str]) -> int:
+    """Fetch (blocking, user-initiated) the logos of these teams that are not cached and not known
+    to be missing on Wikipedia. Returns how many were newly cached."""
+    credits = load_logo_credits()
+    got = 0
+    for name in team_names:
+        if logo_file(name).exists() or credits.get(name, {}).get("status") == "missing":
+            continue
+        got += fetch_team_logo(name) is not None
+    return got
 
 
 def make_team_placeholder(path: Path = TEAM_PLACEHOLDER_PATH, size: int = 256) -> Path:
@@ -465,13 +507,21 @@ def make_team_placeholder(path: Path = TEAM_PLACEHOLDER_PATH, size: int = 256) -
 
 def team_logo_uri(team_name: str, px: int) -> str:
     """A PNG data URI of the club's logo sized `px` (x2 for high-density screens), or the
-    placeholder badge. Never raises."""
+    placeholder badge. Cache only, never touches the network, never raises."""
+    path = team_logo_path(team_name) or TEAM_PLACEHOLDER_PATH
     try:
-        path = team_logo_path(team_name)
-        if path is None:
-            if not TEAM_PLACEHOLDER_PATH.exists():
-                make_team_placeholder()
-            path = TEAM_PLACEHOLDER_PATH
+        return _logo_uri(str(path), path.stat().st_mtime_ns if path.exists() else 0, px)
+    except OSError:
+        return ""
+
+
+@lru_cache(maxsize=512)
+def _logo_uri(path_str: str, mtime_ns: int, px: int) -> str:
+    """Encoded once per (file version, size); later renders reuse the string."""
+    try:
+        path = Path(path_str)
+        if not path.exists():
+            make_team_placeholder(path)
         img = Image.open(path).convert("RGBA")
         img.thumbnail((px * 2, px * 2))
         buf = io.BytesIO()

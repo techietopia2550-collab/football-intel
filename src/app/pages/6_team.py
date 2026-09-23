@@ -10,7 +10,7 @@ import streamlit as st
 
 from src.analytics.team_profile import FLIPPED_AXES, RADAR_LABELS
 from src.analytics.team_style import AXIS_COLUMNS
-from src.app import data, design, shell
+from src.app import data, design, player_images, shell
 from src.models.team import TeamProfile
 
 SIMILAR_N = 10
@@ -107,6 +107,18 @@ def _radar_section(p: TeamProfile) -> None:
         st.dataframe(table, hide_index=True, use_container_width=True)
 
 
+def _logo_refresh(names: list[str]) -> None:
+    """Logos come from the local cache only; this button fetches the missing ones on demand."""
+    credits = player_images.load_logo_credits()
+    missing = [n for n in names if not player_images.has_team_logo(n)
+               and credits.get(n, {}).get("status") != "missing"]  # fmt: skip
+    if missing and st.button(f"Fetch {len(missing)} missing logos", key="fetch_logos",
+                             help="Downloads them from Wikipedia now; they are cached for next time."):
+        with st.spinner("Fetching logos..."):
+            player_images.fetch_missing_logos(missing)
+        st.rerun()
+
+
 def _similar_section(p: TeamProfile) -> None:
     design.render(
         design.section_header(
@@ -114,12 +126,13 @@ def _similar_section(p: TeamProfile) -> None:
         )
     )
     res = data.similar_teams(p.team_name, SIMILAR_N)
+    _logo_refresh([p.team_name, *(s.team_name for s in res.similar)])
     cols = st.columns(2)
     for i, s in enumerate(res.similar):
         with cols[i % 2], st.container(key=f"ficard_simteam_{i}"):
             why = f"Closest on: {', '.join(s.closest_axes)}. Biggest gaps: {', '.join(s.biggest_gaps)}."
             design.render(
-                f'<div class="fi-mini" title="{design.esc(why)}">'
+                f'<div class="fi-mini" title="{design.esc(why)}">{shell.team_logo_img(s.team_name, 32)}'
                 f'<div class="fi-col" style="flex:1"><span class="fi-name" style="font-size:{design.SIZE_BODY}px">'
                 f"{s.rank}. {design.esc(s.team_name)}</span>"
                 f'<span class="fi-muted">{design.esc(shell.LEAGUE_SHORT.get(s.league, s.league))} · '

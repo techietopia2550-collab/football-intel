@@ -592,3 +592,25 @@ numbers are what StatsBomb events give.
 - **Licences.** Player photos are CC-licensed per image; club logos are trademarks, usually fair-use
   files on Wikipedia. Fine for local/portfolio use; any commercial use needs a per-image licence
   check. Nothing is scraped from Transfermarkt or any other source.
+
+## 21. Team logo cache and the match recap (2026-09-23)
+
+- **Logos are cache-only in the UI.** `team_logo_path` / `team_logo_uri` only read
+  `data/team_logos/<slug>.png` (or show the shield placeholder); they never start a fetch, so a page
+  render never waits on Wikipedia. The encoded data URI is memoised per (file version, size).
+- **Filling the cache.** `python -m src.app.preload_logos` walks every team in `team_style` (80),
+  fetches each missing logo once with 3 s between teams, and is resumable (cached teams are skipped;
+  teams recorded as `missing` in `credits.json` are skipped unless `--retry-missing`). The Team
+  Fingerprint page has a small "Fetch N missing logos" button for the teams on screen.
+- **Finding the crest.** The page's lead image when its file name says logo/crest/badge; otherwise the
+  crest named in the club infobox (`image =` / `logo =`), because non-free crests such as Chelsea's are
+  not returned by the page-image API. Only `.svg`/`.png` infobox files are accepted (a JPG there was a
+  photo of a town hall for Guingamp), and the page intro must still describe a football club.
+- **Match recap (`src/analytics/match_report.py`).** Timeline, lineups and team totals are parsed from
+  the cached StatsBomb `events`/`lineups`/`matches` files. Goals carry the assister (`pass.goal_assist`
+  via `shot.key_pass_id`), cards come from `Foul Committed`/`Bad Behaviour`, own goals from `Own Goal
+  Against`, substitutions from `Substitution`. Period 5 (shoot-out) is ignored. Possession is each
+  team's share of all passes (there is no possession clock in this data); pass accuracy counts passes
+  without an outcome as completed; shots on target are Goal/Saved/Saved to Post as in the player
+  metrics. Formation is the kick-off `tactics.formation`. Missing files give empty parts, and the page
+  shows "not available" instead of a broken layout.
