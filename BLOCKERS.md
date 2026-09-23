@@ -416,3 +416,16 @@ Neither is fixed: k is accepted and the clusters are not re-run.
    analytics yet.
 2. An age source, if `max_age` is wanted (StatsBomb has none).
 3. Decide whether a role model beyond StatsBomb's position string is needed (Kanté/Özil neighbours above).
+
+## 17. Team fingerprint: axes and known limits (2026-09-23)
+
+- **Axes not computed: none.** All 12 requested axes are computed. Nine are proxies, not direct measurements (possession
+  % is pass share, PPDA excludes `Pressure` events, transition speed is seconds to a shot, etc.); the exact
+  definitions and what each does not measure are in ANALYTICS_DECISIONS.md section 17.
+- **Bayern Munich is not in the dataset.** Only the Big-4 (EPL, La Liga, Serie A, Ligue 1) is ingested; the cached
+  Bundesliga file holds 34 matches and is not parsed. "Bayern clusters with PSG, Barcelona, Real" cannot be tested;
+  Barcelona, Real Madrid and PSG can be compared with each other instead.
+- **Standings can be short.** StatsBomb lists 377 of Ligue 1's 380 matches (and 37 for PSG), so a Ligue 1 table can differ
+  from the real one. The team page shows a note when a team has fewer than 38 fixtures.
+- **Set-piece and transition axes are noisy proxies** (penalties count as set pieces; transition speed only sees
+  possessions that end in a shot).

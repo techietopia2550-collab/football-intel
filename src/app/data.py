@@ -11,10 +11,13 @@ import streamlit as st
 from sqlalchemy import Engine
 
 from src.analytics import directory as analytics_dir
+from src.analytics import team_profile as team_profile_mod
 from src.analytics.profile import classify
 from src.analytics.similarity import find_similar
+from src.analytics.team_similarity import find_similar_teams
 from src.models.schema import get_engine
 from src.models.similarity import SimilarityResult
+from src.models.team import KeyPlayer, SimilarTeamsResult, TeamProfile
 from src.transform.normalize import DEFAULT_SEASON
 
 SEASON = DEFAULT_SEASON
@@ -129,3 +132,26 @@ def classified(player_id: str, group: str) -> dict[str, list[dict]]:
 @st.cache_data(show_spinner=False)
 def correction_counts() -> dict[str, int]:
     return analytics_dir.lineup_correction_counts(SEASON)
+
+
+# ---- teams (src.analytics.team_*) -------------------------------------------------------------
+
+
+@st.cache_data(show_spinner=False)
+def teams() -> pd.DataFrame:
+    return team_profile_mod.list_teams(SEASON, engine())
+
+
+@st.cache_data(show_spinner=False)
+def team_profile(team_name: str) -> TeamProfile:
+    return team_profile_mod.team_profile(team_name, SEASON, engine())
+
+
+@st.cache_data(show_spinner=False)
+def similar_teams(team_name: str, n: int = 10) -> SimilarTeamsResult:
+    return find_similar_teams(team_name, SEASON, n, engine())
+
+
+@st.cache_data(show_spinner=False)
+def team_key_players(team_name: str, league: str) -> tuple[list[KeyPlayer], str]:
+    return team_profile_mod.key_players(team_name, league, SEASON, engine())

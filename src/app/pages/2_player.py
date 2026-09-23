@@ -72,6 +72,8 @@ def _hero(row: pd.Series, table: pd.DataFrame) -> None:
                 f'<div class="fi-body">{design.esc(row["team"])} · '
                 f"{design.esc(shell.LEAGUE_SHORT[row['league']])} · {data.SEASON_LABEL}</div>"
             )
+            if st.button(f"Plays for → {row['team']}", key=f"team_link_{pid}"):
+                shell.open_team(row["team"])
         with right:
             design.render(
                 '<div class="fi-row" style="justify-content:flex-end">'

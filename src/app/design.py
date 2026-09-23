@@ -421,6 +421,45 @@ def radar_chart(
     return _base_layout(fig, 460)
 
 
+TEAM_COLOR = "#58A6FF"  # fixed neutral blue for a team's style radar
+
+
+def team_radar(
+    team: str, labels: Sequence[str], scores: Sequence[float], values: Sequence[float],
+    value_texts: Sequence[str] | None = None,
+) -> go.Figure:
+    """A team's style axes as 0-100 ranks among all teams (the dashed ring is the median team).
+    Hover shows the raw value, so nothing depends on colour or on reading the ring."""
+    texts = list(value_texts) if value_texts else [f"{v:.2f}" for v in values]
+    theta = [*labels, labels[0]]
+    fig = go.Figure()
+    fig.add_trace(
+        go.Scatterpolar(
+            r=[*scores, scores[0]], theta=theta, name=team, fill="toself",
+            line=dict(color=TEAM_COLOR, width=2), fillcolor=_rgba(TEAM_COLOR, 0.22),
+            customdata=[*texts, texts[0]],
+            hovertemplate="<b>%{theta}</b><br>Raw: %{customdata}<br>Rank score: %{r:.0f} / 100<extra></extra>",
+        )
+    )  # fmt: skip
+    fig.add_trace(
+        go.Scatterpolar(
+            r=[50] * len(theta), theta=theta, mode="lines", name="Median team",
+            line=dict(color=TEXT_SECONDARY, width=1, dash="dot"), hoverinfo="skip",
+        )
+    )  # fmt: skip
+    fig.update_layout(
+        polar=dict(
+            bgcolor="rgba(0,0,0,0)",
+            radialaxis=dict(range=[0, 100], tickvals=[25, 50, 75, 100], gridcolor=BORDER,
+                            linecolor=BORDER, tickfont=dict(size=SIZE_SMALL, color=TEXT_SECONDARY)),
+            angularaxis=dict(gridcolor=BORDER, linecolor=BORDER,
+                             tickfont=dict(size=SIZE_SMALL, color=TEXT_PRIMARY)),
+        ),
+        showlegend=False,
+    )  # fmt: skip
+    return _base_layout(fig, 500)
+
+
 def _rgba(hex_color: str, alpha: float) -> str:
     h = hex_color.lstrip("#")
     r, g, b = (int(h[i : i + 2], 16) for i in (0, 2, 4))

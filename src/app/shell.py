@@ -82,6 +82,11 @@ def open_player(player_id: str) -> None:
     st.switch_page("pages/2_player.py")
 
 
+def open_team(team_name: str) -> None:
+    st.session_state["selected_team"] = team_name
+    st.switch_page("pages/6_team.py")
+
+
 def open_compare(player_ids: list[str]) -> None:
     st.session_state["compare_ids"] = player_ids[:5]
     st.switch_page("pages/3_compare.py")

@@ -472,9 +472,8 @@ The UI (`src/app`) renders what `src/analytics` computes. New read-side code liv
   percentile (ratio under its sample guard) are dropped. "Raw values" mode draws each axis as a share of the
   group maximum; the hover shows the raw number.
 - **Heatmaps** are drawn in StatsBomb yards (120 x 80, 10-yard cells) rather than 105 x 68 metres, because that is what
-  the stored grid is; the team attacks left to right. Only the 323 Premier League players have heatmaps (the
-  heatmap job was run for the EPL only, and no new data was ingested for this UI); everyone else sees "No data for
-  this heatmap type".
+  the stored grid is; the team attacks left to right. All 1,337 players now have heatmaps (the first UI
+  build only had the 323 EPL players; the job was rebuilt for the four leagues on 2026-09-23).
 - **Search** ranks exact name, whole-word, prefix, substring, then a difflib fuzzy match (cutoff 0.72), accent-blind.
 - **Pairwise similarity (Compare)** reuses `find_similar` in both modes; a pair outside one pool shows a dash.
 - **Lineup corrections per player** are counted from `data/processed/statsbomb_corrections.csv` by the name written
@@ -488,3 +487,60 @@ The UI (`src/app`) renders what `src/analytics` computes. New read-side code liv
   remembered. Third-party images are gitignored. **For local or portfolio use this is fine; commercial use needs a
   per-image licence check** (the credit line "Photo: Wikipedia / CC-BY-SA" is a generic label, not a verified
   licence for each file).
+
+## 17. Team style vectors and team similarity (2026-09-23)
+
+*(The request called this "section 16"; that number was already taken by the UI section, so it is 17.)*
+
+Code: `src/analytics/team_style.py` (axes, table `team_style`), `team_similarity.py`, `team_profile.py` (scores,
+headline facts, key players). Built from the cached StatsBomb events of the 1,507 stored matches; nothing new was
+ingested. **These axes describe what a team's events look like. They do not measure tactics, instructions or
+intent**, and every axis mixes a team's own choices with the opposition, game state and league.
+
+**Season aggregation:** raw counts are summed over the team's matches, then the ratio is taken (never an average of
+per-match ratios). `matches_used` is the number of matches with stored events (up to 3 fewer than the schedule for
+teams hit by the ingest gaps in BLOCKERS.md section 12). Shoot-out events (period 5) are ignored. Team names go
+through `normalize_team_name`. Coordinates are StatsBomb yards, the team attacking towards x = 120.
+
+| Axis (column) | Exact definition | Measures | Does NOT measure | Kind |
+|---|---|---|---|---|
+| Possession % (`possession_pct`) | own passes / (own + opponent passes) x 100, all `Pass` events | share of passing volume | true time on the ball, carries, or possession quality | **proxy** (pass share, not ball time) |
+| PPDA (`ppda`) | opponent passes that start at x <= 72 in their frame (their own 60%) / own tackles (`Duel` Tackle) + interceptions + fouls committed at x >= 48 in the team's frame. Lower = more aggressive | how few passes the opponent gets in its own 60% per defensive action | pressing itself: `Pressure` events are not used, so a press that forces errors without a tackle, interception or foul is invisible | **proxy** (the conventional PPDA form) |
+| Direct speed (`direct_speed`) | mean of (end x - start x) over all passes, yards | how far the average pass moves the ball towards goal | speed in time; backward passes count negatively | **proxy** for directness |
+| Build-up length (`buildup_length`) | own passes / possessions containing at least one own pass | passes per possession that had a pass | possession length in time; possessions made only of carries or a shot are excluded | **proxy** |
+| Defensive line height (`def_line_height`) | mean x of own defensive actions: tackles, interceptions, blocks, clearances, non-failed ball recoveries (the `defensive` heatmap set) | where the team defends, in yards from its own goal | the offside line, or the shape when not defending: it only sees where an action happened | **proxy** |
+| Width (`width`) | population standard deviation of the start y of all own passes | how spread across the pitch the passing is | wingers' positions, overlaps, or pass intent | **proxy** |
+| Crossing volume (`crosses_p90`) | own `Pass` events flagged `cross`, excluding corners, per match | crosses attempted | success or quality; "per 90" is per match (league games have no extra time) | direct count |
+| Progressive pass rate (`progressive_pass_rate`) | completed passes that cut the straight-line distance to the goal centre by 10+ yards / all passes | share of passes that move the ball goalwards | carries, or passes that break lines but stay level | **proxy**, our own 10-yard threshold as in section 2 |
+| Shot quality (`xg_per_shot`) | sum of StatsBomb pre-shot xG / shots (penalties included, as in section 2) | average chance value | finishing, or chances not shot | direct measurement |
+| Shot volume (`shots_pm`) | shots per match | how often the team shoots | shot value | direct count |
+| Transition speed (`transition_secs`) | mean seconds from the first event of a possession to its first non-penalty shot, over own possessions that end in a shot and did not start from a corner, free kick or kick-off. **Lower = faster** | how quickly open-play possessions reach a shot | counter-attacks specifically (a slow passing move and a long ball are both just seconds), or possessions with no shot | **proxy**, approximate: event clock to the second, and possessions that reach no shot are not included, so it is noisy for teams with few shots |
+| Set-piece reliance (`set_piece_xg_pct`) | xG of shots whose possession began from a corner or free kick, or that are corner / free-kick / penalty shots, / all xG x 100 | how much of the team's chance value is dead-ball | how good the set-piece routines are | **proxy**; penalties count as set pieces |
+
+**Axes not computed:** none of the 12 requested was dropped. Every one is computable from event data, with the
+proxy caveats above (BLOCKERS.md section 17 repeats them).
+
+**Standings (position, points).** From StatsBomb's own cached match lists, not from `matches`, so they include the
+few fixtures whose events were not ingested: 3 points a win, ranked by points, goal difference, goals for, then name.
+Head-to-head tie-breaks are not applied. StatsBomb lists 377 of Ligue 1's 380 matches, so a Ligue 1 team can show 37
+matches and fewer points than its real final table (the page says so). `league_position` is within league.
+
+**Team similarity.** Each axis is z-scored across all 80 teams (population standard deviation; a constant axis becomes
+0), and teams are compared by cosine similarity. **No PCA** (80 teams, 12 axes). Neighbours are ranked across all
+four leagues. For each neighbour, "closest on" lists the axes where the two z-scores are largest with the same sign,
+and "biggest gaps" the axes with the largest difference. The score is a heuristic, not validated; the page shows it as
+a percentage (negative shows as 0%). Nothing was tuned to make known teams look right.
+
+**Radar scores.** 0-100 rank among the 80 teams (average rank for ties, 0 lowest, 100 highest). PPDA and transition
+seconds are flipped for display only so outward always means more pressing / faster to a shot; similarity uses the
+raw axes (a sign flip of one axis for every team leaves cosine similarity unchanged). Headline facts are the up to
+three axes at least 25 points from the median, worded as event patterns ("Deep defensive block" means the team's
+defensive actions happen deep).
+
+**Sanity check (reported, not tuned).** Leicester City is low on possession, high on direct speed, short on build-up
+and fast to a shot, but its defensive line sits near the middle of the 80 teams, not deep. Its nearest neighbours
+are not led by Atletico Madrid. Bayern Munich cannot be checked: the Bundesliga is not in this dataset (Big-4 only).
+Exact neighbours are in the session report, not repeated here because they are a snapshot of a heuristic.
+
+**Key players.** The five players with most minutes for the team (from `player_archetypes` and the season stats), with
+the archetype mix of those five (goalkeepers show their own keeper archetype).
