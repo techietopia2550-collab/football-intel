@@ -6,6 +6,7 @@ creators), so the right neighbours are known in advance and no real player is be
 
 from __future__ import annotations
 
+from functools import partial
 from pathlib import Path
 
 import numpy as np
@@ -20,14 +21,19 @@ from src.analytics.similarity import (
     VARIANCE_TARGET,
     AgeDataUnavailable,
     cosine,
-    find_similar,
     fit_group,
     group_features,
     pair_contributions,
 )
+from src.analytics.similarity import (
+    find_similar as _find_similar,
+)
 from src.models.similarity import SimilarityFilters
 from src.transform.normalize import INSUFFICIENT_TABLE, season_table_name
 from tests.analytics_fixtures import LEAGUE, SEASON
+
+# These tests cover the position-group behaviour; archetype search is in test_archetypes.py.
+find_similar = partial(_find_similar, use_archetypes=False)
 
 WINNER_METRICS = {"tackles_p90", "interceptions_p90", "ball_recoveries_p90", "pressures_p90"}
 CREATOR_METRICS = {"key_passes_p90", "xa_p90", "assists_p90", "passes_into_box_p90"}

@@ -379,3 +379,85 @@ on today's data because the stored file predates the repair of 6 EPL matches; ru
 database reproduces the stored scores exactly. The verdict rule (top score and top-10 mean both move 0.05) was
 fixed before the run; the reviewer notes there say where it misleads. A larger pool raises scores by itself, so a
 score rise is weak evidence.
+
+## 14. Playing archetypes (`src/analytics/archetypes.py`)
+
+Why: `position_group_fine` comes from StatsBomb lineup position strings, so players who play alike land in
+different groups (Özil AM; Mata and Eriksen W; Cazorla DM; Pjanić CM). An archetype groups players by what they DO.
+
+- **Features:** 14 common outfield per-90 rates and ratios (`OUTFIELD_FEATURES`), fixed before any result was seen.
+  Raw values, not within-position percentiles (percentiles would make an elite centre-back and an elite winger look
+  alike). Position is never a feature.
+- **Method:** z-score across the 1,239 outfield players, PCA to 85% variance (6 components), K-Means (seed 0, 50
+  restarts). Goalkeepers (98) are clustered separately on the nine goalkeeper metrics, k = 3.
+- **k = 10 is a judgement, not the arg-max.** Silhouette falls from 0.2055 (k = 8) to 0.1935 (k = 10); no k is
+  well-separated, and k = 10 was accepted as the one that splits the roles worth telling apart (Chance creator, Deep
+  playmaker, Destroyer, Target man, Poacher, ...). Stability across seeds: adjusted Rand 0.964 (outfield), 0.974
+  (goalkeepers). k is accepted and is not revisited by the similarity work below.
+- **Labels are descriptive names a person gave the clusters**, keyed by cluster id; they must be re-checked whenever
+  the data or the feature list changes (`--describe`).
+- **`cluster_confidence`** = (d2 - d1) / d2, the margin between the nearest and second-nearest centroid in PCA space.
+  Not a probability. 0.25 is the "near the edge" warning line.
+- **Structural checks (`sanity_check`):** Özil and Silva share an archetype; Kanté and Özil do not. Both hold
+  (Chance creator; Destroyer).
+- Sizes: Stopper CB 176, Ball-playing CB 105, Defensive FB 196, Destroyer 175, Deep playmaker 119, Pressing wide
+  midfielder 129, Target man 44, Poacher 122, Dribbling winger 118, Chance creator 55; goalkeepers 28 / 43 / 27.
+- Known misses (BLOCKERS.md section 14): Mata is a Deep playmaker, M'Vila a Defensive full-back.
+- Exports: `python -m src.analytics.archetypes --export` writes `docs/archetypes/archetype_summary.csv`,
+  `player_archetype_map.csv`, `archetype_scatter.png` (PC1 vs PC2 of the clustering space).
+
+## 15. Archetype-weighted similarity: distinctive features (2026-09-23)
+
+**Problem.** Inside an archetype, similarity used the union of every position group's metrics (34 usable of 38).
+For a Chance creator that includes clearances, own-box defensive actions and aerial win %, which add noise: Eriksen
+and Pjanić ranked 26th and 21st of 55 in Özil's list.
+
+**Principle.** An archetype is defined by the metrics on which it differs most from everyone else, so only those
+are compared inside it.
+1. Z-score the usable features across the whole outfield pool (1,239 players). Four ratios empty for over 30% of the
+   pool (`cross_clearance_pct`, `dribble_success_pct`, `shot_accuracy`, `xg_per_shot`) cannot be scored and are absent.
+2. Archetype centroid = mean z per feature over the archetype's members. Global centroid = mean z over the pool (0
+   by construction; empty ratios are imputed as 0).
+3. Distinctiveness = |archetype centroid - global centroid|; **low counts as much as high** (a Stopper is defined by
+   how little he carries as well as how much he clears).
+4. Keep the top **N = 12**. Ranking and selection live in `archetypes.distinctive_table` / `distinctive_features`.
+5. `find_similar(use_archetypes=True)` z-scores those 12 within the archetype's members, then PCA (85%) and cosine as
+   before. `distinctive_n=None` restores the all-feature archetype behaviour; `use_archetypes=False` is unchanged.
+   Goalkeepers keep their nine metrics (fewer than N, nothing to select).
+
+**Why N = 12** (range allowed was 12 to 15; chosen before seeing any list): PCA at 85% then keeps 5 to 8 components,
+enough for a 12-dimension space without leaving room for weak features. For the sharp archetypes (creators,
+poachers, target men, stoppers) the 12th feature still has |Δz| of 1.0 to 1.2, so 12 loses little there. For the
+weak archetypes (full-back, Destroyer, pressing wide midfielder) the 12th to 16th features all sit at 0.4 to 0.5 (a
+plateau), so any cut-off in the range is arbitrary; a larger N would only add features at that same noise level.
+One N for all archetypes keeps the rule simple and untuned.
+
+**Selected features** (archetype mean z in brackets; a short reason after each group):
+
+| Archetype | Features (in order) |
+|---|---|
+| 0 Stopper centre-back | cross_clearances_p90 (+1.63), clearances_p90 (+1.62), def_actions_in_own_box_p90 (+1.61): clears the box; avg_defensive_action_x (-1.20): defends deep; counterpressures_p90 (-1.17), pressures_p90 (-1.00): does not press; passes_received_under_pressure_p90 (-1.16), progressive_passes_received_p90 (-1.12), passes_received_p90 (-1.09), key_passes_p90 (-1.06), carries_p90 (-1.05): hardly involved in build-up or creation; aerial_win_pct (+1.06): wins headers |
+| 1 Ball-playing centre-back | clearances_p90 (+1.32), def_actions_in_own_box_p90 (+1.30), cross_clearances_p90 (+1.29): still clears the box; pass_completion_pct (+1.27), progressive_passes_p90 (+1.22): the passing that separates him from a stopper; pressures_p90 (-1.20), counterpressures_p90 (-1.17): no pressing; avg_defensive_action_x (-1.14): deep; aerial_win_pct (+1.04); passes_received_under_pressure_p90 (-1.03), progressive_passes_received_p90 (-0.99), key_passes_p90 (-0.98): not a receiver or creator |
+| 2 Defensive full-back | progressive_passes_p90 (+0.97): moves the ball forward by passing; shots_p90 (-0.75), xg_p90 (-0.69), goals_p90 (-0.62): little goal threat; progressive_passes_received_p90 (-0.75), passes_received_under_pressure_p90 (-0.67): not a forward outlet; interceptions_p90 (+0.68), blocks_p90 (+0.64), tackles_p90 (+0.53): defensive actions; avg_defensive_action_x (-0.64): deeper than the wide midfielders; pressure_duration_avg (+0.53); tackle_win_pct (-0.45) |
+| 3 Destroyer | tackles_p90 (+1.28), ball_recoveries_p90 (+0.79), interceptions_p90 (+0.57), blocks_p90 (+0.61): wins the ball; pressures_p90 (+1.15), counterpressures_p90 (+0.93): presses; fouls_committed_p90 (+0.81): pays for it; pass_completion_pct (+0.56), passes_into_final_third_p90 (+0.50): keeps it simple; xa_p90 (-0.52), goals_p90 (-0.52), xg_p90 (-0.51): little attacking output |
+| 4 Deep playmaker | passes_received_p90 (+1.56), carries_p90 (+1.50), carry_distance_p90 (+0.89): the ball runs through him; passes_into_final_third_p90 (+1.47), progressive_passes_p90 (+0.66), passes_into_box_p90 (+0.65), key_passes_p90 (+0.65): moves it forward; pass_completion_pct (+0.91); ball_recoveries_p90 (+0.81), counterpressures_p90 (+0.68): wins it back; aerials_attempted_p90 (-0.73), aerials_won_p90 (-0.67): stays out of the air |
+| 5 Pressing wide midfielder | pressures_p90 (+0.75), counterpressures_p90 (+0.62), avg_defensive_action_x (+0.60): presses high; def_actions_in_own_box_p90 (-0.72), clearances_p90 (-0.68), cross_clearances_p90 (-0.65): never defends the box; aerial_win_pct (-0.73), aerials_won_p90 (-0.49): loses aerial duels; pass_completion_pct (-0.66), progressive_passes_p90 (-0.65): rough passer; key_passes_p90 (+0.51), passes_received_under_pressure_p90 (+0.50): receives in tight wide areas |
+| 6 Target man | aerials_attempted_p90 (+3.33), aerials_won_p90 (+2.92): the aerial outlet; progressive_passes_received_p90 (+1.87), xg_p90 (+1.77), shots_p90 (+1.43), goals_p90 (+1.42): the forward end of moves and finishing; pass_completion_pct (-1.55), progressive_passes_p90 (-1.42), carry_distance_p90 (-1.28), carries_p90 (-1.24): does not pass or carry; interceptions_p90 (-1.27), ball_recoveries_p90 (-1.21): does not win the ball |
+| 7 Poacher | xg_p90 (+1.82), goals_p90 (+1.62), shots_p90 (+1.35): finishing; progressive_passes_received_p90 (+1.32), passes_received_under_pressure_p90 (+1.14), avg_defensive_action_x (+0.99): plays on the last line; progressive_passes_p90 (-1.46), passes_into_final_third_p90 (-1.07): does not build; interceptions_p90 (-1.27), tackles_p90 (-1.23), blocks_p90 (-1.03), ball_recoveries_p90 (-1.00): does not defend |
+| 8 Dribbling winger | dribbles_p90 (+1.88), progressive_carries_p90 (+1.67), carry_distance_p90 (+1.36): carries and beats his man; shots_p90 (+1.04), xa_p90 (+1.00), key_passes_p90 (+0.90): end product; fouls_won_p90 (+0.92), passes_received_under_pressure_p90 (+0.90): fouled while receiving in tight space; avg_defensive_action_x (+0.88): high; aerial_win_pct (-1.09), def_actions_in_own_box_p90 (-0.92), clearances_p90 (-0.90): not a defender |
+| 9 Chance creator | key_passes_p90 (+2.63), xa_p90 (+2.62), passes_into_box_p90 (+2.58), assists_p90 (+2.21): the creation itself; carry_distance_p90 (+1.62), progressive_carries_p90 (+1.50), carries_p90 (+1.46), dribbles_p90 (+1.41): moves the ball into space; passes_received_p90 (+1.47), passes_received_under_pressure_p90 (+1.25), progressive_passes_received_p90 (+1.22): the ball comes to him between the lines; avg_defensive_action_x (+1.24): high up the pitch. No defensive feature: the first (low own-box actions) is 15th |
+| GK (all three) | the nine `gk_*` metrics (`group_features(GK)`): fewer than N, so no selection |
+
+**Outcome** (`docs/similarity_eval_v3.md`, 14 players plus Busquets; not a benchmark, no ground truth):
+- Özil's top 5 are James Rodríguez, Barrada, Di María, De Bruyne, David Silva: all chance creators. Kanté's top 5 are
+  ball-winning midfielders (Gueye, Illarramendi, Kankava, Poko, Rubén Pérez), better than the all-feature list,
+  whose first match was a full-back.
+- Diagnostic: Eriksen 26th -> 12th, Pjanić 21st -> 10th, Cazorla 13th -> 16th, Hamšík 11th -> 17th. Two better,
+  two worse; the hoped-for top 10 was reached by one of four.
+- Kyle Walker's list got worse (two centre-backs in the top 10). The weak archetypes have weak signatures (see
+  the plateau above), so the principle helps sharply defined archetypes more than blurry ones. Not re-tuned.
+- No list became nonsense.
+
+**Limits:** the selection uses |difference|, so "low" features count; centroid distance is measured in z-units of the
+whole outfield pool, so a broad archetype (full-back) always has smaller distances than a narrow one (Target man);
+one N for all; 34 features are usable, not the 38 defined; one season. Nothing here was tuned to any player.

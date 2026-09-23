@@ -14,8 +14,18 @@
      the variance.
   4. Cosine similarity between the target's and each candidate's PCA vector. Ranked, top `n`.
 
-Only players of the same `position_group_fine` are ever compared. Everyone in the group is used to
-fit the scaling and the PCA; filters only narrow which candidates are ranked.
+With `use_archetypes=True` (the default) the pool is instead the target's ARCHETYPE (see
+`archetypes.py`): players who play alike whatever their position label, across positions and
+leagues. The features are then the archetype's DISTINCTIVE metrics (`archetypes.distinctive_
+features`: the `distinctive_n` metrics, out of the union of the outfield groups' `RELEVANT_METRICS`,
+whose archetype centroid sits furthest from the global one), so a chance creator is compared on
+creation and ball-carrying, not on clearances. `distinctive_n=None` uses the whole union instead
+(the first archetype version). A goalkeeper archetype uses the goalkeeper set. Scaling (within the
+archetype's members), PCA and cosine are otherwise identical. `use_archetypes=False` is the
+position-group behaviour described above.
+
+With `use_archetypes=False` only players of the same `position_group_fine` are compared. Everyone in
+the group is used to fit the scaling and the PCA; filters only narrow which candidates are ranked.
 
 The pool is every qualifying player of the season table, so with several leagues ingested the
 group is POOLED across leagues (`league=None`, the default). Passing a league name restricts the
@@ -51,6 +61,7 @@ import pandas as pd
 from sklearn.decomposition import PCA
 from sqlalchemy import Engine, inspect, text
 
+from src.analytics.metrics import GK
 from src.analytics.percentiles import MIN_GROUP_SIZE
 from src.analytics.profile import RELEVANT_METRICS, find_player
 from src.models.schema import get_engine
@@ -62,9 +73,12 @@ from src.models.similarity import (
 )
 from src.transform.normalize import INSUFFICIENT_TABLE, season_table_name
 
+ARCHETYPES_TABLE = "player_archetypes"
+LOW_CONFIDENCE = 0.25  # below this margin a player sits near the edge of his archetype
 VARIANCE_TARGET = 0.85
 MAX_MISSING_SHARE = 0.30
 TOP_EXPLAINERS = 3
+DISTINCTIVE_N = 12  # archetype-distinctive features used inside an archetype
 MIXED_ROLE_SHARE = 0.6
 # Yellow and red cards are rare, chance-driven counts: they add noise, not style.
 EXCLUDED_FEATURES: frozenset[str] = frozenset({"red_p90", "yellow_p90"})
@@ -77,6 +91,35 @@ class AgeDataUnavailable(ValueError):
 def group_features(group: str) -> list[str]:
     """The metrics used to compare players of one fine position group."""
     return [m for m in RELEVANT_METRICS[group] if m not in EXCLUDED_FEATURES]
+
+
+def archetype_features() -> list[str]:
+    """Metrics for comparing outfield players inside an archetype: every metric that any outfield
+    position group treats as relevant (ordered, without duplicates), minus EXCLUDED_FEATURES."""
+    seen: dict[str, None] = {}
+    for group, metrics in RELEVANT_METRICS.items():
+        if group != GK:
+            seen.update(dict.fromkeys(m for m in metrics if m not in EXCLUDED_FEATURES))
+    return list(seen)
+
+
+def load_archetypes(engine: Engine, season: str) -> pd.DataFrame:
+    """player_id -> archetype columns for a season. Raises LookupError when the table is missing
+    or holds no rows for the season (`init_db` creates it empty)."""
+    hint = "run `python -m src.analytics.archetypes --rebuild`, or pass use_archetypes=False"
+    if not inspect(engine).has_table(ARCHETYPES_TABLE):
+        raise LookupError(f"{ARCHETYPES_TABLE} does not exist: {hint}")
+    out = pd.read_sql(
+        text(
+            "SELECT player_id, pool, archetype_id, archetype_label, cluster_confidence "
+            f"FROM {ARCHETYPES_TABLE} WHERE season = :s"
+        ),
+        engine,
+        params={"s": season},
+    )
+    if out.empty:
+        raise LookupError(f"{ARCHETYPES_TABLE} has no rows for season {season}: {hint}")
+    return out
 
 
 @dataclass
@@ -101,14 +144,16 @@ class GroupModel:
         return self._cache["P"]
 
 
-def fit_group(members: pd.DataFrame, group: str) -> GroupModel:
-    """Z-score `members` (one position group's qualifying players) and fit the PCA."""
+def fit_group(members: pd.DataFrame, group: str, features: list[str] | None = None) -> GroupModel:
+    """Z-score `members` (one pool's qualifying players) and fit the PCA.
+
+    `group` names the pool in messages and picks its features unless `features` is given."""
     if len(members) < 3:
         raise ValueError(f"Only {len(members)} {group} players: too few to compare")
     kept: list[str] = []
     dropped: dict[str, str] = {}
     columns: list[np.ndarray] = []
-    for name in group_features(group):
+    for name in features if features is not None else group_features(group):
         values = members[name].to_numpy(dtype=float)
         missing = float(np.isnan(values).mean())
         if missing > MAX_MISSING_SHARE:
@@ -250,8 +295,12 @@ def find_similar(
     filters: SimilarityFilters | dict[str, object] | None = None,
     league: str | None = None,
     engine: Engine | None = None,
+    use_archetypes: bool = True,
+    distinctive_n: int | None = DISTINCTIVE_N,
 ) -> SimilarityResult:
-    """The `n` players most similar to `player_name` in `season`, within his position group.
+    """The `n` players most similar to `player_name` in `season`, within his archetype (default)
+    or, with `use_archetypes=False`, within his position group. `distinctive_n` is the number of
+    archetype-distinctive features used inside an archetype (None = every outfield feature).
 
     Raises ValueError if the name matches no player or several, if the player is below the minutes
     threshold (no rates to compare), or if `filters` are contradictory; `AgeDataUnavailable` for
@@ -275,23 +324,52 @@ def find_similar(
         )
 
     group = target["position_group_fine"]
-    members = qualified[qualified["position_group_fine"] == group].reset_index(drop=True)
-    model = fit_group(members, group)
+    warnings: list[str] = []
+    arch_id: int | None = None
+    arch_label: str | None = None
+    confidence: float | None = None
+    features: list[str] | None = None
+    if use_archetypes:
+        qualified = qualified.merge(load_archetypes(engine, season), on="player_id", how="left")
+        mine = qualified[qualified["player_id"] == target["player_id"]].iloc[0]
+        if pd.isna(mine["archetype_id"]):
+            raise ValueError(f"{target['player_name']} has no archetype: rebuild player_archetypes")
+        arch_id, arch_label = int(mine["archetype_id"]), str(mine["archetype_label"])
+        confidence = float(mine["cluster_confidence"])
+        members = qualified[qualified["archetype_id"] == arch_id].reset_index(drop=True)
+        pool_name = arch_label
+        if mine["pool"] == "gk":
+            features = group_features(GK)
+        elif distinctive_n is None:
+            features = archetype_features()
+        else:
+            from src.analytics.archetypes import distinctive_features  # avoids an import cycle
+
+            outfield = qualified[qualified["pool"] == "outfield"]
+            features = distinctive_features(outfield, arch_id, distinctive_n)
+        if confidence < LOW_CONFIDENCE:
+            warnings.append(
+                f"Low archetype confidence ({confidence:.2f}): near the edge of '{arch_label}', "
+                "so the pool is a soft description of him."
+            )
+    else:
+        members = qualified[qualified["position_group_fine"] == group].reset_index(drop=True)
+        pool_name = group
+    model = fit_group(members, pool_name, features)
     t_idx = int(members.index[members["player_id"] == target["player_id"]][0])
 
-    warnings: list[str] = []
     if len(members) < MIN_GROUP_SIZE:
         warnings.append(
-            f"Only {len(members)} qualifying {group} players (< {MIN_GROUP_SIZE}): the PCA and "
-            "the similarity scores are coarse."
+            f"Only {len(members)} qualifying {pool_name} players (< {MIN_GROUP_SIZE}): the PCA "
+            "and the similarity scores are coarse."
         )
-    if target["position_group_fine_share"] < MIXED_ROLE_SHARE:
+    if not use_archetypes and target["position_group_fine_share"] < MIXED_ROLE_SHARE:
         warnings.append(
             f"Mixed role: only {target['position_group_fine_share']:.0%} of minutes as {group}; "
             "similar players are searched within that group only."
         )
     if model.dropped:
-        warnings.append(f"Features left out for {group}: {model.dropped}")
+        warnings.append(f"Features left out for {pool_name}: {model.dropped}")
 
     pool = members[members["player_id"] != target["player_id"]]
     pool = _apply_filters(pool, target, flt, season, engine, warnings)
@@ -308,7 +386,7 @@ def find_similar(
                 player_id=row["player_id"],
                 player_name=row["player_name"],
                 team=row["team"],
-                position_group_fine=group,
+                position_group_fine=row["position_group_fine"],
                 minutes_total=round(float(row["minutes_total"]), 1),
                 similarity=round(float(sims[i]), 4),
                 shared_metrics=shared,
@@ -324,6 +402,10 @@ def find_similar(
         pool_leagues=sorted(members["league"].unique()),
         position_group_fine=group,
         position_group_fine_share=float(target["position_group_fine_share"]),
+        pool_kind="archetype" if use_archetypes else "position_group",
+        archetype_id=arch_id,
+        archetype_label=arch_label,
+        cluster_confidence=None if confidence is None else round(confidence, 4),
         group_size=len(members),
         candidates_considered=len(pool),
         features_used=model.features,
@@ -339,6 +421,7 @@ def find_similar(
 __all__ = [
     "EXCLUDED_FEATURES",
     "AgeDataUnavailable",
+    "archetype_features",
     "find_similar",
     "fit_group",
     "group_features",

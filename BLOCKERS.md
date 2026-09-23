@@ -390,6 +390,26 @@ not hidden.
 - **Leagues are treated as one population.** Whether a Ligue 1 winger's numbers are comparable with a La Liga
   winger's (pace of play, StatsBomb tagging by competition) has not been checked.
 
+## 14. Archetype edge cases (2026-09-23)
+
+Archetypes (k = 10, ANALYTICS_DECISIONS.md section 14) are descriptive clusters; two expected assignments miss.
+Neither is fixed: k is accepted and the clusters are not re-run.
+
+- **Juan Mata (Manchester United): Deep playmaker (confidence 0.21), not Chance creator.** His metrics put him with
+  the deep-lying, ball-circulating group, so he is not in Özil's Chance creator pool of 55 and never appears in
+  Özil's list. Eriksen, Pjanić, Cazorla and Hamšík (the other creators the brief names) are in it.
+- **Yann M'Vila (Sunderland): Defensive full-back (confidence 0.27), not Destroyer.** A ball-winning midfielder in
+  the position data (CM) whose numbers look more like a full-back's; he sits in the Defensive full-back pool, not
+  Kanté's Destroyer pool (v2's position-group list had him 7th for Kanté).
+- **Low-confidence assignments** (confidence under 0.25: Kanté 0.24, Vardy 0.07, Mahrez 0.19, Pjanić 0.18, Cazorla
+  0.12, Hamšík 0.22, Busquets 0.18) sit near an archetype boundary: the pool is a soft description of them and
+  `find_similar` warns.
+- **Weak archetypes have weak signatures.** Defensive full-back, Destroyer and Pressing wide midfielder have a 12th
+  distinctive feature at |Δz| 0.45 to 0.50 (sharp archetypes 1.0 to 1.3), so their similarity lists are less
+  reliable; Kyle Walker's v3 list got worse (`docs/similarity_eval_v3.md`).
+- **Hard-coded label map.** `OUTFIELD_LABELS` is keyed by cluster id (numbered by centroid PC1); re-check it after any
+  data or feature change (`python -m src.analytics.archetypes --describe`).
+
 ## Next priority (future session)
 
 1. UI (player profile page, radar/heatmap rendering, search, comparison). Nothing in `src/app` uses the

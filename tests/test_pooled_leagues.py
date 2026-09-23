@@ -6,6 +6,7 @@ Two synthetic leagues. Every outfield group has players in both, so a pooled gro
 from __future__ import annotations
 
 from datetime import date
+from functools import partial
 from pathlib import Path
 from typing import Any
 
@@ -16,10 +17,12 @@ from sqlalchemy import Engine, create_engine, text
 from src.analytics import heatmaps, percentiles
 from src.analytics.metrics import OUTFIELD_GROUPS
 from src.analytics.profile import profile
-from src.analytics.similarity import find_similar
+from src.analytics.similarity import find_similar as _find_similar
 from src.transform import normalize
 from src.utils.config import settings
 from tests.analytics_fixtures import SEASON, load_into, player_rows
+
+find_similar = partial(_find_similar, use_archetypes=False)
 
 LEAGUE_A, LEAGUE_B = "ENG-Premier League", "ESP-La Liga"
 

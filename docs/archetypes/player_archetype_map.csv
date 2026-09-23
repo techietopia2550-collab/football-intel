@@ -1,0 +1,1338 @@
+player_id,player_name,season,league,team,source,position_group_fine,pool,archetype_id,archetype_label,cluster_confidence,distance_to_centroid
+statsbomb:3843,Angelo Ogbonna,2015,ENG-Premier League,West Ham United,statsbomb,CB,outfield,0,Stopper centre-back,0.7734,0.5435
+statsbomb:4035,Ryan Shawcross,2015,ENG-Premier League,Stoke City,statsbomb,CB,outfield,0,Stopper centre-back,0.7705,0.6352
+statsbomb:7346,Lindsay Rose,2015,FRA-Ligue 1,Lorient,statsbomb,CB,outfield,0,Stopper centre-back,0.6809,0.6462
+statsbomb:8873,Marios Ikonomou,2015,ITA-Serie A,Bologna,statsbomb,CB,outfield,0,Stopper centre-back,0.6504,0.6944
+statsbomb:401194,François Modesto,2015,FRA-Ligue 1,Bastia,statsbomb,CB,outfield,0,Stopper centre-back,0.6902,0.6976
+statsbomb:2953,Kader Mangane,2015,FRA-Ligue 1,Gazélec Ajaccio,statsbomb,CB,outfield,0,Stopper centre-back,0.625,0.7621
+statsbomb:5259,José Giménez,2015,ESP-La Liga,Atlético Madrid,statsbomb,CB,outfield,0,Stopper centre-back,0.6687,0.8022
+statsbomb:7771,Dario Dainelli,2015,ITA-Serie A,Chievo,statsbomb,CB,outfield,0,Stopper centre-back,0.6599,0.8034
+statsbomb:4280,Winston Reid,2015,ENG-Premier League,West Ham United,statsbomb,CB,outfield,0,Stopper centre-back,0.5337,0.8114
+statsbomb:8818,Jorge Meré,2015,ESP-La Liga,Sporting Gijón,statsbomb,CB,outfield,0,Stopper centre-back,0.6892,0.8181
+statsbomb:6376,Stefan Savić,2015,ESP-La Liga,Atlético Madrid,statsbomb,CB,outfield,0,Stopper centre-back,0.692,0.819
+statsbomb:16430,Uroš Spajić,2015,FRA-Ligue 1,Toulouse,statsbomb,CB,outfield,0,Stopper centre-back,0.6201,0.8206
+statsbomb:4349,Issa Diop,2015,FRA-Ligue 1,Toulouse,statsbomb,CB,outfield,0,Stopper centre-back,0.6833,0.8259
+statsbomb:8277,Wallace,2015,FRA-Ligue 1,Monaco,statsbomb,CB,outfield,0,Stopper centre-back,0.6362,0.8523
+statsbomb:10936,Lorik Cana,2015,FRA-Ligue 1,Nantes,statsbomb,CB,outfield,0,Stopper centre-back,0.589,0.8551
+statsbomb:7799,Danilo,2015,ITA-Serie A,Udinese,statsbomb,CB,outfield,0,Stopper centre-back,0.6755,0.863
+statsbomb:26087,Carlos Gurpegi,2015,ESP-La Liga,Athletic Club,statsbomb,CB,outfield,0,Stopper centre-back,0.661,0.8655
+statsbomb:27184,Marcos Angeleri,2015,ESP-La Liga,Málaga,statsbomb,CB,outfield,0,Stopper centre-back,0.6653,0.8781
+statsbomb:3041,Ciaran Clark,2015,ENG-Premier League,Aston Villa,statsbomb,CB,outfield,0,Stopper centre-back,0.662,0.888
+statsbomb:3324,Eric Bailly,2015,ESP-La Liga,Villarreal,statsbomb,CB,outfield,0,Stopper centre-back,0.6045,0.8882
+statsbomb:38237,Gabriel Paletta,2015,ITA-Serie A,Atalanta,statsbomb,CB,outfield,0,Stopper centre-back,0.6581,0.9131
+statsbomb:16456,Enzo Roco,2015,ESP-La Liga,Espanyol,statsbomb,CB,outfield,0,Stopper centre-back,0.5444,0.9193
+statsbomb:8877,Boštjan Cesar,2015,ITA-Serie A,Chievo,statsbomb,CB,outfield,0,Stopper centre-back,0.5768,0.9481
+statsbomb:16622,Mikel González,2015,ESP-La Liga,Real Sociedad,statsbomb,CB,outfield,0,Stopper centre-back,0.5967,0.9512
+statsbomb:7142,Luca Rossettini,2015,ITA-Serie A,Bologna,statsbomb,CB,outfield,0,Stopper centre-back,0.5609,0.9519
+statsbomb:6825,Daniel Carriço,2015,ESP-La Liga,Sevilla,statsbomb,CB,outfield,0,Stopper centre-back,0.4473,0.972
+statsbomb:40527,Benjamin Angoua,2015,FRA-Ligue 1,Guingamp,statsbomb,CB,outfield,0,Stopper centre-back,0.6646,0.9949
+statsbomb:30745,Daniele Gastaldello,2015,ITA-Serie A,Bologna,statsbomb,CB,outfield,0,Stopper centre-back,0.4469,1.0026
+statsbomb:31488,Vangelis Moras,2015,ITA-Serie A,Hellas Verona,statsbomb,CB,outfield,0,Stopper centre-back,0.3936,1.0172
+statsbomb:26012,David Navarro,2015,ESP-La Liga,Levante,statsbomb,CB,outfield,0,Stopper centre-back,0.5806,1.0449
+statsbomb:174418,Modibo Diakité,2015,ITA-Serie A,Frosinone,statsbomb,CB,outfield,0,Stopper centre-back,0.6395,1.0513
+statsbomb:6788,Xabier Etxeita,2015,ESP-La Liga,Athletic Club,statsbomb,CB,outfield,0,Stopper centre-back,0.3434,1.0577
+statsbomb:3004,Oswaldo Vizcarrondo,2015,FRA-Ligue 1,Nantes,statsbomb,CB,outfield,0,Stopper centre-back,0.6159,1.0587
+statsbomb:6702,David Lombán,2015,ESP-La Liga,Granada,statsbomb,CB,outfield,0,Stopper centre-back,0.5847,1.0705
+statsbomb:26669,Weligton,2015,ESP-La Liga,Málaga,statsbomb,CB,outfield,0,Stopper centre-back,0.6078,1.0742
+statsbomb:6872,Bruno González,2015,ESP-La Liga,Real Betis,statsbomb,CB,outfield,0,Stopper centre-back,0.6151,1.0804
+statsbomb:20285,Joleon Lescott,2015,ENG-Premier League,Aston Villa,statsbomb,CB,outfield,0,Stopper centre-back,0.606,1.081
+statsbomb:7176,Sebastian De Maio,2015,ITA-Serie A,Genoa,statsbomb,CB,outfield,0,Stopper centre-back,0.3957,1.0975
+statsbomb:3577,Molla Wagué,2015,ITA-Serie A,Udinese,statsbomb,CB,outfield,0,Stopper centre-back,0.5952,1.1013
+statsbomb:8677,Marcel Tisserand,2015,FRA-Ligue 1,Toulouse,statsbomb,CB,outfield,0,Stopper centre-back,0.2726,1.1235
+statsbomb:7034,Mateo Musacchio,2015,ESP-La Liga,Villarreal,statsbomb,CB,outfield,0,Stopper centre-back,0.2651,1.1367
+statsbomb:3779,Cédric Yambéré,2015,FRA-Ligue 1,Bordeaux,statsbomb,CB,outfield,0,Stopper centre-back,0.3754,1.139
+statsbomb:4406,Aymen Abdennour,2015,ESP-La Liga,Valencia,statsbomb,CB,outfield,0,Stopper centre-back,0.2829,1.1398
+statsbomb:8852,Thomas Heurtaux,2015,ITA-Serie A,Udinese,statsbomb,CB,outfield,0,Stopper centre-back,0.4886,1.1561
+statsbomb:13286,Lamine Koné,2015,FRA-Ligue 1,Lorient,statsbomb,CB,outfield,0,Stopper centre-back,0.6033,1.1664
+statsbomb:3022,Fallou Diagne,2015,FRA-Ligue 1,Rennes,statsbomb,CB,outfield,0,Stopper centre-back,0.1468,1.1776
+statsbomb:6762,Álvaro González,2015,ESP-La Liga,Espanyol,statsbomb,CB,outfield,0,Stopper centre-back,0.4634,1.179
+statsbomb:6360,Cristián Zapata,2015,ITA-Serie A,AC Milan,statsbomb,CB,outfield,0,Stopper centre-back,0.4298,1.18
+statsbomb:7002,Rafael Tolói,2015,ITA-Serie A,Atalanta,statsbomb,CB,outfield,0,Stopper centre-back,0.4936,1.1808
+statsbomb:3549,Romain Thomas,2015,FRA-Ligue 1,Angers,statsbomb,CB,outfield,0,Stopper centre-back,0.3495,1.1817
+statsbomb:6869,Alejandro Arribas,2015,ESP-La Liga,Deportivo La Coruña,statsbomb,CB,outfield,0,Stopper centre-back,0.6158,1.1921
+statsbomb:7467,Nicolás Burdisso,2015,ITA-Serie A,Genoa,statsbomb,CB,outfield,0,Stopper centre-back,0.4693,1.193
+statsbomb:3316,James Tomkins,2015,ENG-Premier League,West Ham United,statsbomb,FB,outfield,0,Stopper centre-back,0.3076,1.2054
+statsbomb:8278,Nicolás Spolli,2015,ITA-Serie A,Chievo,statsbomb,CB,outfield,0,Stopper centre-back,0.5837,1.2064
+statsbomb:3270,Danny Simpson,2015,ENG-Premier League,Leicester City,statsbomb,FB,outfield,0,Stopper centre-back,0.5575,1.208
+statsbomb:3011,Daniel Congré,2015,FRA-Ligue 1,Montpellier,statsbomb,CB,outfield,0,Stopper centre-back,0.2564,1.2147
+statsbomb:3250,Mexer,2015,FRA-Ligue 1,Rennes,statsbomb,CB,outfield,0,Stopper centre-back,0.3267,1.2201
+statsbomb:6727,Raúl Albentosa,2015,ESP-La Liga,Málaga,statsbomb,CB,outfield,0,Stopper centre-back,0.5829,1.2479
+statsbomb:24380,Tetchi Jores Charlemagne Ulrich Okore,2015,ENG-Premier League,Aston Villa,statsbomb,CB,outfield,0,Stopper centre-back,0.5247,1.2668
+statsbomb:5598,Óscar Duarte,2015,ESP-La Liga,Espanyol,statsbomb,CB,outfield,0,Stopper centre-back,0.6108,1.2732
+statsbomb:3300,Maya Yoshida,2015,ENG-Premier League,Southampton,statsbomb,CB,outfield,0,Stopper centre-back,0.3061,1.2749
+statsbomb:6861,Juan Cala,2015,ESP-La Liga,Getafe,statsbomb,CB,outfield,0,Stopper centre-back,0.4622,1.2832
+statsbomb:27144,Antonio Amaya,2015,ESP-La Liga,Rayo Vallecano,statsbomb,CB,outfield,0,Stopper centre-back,0.4956,1.2866
+statsbomb:29057,Renato Civelli,2015,FRA-Ligue 1,Lille,statsbomb,CB,outfield,0,Stopper centre-back,0.5456,1.2991
+statsbomb:5249,Diego Godín,2015,ESP-La Liga,Atlético Madrid,statsbomb,CB,outfield,0,Stopper centre-back,0.4812,1.3204
+statsbomb:4386,Damien Da Silva,2015,FRA-Ligue 1,Caen,statsbomb,CB,outfield,0,Stopper centre-back,0.4457,1.3278
+statsbomb:3207,Pablo Jean Antoine Martínez,2015,FRA-Ligue 1,Gazélec Ajaccio,statsbomb,FB,outfield,0,Stopper centre-back,0.2183,1.3293
+statsbomb:3065,Paul Dummett,2015,ENG-Premier League,Newcastle United,statsbomb,FB,outfield,0,Stopper centre-back,0.4602,1.3361
+statsbomb:9626,Tommy Elphick,2015,ENG-Premier League,Bournemouth,statsbomb,CB,outfield,0,Stopper centre-back,0.3142,1.3465
+statsbomb:401455,Mohamed Fofana,2015,FRA-Ligue 1,Reims,statsbomb,CB,outfield,0,Stopper centre-back,0.2825,1.3494
+statsbomb:27122,Simão,2015,ESP-La Liga,Levante,statsbomb,DM,outfield,0,Stopper centre-back,0.4955,1.3589
+statsbomb:7161,Germán Pezzella,2015,ESP-La Liga,Real Betis,statsbomb,CB,outfield,0,Stopper centre-back,0.5954,1.3592
+statsbomb:3124,Jérémy Sorbon,2015,FRA-Ligue 1,Guingamp,statsbomb,CB,outfield,0,Stopper centre-back,0.2874,1.3594
+statsbomb:7962,Andrea Ranocchia,2015,ITA-Serie A,Sampdoria,statsbomb,CB,outfield,0,Stopper centre-back,0.1154,1.3686
+statsbomb:7966,Filip Helander,2015,ITA-Serie A,Hellas Verona,statsbomb,CB,outfield,0,Stopper centre-back,0.4922,1.372
+statsbomb:6614,Alexis Ruano,2015,ESP-La Liga,Getafe,statsbomb,CB,outfield,0,Stopper centre-back,0.4188,1.3816
+statsbomb:6778,Iván Ramis,2015,ESP-La Liga,Eibar,statsbomb,CB,outfield,0,Stopper centre-back,0.4702,1.3848
+statsbomb:27403,Santiago Vergini,2015,ESP-La Liga,Getafe,statsbomb,CB,outfield,0,Stopper centre-back,0.3234,1.3874
+statsbomb:26481,Sébastien Squillaci,2015,FRA-Ligue 1,Bastia,statsbomb,CB,outfield,0,Stopper centre-back,0.4885,1.3887
+statsbomb:21212,Russell Martin,2015,ENG-Premier League,Norwich City,statsbomb,CB,outfield,0,Stopper centre-back,0.3829,1.3916
+statsbomb:16539,Diego Reyes,2015,ESP-La Liga,Real Sociedad,statsbomb,CB,outfield,0,Stopper centre-back,0.3426,1.3931
+statsbomb:3677,Adama Soumaoro,2015,FRA-Ligue 1,Lille,statsbomb,CB,outfield,0,Stopper centre-back,0.3685,1.394
+statsbomb:26207,Fabricio Coloccini,2015,ENG-Premier League,Newcastle United,statsbomb,CB,outfield,0,Stopper centre-back,0.234,1.4041
+statsbomb:3045,Ismaël Traoré,2015,FRA-Ligue 1,Angers,statsbomb,CB,outfield,0,Stopper centre-back,0.3342,1.4112
+statsbomb:387847,Leonardo Blanchard,2015,ITA-Serie A,Frosinone,statsbomb,CB,outfield,0,Stopper centre-back,0.5464,1.4384
+statsbomb:7052,Alessandro Gamberini,2015,ITA-Serie A,Chievo,statsbomb,CB,outfield,0,Stopper centre-back,0.5433,1.4411
+statsbomb:8421,Matteo Bianchetti,2015,ITA-Serie A,Hellas Verona,statsbomb,CB,outfield,0,Stopper centre-back,0.3467,1.4525
+statsbomb:3693,Damien Delaney,2015,ENG-Premier League,Crystal Palace,statsbomb,CB,outfield,0,Stopper centre-back,0.5354,1.4537
+statsbomb:42700,Micah Richards,2015,ENG-Premier League,Aston Villa,statsbomb,CB,outfield,0,Stopper centre-back,0.2365,1.4702
+statsbomb:2936,Christophe Kerbrat,2015,FRA-Ligue 1,Guingamp,statsbomb,CB,outfield,0,Stopper centre-back,0.2992,1.4756
+statsbomb:3044,Chancel Mbemba,2015,ENG-Premier League,Newcastle United,statsbomb,CB,outfield,0,Stopper centre-back,0.3568,1.4773
+statsbomb:6777,Sidnei,2015,ESP-La Liga,Deportivo La Coruña,statsbomb,CB,outfield,0,Stopper centre-back,0.3681,1.4905
+statsbomb:3174,Koffi Djidji,2015,FRA-Ligue 1,Nantes,statsbomb,CB,outfield,0,Stopper centre-back,0.2479,1.4964
+statsbomb:3309,Sebastian Prödl,2015,ENG-Premier League,Watford,statsbomb,CB,outfield,0,Stopper centre-back,0.5659,1.4972
+statsbomb:3674,Hilton,2015,FRA-Ligue 1,Montpellier,statsbomb,CB,outfield,0,Stopper centre-back,0.202,1.4979
+statsbomb:2975,Mathieu Deplagne,2015,FRA-Ligue 1,Montpellier,statsbomb,FB,outfield,0,Stopper centre-back,0.065,1.5059
+statsbomb:31721,Matteo Ciofani,2015,ITA-Serie A,Frosinone,statsbomb,FB,outfield,0,Stopper centre-back,0.3695,1.516
+statsbomb:4498,Jean-Sylvain Babin,2015,ESP-La Liga,Granada,statsbomb,CB,outfield,0,Stopper centre-back,0.3895,1.5268
+statsbomb:7808,Rodéric Filippi,2015,FRA-Ligue 1,Gazélec Ajaccio,statsbomb,CB,outfield,0,Stopper centre-back,0.4609,1.5377
+statsbomb:11012,Jonny Evans,2015,ENG-Premier League,West Bromwich Albion,statsbomb,CB,outfield,0,Stopper centre-back,0.3233,1.552
+statsbomb:16890,John O'Shea,2015,ENG-Premier League,Sunderland,statsbomb,CB,outfield,0,Stopper centre-back,0.575,1.557
+statsbomb:23324,Nicolas Sebastian Frey,2015,ITA-Serie A,Chievo,statsbomb,FB,outfield,0,Stopper centre-back,0.3461,1.562
+statsbomb:4802,Florentin Pogba,2015,FRA-Ligue 1,Saint-Étienne,statsbomb,CB,outfield,0,Stopper centre-back,0.3024,1.566
+statsbomb:23850,Mathieu Peybernes,2015,FRA-Ligue 1,Bastia,statsbomb,CB,outfield,0,Stopper centre-back,0.3621,1.5679
+statsbomb:3288,Miguel Britos,2015,ENG-Premier League,Watford,statsbomb,CB,outfield,0,Stopper centre-back,0.5607,1.5714
+statsbomb:7444,Alaeddine Yahia,2015,FRA-Ligue 1,Caen,statsbomb,CB,outfield,0,Stopper centre-back,0.5555,1.5744
+statsbomb:131849,Antoine Conte,2015,FRA-Ligue 1,Reims,statsbomb,CB,outfield,0,Stopper centre-back,0.009,1.5766
+statsbomb:4542,Pablo,2015,FRA-Ligue 1,Bordeaux,statsbomb,CB,outfield,0,Stopper centre-back,0.3228,1.581
+statsbomb:5588,Antonio Rukavina,2015,ESP-La Liga,Villarreal,statsbomb,FB,outfield,0,Stopper centre-back,0.1902,1.5815
+statsbomb:40350,Siniša Anđelković,2015,ITA-Serie A,Palermo,statsbomb,CB,outfield,0,Stopper centre-back,0.5232,1.5995
+statsbomb:3374,Andrea Raggi,2015,FRA-Ligue 1,Monaco,statsbomb,CB,outfield,0,Stopper centre-back,0.2915,1.612
+statsbomb:3813,Wes Morgan,2015,ENG-Premier League,Leicester City,statsbomb,CB,outfield,0,Stopper centre-back,0.5479,1.6313
+statsbomb:19454,Ricardo Costa,2015,ESP-La Liga,Granada,statsbomb,CB,outfield,0,Stopper centre-back,0.4191,1.6335
+statsbomb:27656,Carl Medjani,2015,ESP-La Liga,Levante,statsbomb,CB,outfield,0,Stopper centre-back,0.3023,1.6337
+statsbomb:3596,Gareth McAuley,2015,ENG-Premier League,West Bromwich Albion,statsbomb,CB,outfield,0,Stopper centre-back,0.5686,1.6356
+statsbomb:3645,Gary Cahill,2015,ENG-Premier League,Chelsea,statsbomb,CB,outfield,0,Stopper centre-back,0.3174,1.6376
+statsbomb:27482,Aderllan Santos,2015,ESP-La Liga,Valencia,statsbomb,CB,outfield,0,Stopper centre-back,0.2613,1.6424
+statsbomb:4746,Younès Kaboul,2015,ENG-Premier League,Sunderland,statsbomb,CB,outfield,0,Stopper centre-back,0.4982,1.6433
+statsbomb:387300,Cristian Zaccardo,2015,ITA-Serie A,Carpi,statsbomb,CB,outfield,0,Stopper centre-back,0.2253,1.6466
+statsbomb:6713,Diego Llorente,2015,ESP-La Liga,Rayo Vallecano,statsbomb,CB,outfield,0,Stopper centre-back,0.0692,1.6505
+statsbomb:3456,Kurt Zouma,2015,ENG-Premier League,Chelsea,statsbomb,CB,outfield,0,Stopper centre-back,0.3952,1.6688
+statsbomb:3651,Matt Targett,2015,ENG-Premier League,Southampton,statsbomb,FB,outfield,0,Stopper centre-back,0.1699,1.6689
+statsbomb:40426,Guglielmo Stendardo,2015,ITA-Serie A,Atalanta,statsbomb,CB,outfield,0,Stopper centre-back,0.4295,1.671
+statsbomb:6837,Mauro dos Santos,2015,ESP-La Liga,Eibar,statsbomb,CB,outfield,0,Stopper centre-back,0.5241,1.6864
+statsbomb:3448,Martin Kelly,2015,ENG-Premier League,Crystal Palace,statsbomb,FB,outfield,0,Stopper centre-back,0.1117,1.6892
+statsbomb:8848,Paolo Cannavaro,2015,ITA-Serie A,Sassuolo,statsbomb,CB,outfield,0,Stopper centre-back,0.351,1.6911
+statsbomb:27349,Heiko Westermann,2015,ESP-La Liga,Real Betis,statsbomb,CB,outfield,0,Stopper centre-back,0.4725,1.6924
+statsbomb:3263,Craig Cathcart,2015,ENG-Premier League,Watford,statsbomb,CB,outfield,0,Stopper centre-back,0.5089,1.6991
+statsbomb:5584,Giancarlo González,2015,ITA-Serie A,Palermo,statsbomb,CB,outfield,0,Stopper centre-back,0.4591,1.6998
+statsbomb:8102,Edoardo Goldaniga,2015,ITA-Serie A,Palermo,statsbomb,CB,outfield,0,Stopper centre-back,0.4662,1.7072
+statsbomb:3407,Scott Dann,2015,ENG-Premier League,Crystal Palace,statsbomb,CB,outfield,0,Stopper centre-back,0.4614,1.7155
+statsbomb:6938,Felipe,2015,ITA-Serie A,Udinese,statsbomb,CB,outfield,0,Stopper centre-back,0.3163,1.7281
+statsbomb:25881,Juan Rodríguez,2015,ESP-La Liga,Getafe,statsbomb,DM,outfield,0,Stopper centre-back,0.1458,1.7346
+statsbomb:401479,Calvin Anele Ngcongca,2015,FRA-Ligue 1,Troyes,statsbomb,CB,outfield,0,Stopper centre-back,0.3018,1.7363
+statsbomb:3769,Wesley Lautoa,2015,FRA-Ligue 1,Lorient,statsbomb,CB,outfield,0,Stopper centre-back,0.1471,1.7365
+statsbomb:8291,Arlind Afrim Ajeti,2015,ITA-Serie A,Frosinone,statsbomb,CB,outfield,0,Stopper centre-back,0.5614,1.738
+statsbomb:3160,Rene Krhin,2015,ESP-La Liga,Granada,statsbomb,DM,outfield,0,Stopper centre-back,0.3427,1.7416
+statsbomb:9930,Ryan Bennett,2015,ENG-Premier League,Norwich City,statsbomb,CB,outfield,0,Stopper centre-back,0.5017,1.7431
+statsbomb:9939,Maurício,2015,ITA-Serie A,Lazio,statsbomb,CB,outfield,0,Stopper centre-back,0.2688,1.7508
+statsbomb:40121,Philipp Wollscheid,2015,ENG-Premier League,Stoke City,statsbomb,CB,outfield,0,Stopper centre-back,0.0942,1.7627
+statsbomb:31296,Sébastien Bassong,2015,ENG-Premier League,Norwich City,statsbomb,CB,outfield,0,Stopper centre-back,0.4427,1.7713
+statsbomb:3081,Jamaal Lascelles,2015,ENG-Premier League,Newcastle United,statsbomb,CB,outfield,0,Stopper centre-back,0.3371,1.7844
+statsbomb:6894,Ezequiel Muñoz,2015,ITA-Serie A,Genoa,statsbomb,CB,outfield,0,Stopper centre-back,0.2394,1.7914
+statsbomb:7172,Simone Romagnoli,2015,ITA-Serie A,Carpi,statsbomb,CB,outfield,0,Stopper centre-back,0.5209,1.8244
+statsbomb:10958,Chris Smalling,2015,ENG-Premier League,Manchester United,statsbomb,CB,outfield,0,Stopper centre-back,0.1708,1.83
+statsbomb:40945,Alex Rodrigo Dias da Costa,2015,ITA-Serie A,AC Milan,statsbomb,CB,outfield,0,Stopper centre-back,0.1639,1.8341
+statsbomb:3253,Adil Rami,2015,ESP-La Liga,Sevilla,statsbomb,CB,outfield,0,Stopper centre-back,0.2453,1.846
+statsbomb:9628,James Grant Chester,2015,ENG-Premier League,West Bromwich Albion,statsbomb,FB,outfield,0,Stopper centre-back,0.1987,1.8919
+statsbomb:6647,Zouhair Feddal,2015,ESP-La Liga,Levante,statsbomb,CB,outfield,0,Stopper centre-back,0.3319,1.9065
+statsbomb:6992,Andrea Masiello,2015,ITA-Serie A,Atalanta,statsbomb,FB,outfield,0,Stopper centre-back,0.0133,1.9625
+statsbomb:23203,Stopilla Sunzu,2015,FRA-Ligue 1,Lille,statsbomb,CB,outfield,0,Stopper centre-back,0.343,1.9954
+statsbomb:6561,Luis Hernández,2015,ESP-La Liga,Sporting Gijón,statsbomb,CB,outfield,0,Stopper centre-back,0.2064,2.0478
+statsbomb:3035,Steeve Yago,2015,FRA-Ligue 1,Toulouse,statsbomb,FB,outfield,0,Stopper centre-back,0.0395,2.0758
+statsbomb:40351,Alessandro Gazzi,2015,ITA-Serie A,Torino,statsbomb,DM,outfield,0,Stopper centre-back,0.0476,2.0972
+statsbomb:17054,Emiliano Velázquez,2015,ESP-La Liga,Getafe,statsbomb,CB,outfield,0,Stopper centre-back,0.1976,2.117
+statsbomb:6300,Sebastián Coates,2015,ENG-Premier League,Sunderland,statsbomb,CB,outfield,0,Stopper centre-back,0.2936,2.1202
+statsbomb:3523,Craig Dawson,2015,ENG-Premier League,West Bromwich Albion,statsbomb,FB,outfield,0,Stopper centre-back,0.2958,2.1481
+statsbomb:6592,Rúben Vezo,2015,ESP-La Liga,Valencia,statsbomb,CB,outfield,0,Stopper centre-back,0.111,2.1576
+statsbomb:45590,Nicolò Cherubin,2015,ITA-Serie A,Atalanta,statsbomb,CB,outfield,0,Stopper centre-back,0.4422,2.186
+statsbomb:6573,Bernardo Espinosa,2015,ESP-La Liga,Sporting Gijón,statsbomb,CB,outfield,0,Stopper centre-back,0.4211,2.2095
+statsbomb:20527,Jonas Olsson,2015,ENG-Premier League,West Bromwich Albion,statsbomb,CB,outfield,0,Stopper centre-back,0.4488,2.2466
+statsbomb:3482,James Collins,2015,ENG-Premier League,West Ham United,statsbomb,CB,outfield,0,Stopper centre-back,0.3328,2.2891
+statsbomb:5656,Syam Ben Youssef,2015,FRA-Ligue 1,Caen,statsbomb,CB,outfield,0,Stopper centre-back,0.397,2.3019
+statsbomb:40517,Gilles Cioni,2015,FRA-Ligue 1,Bastia,statsbomb,FB,outfield,0,Stopper centre-back,0.117,2.3019
+statsbomb:40123,Robert Huth,2015,ENG-Premier League,Leicester City,statsbomb,CB,outfield,0,Stopper centre-back,0.4418,2.3335
+statsbomb:5737,Steven Nzonzi,2015,ESP-La Liga,Sevilla,statsbomb,DM,outfield,0,Stopper centre-back,0.0148,2.4064
+statsbomb:20199,Lars Jacobsen,2015,FRA-Ligue 1,Guingamp,statsbomb,FB,outfield,0,Stopper centre-back,0.0715,2.4072
+statsbomb:3637,Grzegorz Krychowiak,2015,ESP-La Liga,Sevilla,statsbomb,DM,outfield,0,Stopper centre-back,0.0549,2.4195
+statsbomb:27239,Aleksandar Pantić,2015,ESP-La Liga,Eibar,statsbomb,CB,outfield,0,Stopper centre-back,0.4394,2.4509
+statsbomb:3576,Martin Olsson,2015,ENG-Premier League,Norwich City,statsbomb,FB,outfield,0,Stopper centre-back,0.1109,2.4612
+statsbomb:7473,Lorenzo De Silvestri,2015,ITA-Serie A,Sampdoria,statsbomb,FB,outfield,0,Stopper centre-back,0.0918,2.5542
+statsbomb:3669,Virgil van Dijk,2015,ENG-Premier League,Southampton,statsbomb,CB,outfield,0,Stopper centre-back,0.0527,2.5825
+statsbomb:3121,Mustapha Diallo,2015,FRA-Ligue 1,Guingamp,statsbomb,DM,outfield,0,Stopper centre-back,0.0686,2.9906
+statsbomb:16332,Ognjen Vranješ,2015,ESP-La Liga,Sporting Gijón,statsbomb,FB,outfield,0,Stopper centre-back,0.1189,3.0977
+statsbomb:7283,Thiago Xavier,2015,FRA-Ligue 1,Troyes,statsbomb,DM,outfield,0,Stopper centre-back,0.0193,3.1012
+statsbomb:5489,Mile Jedinak,2015,ENG-Premier League,Crystal Palace,statsbomb,DM,outfield,0,Stopper centre-back,0.0351,3.7757
+statsbomb:19813,Rolando,2015,FRA-Ligue 1,Marseille,statsbomb,CB,outfield,1,Ball-playing centre-back,0.7344,0.5718
+statsbomb:20016,Pepe,2015,ESP-La Liga,Real Madrid,statsbomb,CB,outfield,1,Ball-playing centre-back,0.7114,0.712
+statsbomb:3101,Vincent Kompany,2015,ENG-Premier League,Manchester City,statsbomb,CB,outfield,1,Ball-playing centre-back,0.6444,0.7909
+statsbomb:3077,Jan Vertonghen,2015,ENG-Premier League,Tottenham Hotspur,statsbomb,CB,outfield,1,Ball-playing centre-back,0.6861,0.8229
+statsbomb:3103,Milan Biševac,2015,ITA-Serie A,Lazio,statsbomb,CB,outfield,1,Ball-playing centre-back,0.6356,0.8515
+statsbomb:7458,Alessio Romagnoli,2015,ITA-Serie A,AC Milan,statsbomb,CB,outfield,1,Ball-playing centre-back,0.4887,0.9181
+statsbomb:25931,Gonzalo Rodríguez,2015,ITA-Serie A,Fiorentina,statsbomb,CB,outfield,1,Ball-playing centre-back,0.685,0.9231
+statsbomb:3290,Federico Fernández,2015,ENG-Premier League,Swansea City,statsbomb,CB,outfield,1,Ball-playing centre-back,0.6154,0.9305
+statsbomb:7160,Lorenzo Tonelli,2015,ITA-Serie A,Empoli,statsbomb,CB,outfield,1,Ball-playing centre-back,0.5625,0.931
+statsbomb:3229,Maxime Le Marchand,2015,FRA-Ligue 1,Nice,statsbomb,CB,outfield,1,Ball-playing centre-back,0.6484,0.9493
+statsbomb:7119,Francesco Acerbi,2015,ITA-Serie A,Sassuolo,statsbomb,CB,outfield,1,Ball-playing centre-back,0.5081,0.9611
+statsbomb:40699,Sylvain Armand,2015,FRA-Ligue 1,Rennes,statsbomb,CB,outfield,1,Ball-playing centre-back,0.5792,0.9701
+statsbomb:10476,Kolo,2015,ESP-La Liga,Sevilla,statsbomb,CB,outfield,1,Ball-playing centre-back,0.5324,1.0037
+statsbomb:3960,José Fonte,2015,ENG-Premier League,Southampton,statsbomb,CB,outfield,1,Ball-playing centre-back,0.4352,1.0259
+statsbomb:3034,Kamil Glik,2015,ITA-Serie A,Torino,statsbomb,CB,outfield,1,Ball-playing centre-back,0.6039,1.0334
+statsbomb:401468,Moustapha Bayal Sall,2015,FRA-Ligue 1,Saint-Étienne,statsbomb,CB,outfield,1,Ball-playing centre-back,0.3457,1.0434
+statsbomb:5485,Raphaël Varane,2015,ESP-La Liga,Real Madrid,statsbomb,CB,outfield,1,Ball-playing centre-back,0.5056,1.0533
+statsbomb:3256,Nicolas Pallois,2015,FRA-Ligue 1,Bordeaux,statsbomb,CB,outfield,1,Ball-playing centre-back,0.2948,1.0849
+statsbomb:5201,Sergio Ramos,2015,ESP-La Liga,Real Madrid,statsbomb,CB,outfield,1,Ball-playing centre-back,0.6453,1.0855
+statsbomb:7472,Nicolas N'Koulou,2015,FRA-Ligue 1,Marseille,statsbomb,CB,outfield,1,Ball-playing centre-back,0.4019,1.1421
+statsbomb:7435,Anthony Weber,2015,FRA-Ligue 1,Reims,statsbomb,CB,outfield,1,Ball-playing centre-back,0.1135,1.1631
+statsbomb:8572,Karim Rekik,2015,FRA-Ligue 1,Marseille,statsbomb,CB,outfield,1,Ball-playing centre-back,0.6271,1.1649
+statsbomb:6585,Jeison Murillo,2015,ITA-Serie A,Inter Milan,statsbomb,CB,outfield,1,Ball-playing centre-back,0.4635,1.1721
+statsbomb:7498,Mickaël Tacalfred,2015,FRA-Ligue 1,Reims,statsbomb,CB,outfield,1,Ball-playing centre-back,0.325,1.2217
+statsbomb:5551,João Miranda de Souza Filho,2015,ITA-Serie A,Inter Milan,statsbomb,CB,outfield,1,Ball-playing centre-back,0.1251,1.2233
+statsbomb:19288,Martín Demichelis,2015,ENG-Premier League,Manchester City,statsbomb,CB,outfield,1,Ball-playing centre-back,0.3884,1.2236
+statsbomb:4353,Aymeric Laporte,2015,ESP-La Liga,Athletic Club,statsbomb,CB,outfield,1,Ball-playing centre-back,0.427,1.2374
+statsbomb:3588,Wesley Hoedt,2015,ITA-Serie A,Lazio,statsbomb,CB,outfield,1,Ball-playing centre-back,0.1486,1.2504
+statsbomb:3644,Ashley Williams,2015,ENG-Premier League,Swansea City,statsbomb,CB,outfield,1,Ball-playing centre-back,0.486,1.267
+statsbomb:6648,Aïssa Mandi,2015,FRA-Ligue 1,Reims,statsbomb,CB,outfield,1,Ball-playing centre-back,0.0844,1.2807
+statsbomb:3244,John Stones,2015,ENG-Premier League,Everton,statsbomb,CB,outfield,1,Ball-playing centre-back,0.5537,1.2866
+statsbomb:20046,Phil Jagielka,2015,ENG-Premier League,Everton,statsbomb,CB,outfield,1,Ball-playing centre-back,0.3125,1.3147
+statsbomb:22819,Bruno Soriano,2015,ESP-La Liga,Villarreal,statsbomb,DM,outfield,1,Ball-playing centre-back,0.3042,1.324
+statsbomb:7048,Konstantinos Manolas,2015,ITA-Serie A,AS Roma,statsbomb,CB,outfield,1,Ball-playing centre-back,0.3146,1.3352
+statsbomb:20005,Toby Alderweireld,2015,ENG-Premier League,Tottenham Hotspur,statsbomb,CB,outfield,1,Ball-playing centre-back,0.476,1.3439
+statsbomb:13730,Matthieu Saunier,2015,FRA-Ligue 1,Troyes,statsbomb,CB,outfield,1,Ball-playing centre-back,0.3283,1.3664
+statsbomb:4463,Mapou Yanga-Mbiwa,2015,FRA-Ligue 1,Lyon,statsbomb,CB,outfield,1,Ball-playing centre-back,0.5625,1.3786
+statsbomb:3167,Antonio Rüdiger,2015,ITA-Serie A,AS Roma,statsbomb,CB,outfield,1,Ball-playing centre-back,0.5018,1.3825
+statsbomb:3753,Pedro Mendes,2015,FRA-Ligue 1,Rennes,statsbomb,CB,outfield,1,Ball-playing centre-back,0.1108,1.392
+statsbomb:10805,Ricardo Carvalho,2015,FRA-Ligue 1,Monaco,statsbomb,CB,outfield,1,Ball-playing centre-back,0.2947,1.3971
+statsbomb:8847,Santiago Gentiletti,2015,ITA-Serie A,Lazio,statsbomb,CB,outfield,1,Ball-playing centre-back,0.4149,1.3989
+statsbomb:8440,Aythami Artiles,2015,ESP-La Liga,Las Palmas,statsbomb,CB,outfield,1,Ball-playing centre-back,0.3822,1.4093
+statsbomb:6746,Gabriel Paulista,2015,ENG-Premier League,Arsenal,statsbomb,CB,outfield,1,Ball-playing centre-back,0.5174,1.4117
+statsbomb:3424,Cheikh M'Bengue,2015,FRA-Ligue 1,Rennes,statsbomb,FB,outfield,1,Ball-playing centre-back,0.1716,1.4149
+statsbomb:3394,Laurent Koscielny,2015,ENG-Premier League,Arsenal,statsbomb,CB,outfield,1,Ball-playing centre-back,0.4787,1.424
+statsbomb:6927,David García,2015,ESP-La Liga,Las Palmas,statsbomb,FB,outfield,1,Ball-playing centre-back,0.1871,1.4331
+statsbomb:10609,Jérémy Mathieu,2015,ESP-La Liga,Barcelona,statsbomb,CB,outfield,1,Ball-playing centre-back,0.5427,1.4407
+statsbomb:42422,Dušan Veškovac,2015,FRA-Ligue 1,Troyes,statsbomb,CB,outfield,1,Ball-playing centre-back,0.2769,1.4864
+statsbomb:5202,Nacho,2015,ESP-La Liga,Real Madrid,statsbomb,CB,outfield,1,Ball-playing centre-back,0.2223,1.489
+statsbomb:7603,Jérémie Bréchet,2015,FRA-Ligue 1,Gazélec Ajaccio,statsbomb,CB,outfield,1,Ball-playing centre-back,0.1177,1.4896
+statsbomb:4373,Mathieu Bodmer,2015,FRA-Ligue 1,Nice,statsbomb,CB,outfield,1,Ball-playing centre-back,0.4427,1.5049
+statsbomb:7907,Pedro Bigas,2015,ESP-La Liga,Las Palmas,statsbomb,CB,outfield,1,Ball-playing centre-back,0.2834,1.5107
+statsbomb:6953,Daniele Rugani,2015,ITA-Serie A,Juventus,statsbomb,CB,outfield,1,Ball-playing centre-back,0.4857,1.5425
+statsbomb:6804,Sergi Gómez,2015,ESP-La Liga,Celta Vigo,statsbomb,CB,outfield,1,Ball-playing centre-back,0.2952,1.5498
+statsbomb:8664,Andrea Costa,2015,ITA-Serie A,Empoli,statsbomb,CB,outfield,1,Ball-playing centre-back,0.4775,1.5616
+statsbomb:9884,Niklas Moisander,2015,ITA-Serie A,Sampdoria,statsbomb,CB,outfield,1,Ball-playing centre-back,0.1745,1.5713
+statsbomb:8849,Domenico Maietta,2015,ITA-Serie A,Bologna,statsbomb,CB,outfield,1,Ball-playing centre-back,0.1436,1.5713
+statsbomb:7056,Nenad Tomović,2015,ITA-Serie A,Fiorentina,statsbomb,CB,outfield,1,Ball-playing centre-back,0.4794,1.5891
+statsbomb:5594,Branislav Ivanović,2015,ENG-Premier League,Chelsea,statsbomb,FB,outfield,1,Ball-playing centre-back,0.0203,1.6066
+statsbomb:26448,Javier Garrido,2015,ESP-La Liga,Las Palmas,statsbomb,FB,outfield,1,Ball-playing centre-back,0.3463,1.6122
+statsbomb:7476,Emiliano Moretti,2015,ITA-Serie A,Torino,statsbomb,CB,outfield,1,Ball-playing centre-back,0.436,1.6133
+statsbomb:18872,Martin Škrtel,2015,ENG-Premier League,Liverpool,statsbomb,CB,outfield,1,Ball-playing centre-back,0.4391,1.6138
+statsbomb:6827,Daniele Bonera,2015,ESP-La Liga,Villarreal,statsbomb,CB,outfield,1,Ball-playing centre-back,0.2968,1.6209
+statsbomb:5492,Samuel Umtiti,2015,FRA-Ligue 1,Lyon,statsbomb,CB,outfield,1,Ball-playing centre-back,0.5742,1.6221
+statsbomb:30447,Jean-Armel Kana-Biyik,2015,FRA-Ligue 1,Toulouse,statsbomb,CB,outfield,1,Ball-playing centre-back,0.1681,1.6809
+statsbomb:6943,Andrea Barzagli,2015,ITA-Serie A,Juventus,statsbomb,CB,outfield,1,Ball-playing centre-back,0.5007,1.6812
+statsbomb:8275,Davide Astori,2015,ITA-Serie A,Fiorentina,statsbomb,CB,outfield,1,Ball-playing centre-back,0.5418,1.7035
+statsbomb:7019,Matías Silvestre,2015,ITA-Serie A,Sampdoria,statsbomb,CB,outfield,1,Ball-playing centre-back,0.18,1.7053
+statsbomb:7173,Leonardo Bonucci,2015,ITA-Serie A,Juventus,statsbomb,CB,outfield,1,Ball-playing centre-back,0.5335,1.712
+statsbomb:6752,Víctor Ruíz,2015,ESP-La Liga,Villarreal,statsbomb,CB,outfield,1,Ball-playing centre-back,0.1079,1.7158
+statsbomb:3389,Eliaquim Mangala,2015,ENG-Premier League,Manchester City,statsbomb,CB,outfield,1,Ball-playing centre-back,0.0457,1.7238
+statsbomb:7211,Zargo Touré,2015,FRA-Ligue 1,Lorient,statsbomb,CB,outfield,1,Ball-playing centre-back,0.0212,1.7345
+statsbomb:387417,Mattia Cassani,2015,ITA-Serie A,Sampdoria,statsbomb,CB,outfield,1,Ball-playing centre-back,0.0313,1.7661
+statsbomb:7137,Ervin Zukanović,2015,ITA-Serie A,Sampdoria,statsbomb,CB,outfield,1,Ball-playing centre-back,0.2445,1.768
+statsbomb:26222,Zé Castro,2015,ESP-La Liga,Rayo Vallecano,statsbomb,CB,outfield,1,Ball-playing centre-back,0.2588,1.812
+statsbomb:7155,Vincent Laurini,2015,ITA-Serie A,Empoli,statsbomb,FB,outfield,1,Ball-playing centre-back,0.1389,1.8177
+statsbomb:7030,Raúl Albiol,2015,ITA-Serie A,Napoli,statsbomb,CB,outfield,1,Ball-playing centre-back,0.5487,1.854
+statsbomb:4443,Paul Baysse,2015,FRA-Ligue 1,Nice,statsbomb,CB,outfield,1,Ball-playing centre-back,0.3387,1.8665
+statsbomb:3471,Dejan Lovren,2015,ENG-Premier League,Liverpool,statsbomb,CB,outfield,1,Ball-playing centre-back,0.2126,1.8747
+statsbomb:3475,Per Mertesacker,2015,ENG-Premier League,Arsenal,statsbomb,CB,outfield,1,Ball-playing centre-back,0.4385,1.9026
+statsbomb:40427,Cesare Bovo,2015,ITA-Serie A,Torino,statsbomb,CB,outfield,1,Ball-playing centre-back,0.2608,1.9042
+statsbomb:3341,Steve Cook,2015,ENG-Premier League,Bournemouth,statsbomb,CB,outfield,1,Ball-playing centre-back,0.0372,1.9608
+statsbomb:6954,Giorgio Chiellini,2015,ITA-Serie A,Juventus,statsbomb,CB,outfield,1,Ball-playing centre-back,0.4336,1.9955
+statsbomb:3973,Àngel Rangel,2015,ENG-Premier League,Swansea City,statsbomb,FB,outfield,1,Ball-playing centre-back,0.2801,2.0148
+statsbomb:6665,Íñigo Martínez,2015,ESP-La Liga,Real Sociedad,statsbomb,CB,outfield,1,Ball-playing centre-back,0.0666,2.0428
+statsbomb:20287,John Terry,2015,ENG-Premier League,Chelsea,statsbomb,CB,outfield,1,Ball-playing centre-back,0.0787,2.0543
+statsbomb:4629,Ramiro Funes Mori,2015,ENG-Premier League,Everton,statsbomb,CB,outfield,1,Ball-playing centre-back,0.3527,2.064
+statsbomb:2971,Romain Genevois,2015,FRA-Ligue 1,Nice,statsbomb,CB,outfield,1,Ball-playing centre-back,0.2194,2.0968
+statsbomb:6794,Gustavo Cabral,2015,ESP-La Liga,Celta Vigo,statsbomb,CB,outfield,1,Ball-playing centre-back,0.3558,2.1034
+statsbomb:7857,Brice Dja Djédjé,2015,FRA-Ligue 1,Marseille,statsbomb,FB,outfield,1,Ball-playing centre-back,0.037,2.1333
+statsbomb:4751,Michael Carrick,2015,ENG-Premier League,Manchester United,statsbomb,DM,outfield,1,Ball-playing centre-back,0.2528,2.1662
+statsbomb:3483,Mamadou Sakho,2015,ENG-Premier League,Liverpool,statsbomb,CB,outfield,1,Ball-playing centre-back,0.3695,2.2422
+statsbomb:40523,Marko Baša,2015,FRA-Ligue 1,Lille,statsbomb,CB,outfield,1,Ball-playing centre-back,0.1033,2.27
+statsbomb:7110,Bacary Sagna,2015,ENG-Premier League,Manchester City,statsbomb,FB,outfield,1,Ball-playing centre-back,0.2091,2.2707
+statsbomb:8876,Faouzi Ghoulam,2015,ITA-Serie A,Napoli,statsbomb,FB,outfield,1,Ball-playing centre-back,0.0853,2.3591
+statsbomb:3090,Nicolás Otamendi,2015,ENG-Premier League,Manchester City,statsbomb,CB,outfield,1,Ball-playing centre-back,0.2052,2.4114
+statsbomb:4263,Loïc Perrin,2015,FRA-Ligue 1,Saint-Étienne,statsbomb,CB,outfield,1,Ball-playing centre-back,0.1889,2.4716
+statsbomb:5675,Kalidou Koulibaly,2015,ITA-Serie A,Napoli,statsbomb,CB,outfield,1,Ball-playing centre-back,0.3318,2.5397
+statsbomb:3638,Shkodran Mustafi,2015,ESP-La Liga,Valencia,statsbomb,CB,outfield,1,Ball-playing centre-back,0.0434,2.5418
+statsbomb:7051,Daniele De Rossi,2015,ITA-Serie A,AS Roma,statsbomb,DM,outfield,1,Ball-playing centre-back,0.1237,2.6192
+statsbomb:5213,Gerard Piqué,2015,ESP-La Liga,Barcelona,statsbomb,CB,outfield,1,Ball-playing centre-back,0.4229,2.6403
+statsbomb:4372,Marquinhos,2015,FRA-Ligue 1,Paris Saint-Germain,statsbomb,CB,outfield,1,Ball-playing centre-back,0.212,2.9617
+statsbomb:5506,Javier Mascherano,2015,ESP-La Liga,Barcelona,statsbomb,CB,outfield,1,Ball-playing centre-back,0.1719,3.0746
+statsbomb:3956,David Luiz,2015,FRA-Ligue 1,Paris Saint-Germain,statsbomb,CB,outfield,1,Ball-playing centre-back,0.2127,3.0793
+statsbomb:3295,Thiago Silva,2015,FRA-Ligue 1,Paris Saint-Germain,statsbomb,CB,outfield,1,Ball-playing centre-back,0.3706,3.0946
+statsbomb:6984,Danilo D'Ambrosio,2015,ITA-Serie A,Inter Milan,statsbomb,FB,outfield,2,Defensive full-back,0.654,0.5709
+statsbomb:11298,Nacho Martínez,2015,ESP-La Liga,Rayo Vallecano,statsbomb,FB,outfield,2,Defensive full-back,0.641,0.6752
+statsbomb:27054,Roberto Lago,2015,ESP-La Liga,Getafe,statsbomb,FB,outfield,2,Defensive full-back,0.6858,0.7037
+statsbomb:6865,Francisco Molinero,2015,ESP-La Liga,Real Betis,statsbomb,FB,outfield,2,Defensive full-back,0.6568,0.7344
+statsbomb:3205,Kyle Walker,2015,ENG-Premier League,Tottenham Hotspur,statsbomb,FB,outfield,2,Defensive full-back,0.7013,0.7381
+statsbomb:7197,Steven Moreira,2015,FRA-Ligue 1,Rennes,statsbomb,FB,outfield,2,Defensive full-back,0.5795,0.832
+statsbomb:6789,Mikel Balenziaga,2015,ESP-La Liga,Athletic Club,statsbomb,FB,outfield,2,Defensive full-back,0.607,0.8464
+statsbomb:8645,Massimo Gobbi,2015,ITA-Serie A,Chievo,statsbomb,FB,outfield,2,Defensive full-back,0.6521,0.8532
+statsbomb:3144,Léo Dubois,2015,FRA-Ligue 1,Nantes,statsbomb,FB,outfield,2,Defensive full-back,0.5624,0.8624
+statsbomb:3203,Yoann Andreu,2015,FRA-Ligue 1,Angers,statsbomb,FB,outfield,2,Defensive full-back,0.6049,0.8675
+statsbomb:44065,William Matheus,2015,FRA-Ligue 1,Toulouse,statsbomb,FB,outfield,2,Defensive full-back,0.6415,0.8739
+statsbomb:3650,Daryl Janmaat,2015,ENG-Premier League,Newcastle United,statsbomb,FB,outfield,2,Defensive full-back,0.6475,0.875
+statsbomb:7169,Adam Masina,2015,ITA-Serie A,Bologna,statsbomb,FB,outfield,2,Defensive full-back,0.5894,0.8951
+statsbomb:4628,Diego Contento,2015,FRA-Ligue 1,Bordeaux,statsbomb,FB,outfield,2,Defensive full-back,0.5654,0.9041
+statsbomb:27558,Elderson Uwa Echiejile,2015,FRA-Ligue 1,Monaco,statsbomb,FB,outfield,2,Defensive full-back,0.556,0.9135
+statsbomb:6663,Antonio Barragán,2015,ESP-La Liga,Valencia,statsbomb,FB,outfield,2,Defensive full-back,0.5824,0.9679
+statsbomb:6335,Lamine Gassama,2015,FRA-Ligue 1,Lorient,statsbomb,FB,outfield,2,Defensive full-back,0.5417,0.9812
+statsbomb:9642,Alan Hutton,2015,ENG-Premier League,Aston Villa,statsbomb,FB,outfield,2,Defensive full-back,0.6216,0.9855
+statsbomb:6772,Mario Gaspar,2015,ESP-La Liga,Villarreal,statsbomb,FB,outfield,2,Defensive full-back,0.4125,0.9923
+statsbomb:11722,Boukary Dramé,2015,ITA-Serie A,Atalanta,statsbomb,FB,outfield,2,Defensive full-back,0.4793,1.0153
+statsbomb:6944,Mattia De Sciglio,2015,ITA-Serie A,AC Milan,statsbomb,FB,outfield,2,Defensive full-back,0.5508,1.0251
+statsbomb:26633,Alberto Lora,2015,ESP-La Liga,Sporting Gijón,statsbomb,FB,outfield,2,Defensive full-back,0.5825,1.0364
+statsbomb:4508,Julian Palmieri,2015,FRA-Ligue 1,Bastia,statsbomb,FB,outfield,2,Defensive full-back,0.4535,1.0542
+statsbomb:6569,Roberto Rosales,2015,ESP-La Liga,Málaga,statsbomb,FB,outfield,2,Defensive full-back,0.5577,1.0752
+statsbomb:6375,Juanfran,2015,ESP-La Liga,Atlético Madrid,statsbomb,FB,outfield,2,Defensive full-back,0.6023,1.0878
+statsbomb:27335,Arthur Boka,2015,ESP-La Liga,Málaga,statsbomb,FB,outfield,2,Defensive full-back,0.5171,1.0912
+statsbomb:7906,David Simón,2015,ESP-La Liga,Las Palmas,statsbomb,FB,outfield,2,Defensive full-back,0.4844,1.0976
+statsbomb:4429,Yann M'Vila,2015,ENG-Premier League,Sunderland,statsbomb,CM,outfield,2,Defensive full-back,0.2731,1.1422
+statsbomb:7695,Samuel Souprayen,2015,ITA-Serie A,Hellas Verona,statsbomb,FB,outfield,2,Defensive full-back,0.5263,1.1454
+statsbomb:20045,Ryan Bertrand,2015,ENG-Premier League,Southampton,statsbomb,FB,outfield,2,Defensive full-back,0.4663,1.1638
+statsbomb:6627,Damián Suárez,2015,ESP-La Liga,Getafe,statsbomb,FB,outfield,2,Defensive full-back,0.5101,1.1685
+statsbomb:6674,Alberto de la Bella,2015,ESP-La Liga,Real Sociedad,statsbomb,FB,outfield,2,Defensive full-back,0.4083,1.1773
+statsbomb:6913,Fernando Navarro,2015,ESP-La Liga,Deportivo La Coruña,statsbomb,FB,outfield,2,Defensive full-back,0.5329,1.1821
+statsbomb:3075,Javi Manquillo,2015,FRA-Ligue 1,Marseille,statsbomb,FB,outfield,2,Defensive full-back,0.3968,1.1828
+statsbomb:7118,Federico Peluso,2015,ITA-Serie A,Sassuolo,statsbomb,FB,outfield,2,Defensive full-back,0.3566,1.1933
+statsbomb:6849,Lucas Digne,2015,ITA-Serie A,AS Roma,statsbomb,FB,outfield,2,Defensive full-back,0.4471,1.2011
+statsbomb:6914,Tito,2015,ESP-La Liga,Rayo Vallecano,statsbomb,FB,outfield,2,Defensive full-back,0.3269,1.2251
+statsbomb:9533,Leandro Bacuna,2015,ENG-Premier League,Aston Villa,statsbomb,FB,outfield,2,Defensive full-back,0.382,1.2271
+statsbomb:4442,Maxime Poundjé,2015,FRA-Ligue 1,Bordeaux,statsbomb,FB,outfield,2,Defensive full-back,0.2076,1.237
+statsbomb:6802,Jonny Castro,2015,ESP-La Liga,Celta Vigo,statsbomb,FB,outfield,2,Defensive full-back,0.4296,1.2373
+statsbomb:24061,Aljaž Struna,2015,ITA-Serie A,Palermo,statsbomb,FB,outfield,2,Defensive full-back,0.4169,1.2396
+statsbomb:23800,Laure,2015,ESP-La Liga,Deportivo La Coruña,statsbomb,FB,outfield,2,Defensive full-back,0.4447,1.2445
+statsbomb:6716,Sébastien Corchia,2015,FRA-Ligue 1,Lille,statsbomb,FB,outfield,2,Defensive full-back,0.5042,1.2543
+statsbomb:8874,Luca Antonelli,2015,ITA-Serie A,AC Milan,statsbomb,FB,outfield,2,Defensive full-back,0.2831,1.2565
+statsbomb:6787,Pedro López,2015,ESP-La Liga,Levante,statsbomb,FB,outfield,2,Defensive full-back,0.452,1.2629
+statsbomb:6596,José Gayá,2015,ESP-La Liga,Valencia,statsbomb,FB,outfield,2,Defensive full-back,0.4164,1.2661
+statsbomb:4249,Wilfried Moimbé,2015,FRA-Ligue 1,Nantes,statsbomb,FB,outfield,2,Defensive full-back,0.5128,1.2742
+statsbomb:6738,Juanfran,2015,ESP-La Liga,Deportivo La Coruña,statsbomb,FB,outfield,2,Defensive full-back,0.5127,1.281
+statsbomb:6805,Hugo Mallo,2015,ESP-La Liga,Celta Vigo,statsbomb,FB,outfield,2,Defensive full-back,0.3649,1.2942
+statsbomb:3024,François Moubandje,2015,FRA-Ligue 1,Toulouse,statsbomb,FB,outfield,2,Defensive full-back,0.4239,1.2977
+statsbomb:4546,Dimitri Foulquier,2015,ESP-La Liga,Granada,statsbomb,FB,outfield,2,Defensive full-back,0.4779,1.2982
+statsbomb:5461,Šime Vrsaljko,2015,ITA-Serie A,Sassuolo,statsbomb,FB,outfield,2,Defensive full-back,0.4668,1.3038
+statsbomb:6679,Aritz Elustondo,2015,ESP-La Liga,Real Sociedad,statsbomb,FB,outfield,2,Defensive full-back,0.315,1.3064
+statsbomb:3247,Fabinho,2015,FRA-Ligue 1,Monaco,statsbomb,FB,outfield,2,Defensive full-back,0.0717,1.3093
+statsbomb:40521,Franck Signorino,2015,FRA-Ligue 1,Reims,statsbomb,FB,outfield,2,Defensive full-back,0.1868,1.3095
+statsbomb:3594,Danny Rose,2015,ENG-Premier League,Tottenham Hotspur,statsbomb,FB,outfield,2,Defensive full-back,0.3945,1.3191
+statsbomb:3047,Benoît Assou-Ekotto,2015,FRA-Ligue 1,Saint-Étienne,statsbomb,FB,outfield,2,Defensive full-back,0.4424,1.3282
+statsbomb:7347,Pierre-Yves Polomat,2015,FRA-Ligue 1,Saint-Étienne,statsbomb,FB,outfield,2,Defensive full-back,0.2705,1.3391
+statsbomb:7164,Ibrahima M'baye,2015,ITA-Serie A,Bologna,statsbomb,FB,outfield,2,Defensive full-back,0.1072,1.3915
+statsbomb:6560,Marc Muniesa,2015,ENG-Premier League,Stoke City,statsbomb,CB,outfield,2,Defensive full-back,0.3215,1.3939
+statsbomb:27146,Aly Cissokho,2015,ENG-Premier League,Aston Villa,statsbomb,FB,outfield,2,Defensive full-back,0.1276,1.3994
+statsbomb:6605,Joseba Zaldúa,2015,ESP-La Liga,Real Sociedad,statsbomb,FB,outfield,2,Defensive full-back,0.3951,1.4032
+statsbomb:3443,Joel Ward,2015,ENG-Premier League,Crystal Palace,statsbomb,FB,outfield,2,Defensive full-back,0.1118,1.404
+statsbomb:6593,Martín Montoya,2015,ESP-La Liga,Real Betis,statsbomb,FB,outfield,2,Defensive full-back,0.2074,1.4315
+statsbomb:3321,Patrick van Aanholt,2015,ENG-Premier League,Sunderland,statsbomb,FB,outfield,2,Defensive full-back,0.2701,1.4523
+statsbomb:6935,Adrián Marín,2015,ESP-La Liga,Villarreal,statsbomb,FB,outfield,2,Defensive full-back,0.4279,1.4557
+statsbomb:24263,Isma López,2015,ESP-La Liga,Sporting Gijón,statsbomb,FB,outfield,2,Defensive full-back,0.4371,1.4643
+statsbomb:5219,Romain Saïss,2015,FRA-Ligue 1,Angers,statsbomb,DM,outfield,2,Defensive full-back,0.0964,1.4735
+statsbomb:6776,David Juncà,2015,ESP-La Liga,Eibar,statsbomb,FB,outfield,2,Defensive full-back,0.5133,1.4756
+statsbomb:4474,Emmanuel Imorou,2015,FRA-Ligue 1,Caen,statsbomb,FB,outfield,2,Defensive full-back,0.434,1.5029
+statsbomb:2946,Frédéric Guilbert,2015,FRA-Ligue 1,Bordeaux,statsbomb,CB,outfield,2,Defensive full-back,0.1543,1.5036
+statsbomb:18162,Chris Mavinga,2015,FRA-Ligue 1,Troyes,statsbomb,FB,outfield,2,Defensive full-back,0.1128,1.5117
+statsbomb:6675,Antonio Luna,2015,ESP-La Liga,Eibar,statsbomb,FB,outfield,2,Defensive full-back,0.4586,1.5159
+statsbomb:3023,Yuri Berchiche,2015,ESP-La Liga,Real Sociedad,statsbomb,FB,outfield,2,Defensive full-back,0.4631,1.5321
+statsbomb:3498,Nacho Monreal,2015,ENG-Premier League,Arsenal,statsbomb,FB,outfield,2,Defensive full-back,0.1413,1.5322
+statsbomb:6672,Coke,2015,ESP-La Liga,Sevilla,statsbomb,FB,outfield,2,Defensive full-back,0.3001,1.5333
+statsbomb:3431,Vincent Manceau,2015,FRA-Ligue 1,Angers,statsbomb,FB,outfield,2,Defensive full-back,0.2984,1.5448
+statsbomb:3329,Cédric Soares,2015,ENG-Premier League,Southampton,statsbomb,FB,outfield,2,Defensive full-back,0.3993,1.549
+statsbomb:11342,Eros Pisano,2015,ITA-Serie A,Hellas Verona,statsbomb,FB,outfield,2,Defensive full-back,0.2836,1.5507
+statsbomb:3480,Geoff Cameron,2015,ENG-Premier League,Stoke City,statsbomb,CB,outfield,2,Defensive full-back,0.033,1.5531
+statsbomb:46670,Iván Piris,2015,ITA-Serie A,Udinese,statsbomb,CB,outfield,2,Defensive full-back,0.2486,1.5622
+statsbomb:296873,Roberto Crivello,2015,ITA-Serie A,Frosinone,statsbomb,FB,outfield,2,Defensive full-back,0.3583,1.5644
+statsbomb:8443,Dušan Basta,2015,ITA-Serie A,Lazio,statsbomb,FB,outfield,2,Defensive full-back,0.2606,1.5653
+statsbomb:21254,Carl Jenkinson,2015,ENG-Premier League,West Ham United,statsbomb,FB,outfield,2,Defensive full-back,0.2212,1.569
+statsbomb:3248,Hamari Traoré,2015,FRA-Ligue 1,Reims,statsbomb,FB,outfield,2,Defensive full-back,0.4114,1.5706
+statsbomb:8801,Iván López,2015,ESP-La Liga,Levante,statsbomb,FB,outfield,2,Defensive full-back,0.4078,1.5755
+statsbomb:6649,De Marcos,2015,ESP-La Liga,Athletic Club,statsbomb,FB,outfield,2,Defensive full-back,0.2409,1.578
+statsbomb:3602,Marcos Rojo,2015,ENG-Premier League,Manchester United,statsbomb,FB,outfield,2,Defensive full-back,0.3483,1.578
+statsbomb:7479,Cristian Molinaro,2015,ITA-Serie A,Torino,statsbomb,FB,outfield,2,Defensive full-back,0.2717,1.5805
+statsbomb:4475,Romain Danzé,2015,FRA-Ligue 1,Rennes,statsbomb,FB,outfield,2,Defensive full-back,0.1661,1.5856
+statsbomb:6969,Juan Jesus,2015,ITA-Serie A,Inter Milan,statsbomb,CB,outfield,2,Defensive full-back,0.1323,1.5864
+statsbomb:4590,Nathaniel Clyne,2015,ENG-Premier League,Liverpool,statsbomb,FB,outfield,2,Defensive full-back,0.2198,1.5927
+statsbomb:7158,Cristiano Biraghi,2015,ESP-La Liga,Granada,statsbomb,FB,outfield,2,Defensive full-back,0.2801,1.6027
+statsbomb:21210,Mariano,2015,ESP-La Liga,Sevilla,statsbomb,FB,outfield,2,Defensive full-back,0.4319,1.6074
+statsbomb:5836,Bryan Oviedo,2015,ENG-Premier League,Everton,statsbomb,FB,outfield,2,Defensive full-back,0.3692,1.6092
+statsbomb:3086,Ben Davies,2015,ENG-Premier League,Tottenham Hotspur,statsbomb,FB,outfield,2,Defensive full-back,0.3399,1.6114
+statsbomb:6784,Toño,2015,ESP-La Liga,Levante,statsbomb,FB,outfield,2,Defensive full-back,0.4985,1.6195
+statsbomb:30182,Dorian Lévêque,2015,FRA-Ligue 1,Guingamp,statsbomb,FB,outfield,2,Defensive full-back,0.2369,1.6195
+statsbomb:7166,Riccardo Montolivo,2015,ITA-Serie A,AC Milan,statsbomb,DM,outfield,2,Defensive full-back,0.0151,1.6318
+statsbomb:25116,Edenilson,2015,ITA-Serie A,Udinese,statsbomb,FB,outfield,2,Defensive full-back,0.2482,1.6467
+statsbomb:3416,Gabriel Silva,2015,ITA-Serie A,Carpi,statsbomb,FB,outfield,2,Defensive full-back,0.3461,1.6471
+statsbomb:7428,Alexandre Coeff,2015,FRA-Ligue 1,Gazélec Ajaccio,statsbomb,FB,outfield,2,Defensive full-back,0.3619,1.6514
+statsbomb:7462,Aleandro Rosi,2015,ITA-Serie A,Frosinone,statsbomb,FB,outfield,2,Defensive full-back,0.1794,1.6551
+statsbomb:3467,Erik Pieters,2015,ENG-Premier League,Stoke City,statsbomb,FB,outfield,2,Defensive full-back,0.2942,1.6583
+statsbomb:26752,Mouhamadou Dabo,2015,FRA-Ligue 1,Troyes,statsbomb,FB,outfield,2,Defensive full-back,0.1618,1.6585
+statsbomb:6828,Jaume Costa,2015,ESP-La Liga,Villarreal,statsbomb,FB,outfield,2,Defensive full-back,0.2739,1.6723
+statsbomb:3676,Jérôme Roussillon,2015,FRA-Ligue 1,Montpellier,statsbomb,FB,outfield,2,Defensive full-back,0.2847,1.6755
+statsbomb:6718,Sergio Escudero,2015,ESP-La Liga,Sevilla,statsbomb,FB,outfield,2,Defensive full-back,0.3403,1.6756
+statsbomb:6612,Rubén Duarte,2015,ESP-La Liga,Espanyol,statsbomb,FB,outfield,2,Defensive full-back,0.3358,1.6764
+statsbomb:6791,Javi López,2015,ESP-La Liga,Espanyol,statsbomb,FB,outfield,2,Defensive full-back,0.2886,1.6933
+statsbomb:5678,Jefferson Lerma,2015,ESP-La Liga,Levante,statsbomb,CM,outfield,2,Defensive full-back,0.2273,1.694
+statsbomb:401482,Gaël Angoula,2015,FRA-Ligue 1,Angers,statsbomb,FB,outfield,2,Defensive full-back,0.3521,1.6977
+statsbomb:6856,Carlos Vigaray,2015,ESP-La Liga,Getafe,statsbomb,FB,outfield,2,Defensive full-back,0.1129,1.7005
+statsbomb:7464,Cristian Ansaldi,2015,ITA-Serie A,Genoa,statsbomb,FB,outfield,2,Defensive full-back,0.2271,1.7046
+statsbomb:3590,Cuco Martina,2015,ENG-Premier League,Southampton,statsbomb,FB,outfield,2,Defensive full-back,0.4266,1.7064
+statsbomb:23329,Abdelhamid El Kaoutari,2015,FRA-Ligue 1,Reims,statsbomb,CB,outfield,2,Defensive full-back,0.0267,1.7146
+statsbomb:4724,Glen Johnson,2015,ENG-Premier League,Stoke City,statsbomb,FB,outfield,2,Defensive full-back,0.3331,1.744
+statsbomb:386607,Gianpaolo Bellini,2015,ITA-Serie A,Atalanta,statsbomb,FB,outfield,2,Defensive full-back,0.0909,1.7463
+statsbomb:26683,Abdoulay Konko,2015,ITA-Serie A,Lazio,statsbomb,FB,outfield,2,Defensive full-back,0.1334,1.7484
+statsbomb:6932,Dani Castellano,2015,ESP-La Liga,Las Palmas,statsbomb,FB,outfield,2,Defensive full-back,0.3447,1.7607
+statsbomb:40528,Florian Marange,2015,FRA-Ligue 1,Bastia,statsbomb,FB,outfield,2,Defensive full-back,0.1545,1.773
+statsbomb:11634,Cristiano Piccini,2015,ESP-La Liga,Real Betis,statsbomb,FB,outfield,2,Defensive full-back,0.3731,1.7761
+statsbomb:31268,Michel Morganella,2015,ITA-Serie A,Palermo,statsbomb,FB,outfield,2,Defensive full-back,0.2648,1.7781
+statsbomb:2983,Jérémy Morel,2015,FRA-Ligue 1,Lyon,statsbomb,FB,outfield,2,Defensive full-back,0.1039,1.7909
+statsbomb:3364,Jonathan Martins-Pereira,2015,FRA-Ligue 1,Guingamp,statsbomb,FB,outfield,2,Defensive full-back,0.351,1.7957
+statsbomb:20008,Patrice Evra,2015,ITA-Serie A,Juventus,statsbomb,FB,outfield,2,Defensive full-back,0.0087,1.8042
+statsbomb:30769,Andrea Rispoli,2015,ITA-Serie A,Palermo,statsbomb,FB,outfield,2,Defensive full-back,0.4266,1.8067
+statsbomb:3626,Ben Watson,2015,ENG-Premier League,Watford,statsbomb,DM,outfield,2,Defensive full-back,0.1282,1.8072
+statsbomb:10032,Achraf Lazaar,2015,ITA-Serie A,Palermo,statsbomb,FB,outfield,2,Defensive full-back,0.1836,1.8146
+statsbomb:3991,Allan Nyom,2015,ENG-Premier League,Watford,statsbomb,FB,outfield,2,Defensive full-back,0.3369,1.8153
+statsbomb:27241,Víctor Álvarez,2015,ESP-La Liga,Espanyol,statsbomb,W,outfield,2,Defensive full-back,0.1909,1.8325
+statsbomb:3413,Kévin Théophile-Catherine,2015,FRA-Ligue 1,Saint-Étienne,statsbomb,FB,outfield,2,Defensive full-back,0.1675,1.8376
+statsbomb:9940,Armando Izzo,2015,ITA-Serie A,Genoa,statsbomb,CB,outfield,2,Defensive full-back,0.0181,1.8504
+statsbomb:401507,Jérôme Le Moigne,2015,FRA-Ligue 1,Gazélec Ajaccio,statsbomb,DM,outfield,2,Defensive full-back,0.0331,1.852
+statsbomb:4906,Arnold Bouka Moutou,2015,FRA-Ligue 1,Angers,statsbomb,FB,outfield,2,Defensive full-back,0.0313,1.8547
+statsbomb:8191,Ali Adnan,2015,ITA-Serie A,Udinese,statsbomb,FB,outfield,2,Defensive full-back,0.3048,1.8664
+statsbomb:3518,Leighton Baines,2015,ENG-Premier League,Everton,statsbomb,FB,outfield,2,Defensive full-back,0.198,1.8718
+statsbomb:7199,Vincent Le Goff,2015,FRA-Ligue 1,Lorient,statsbomb,FB,outfield,2,Defensive full-back,0.0226,1.8757
+statsbomb:6559,Juan Carlos,2015,ESP-La Liga,Málaga,statsbomb,CM,outfield,2,Defensive full-back,0.0372,1.8971
+statsbomb:26023,Juanfran,2015,ESP-La Liga,Levante,statsbomb,CB,outfield,2,Defensive full-back,0.1197,1.9194
+statsbomb:40250,Marco Zambelli,2015,ITA-Serie A,Empoli,statsbomb,FB,outfield,2,Defensive full-back,0.0785,1.9328
+statsbomb:6386,Eneko Bóveda,2015,ESP-La Liga,Athletic Club,statsbomb,FB,outfield,2,Defensive full-back,0.3045,1.9594
+statsbomb:7151,Mário Rui,2015,ITA-Serie A,Empoli,statsbomb,FB,outfield,2,Defensive full-back,0.1432,1.9607
+statsbomb:3306,Nathan Aké,2015,ENG-Premier League,Watford,statsbomb,FB,outfield,2,Defensive full-back,0.0453,1.9667
+statsbomb:3063,Danilo,2015,ESP-La Liga,Real Madrid,statsbomb,FB,outfield,2,Defensive full-back,0.1399,1.9702
+statsbomb:6878,Miguel Torres,2015,ESP-La Liga,Málaga,statsbomb,FB,outfield,2,Defensive full-back,0.0793,1.9721
+statsbomb:4884,Pape Souaré,2015,ENG-Premier League,Crystal Palace,statsbomb,FB,outfield,2,Defensive full-back,0.2102,1.9737
+statsbomb:26780,Guilherme Siqueira,2015,ESP-La Liga,Valencia,statsbomb,FB,outfield,2,Defensive full-back,0.3493,1.9792
+statsbomb:7463,Ignazio Abate,2015,ITA-Serie A,AC Milan,statsbomb,FB,outfield,2,Defensive full-back,0.2182,2.0007
+statsbomb:3340,Kyle Naughton,2015,ENG-Premier League,Swansea City,statsbomb,FB,outfield,2,Defensive full-back,0.1004,2.0285
+statsbomb:3404,Youssouf Sabaly,2015,FRA-Ligue 1,Nantes,statsbomb,FB,outfield,2,Defensive full-back,0.2298,2.0299
+statsbomb:3658,DeAndre Yedlin,2015,ENG-Premier League,Sunderland,statsbomb,FB,outfield,2,Defensive full-back,0.2974,2.0384
+statsbomb:9627,Neil Taylor,2015,ENG-Premier League,Swansea City,statsbomb,FB,outfield,2,Defensive full-back,0.1811,2.0399
+statsbomb:3957,César Azpilicueta,2015,ENG-Premier League,Chelsea,statsbomb,FB,outfield,2,Defensive full-back,0.0651,2.0453
+statsbomb:25505,Dodô,2015,ITA-Serie A,Sampdoria,statsbomb,FB,outfield,2,Defensive full-back,0.1244,2.0544
+statsbomb:9625,Glenn Whelan,2015,ENG-Premier League,Stoke City,statsbomb,DM,outfield,2,Defensive full-back,0.0468,2.0587
+statsbomb:7050,Fabrizio Cacciatore,2015,ITA-Serie A,Chievo,statsbomb,FB,outfield,2,Defensive full-back,0.1561,2.0691
+statsbomb:20064,Miguel Lopes,2015,ESP-La Liga,Granada,statsbomb,FB,outfield,2,Defensive full-back,0.2256,2.0704
+statsbomb:22111,Dennis Appiah,2015,FRA-Ligue 1,Caen,statsbomb,FB,outfield,2,Defensive full-back,0.1846,2.0897
+statsbomb:3725,Jose Cholevas,2015,ENG-Premier League,Watford,statsbomb,FB,outfield,2,Defensive full-back,0.3862,2.0903
+statsbomb:7042,Ivan Radovanović,2015,ITA-Serie A,Chievo,statsbomb,DM,outfield,2,Defensive full-back,0.0587,2.1025
+statsbomb:27347,Juan Manuel Vargas,2015,ESP-La Liga,Real Betis,statsbomb,FB,outfield,2,Defensive full-back,0.1672,2.1171
+statsbomb:11183,Alex Telles,2015,ITA-Serie A,Inter Milan,statsbomb,FB,outfield,2,Defensive full-back,0.1922,2.139
+statsbomb:3191,Ramy Bensebaini,2015,FRA-Ligue 1,Montpellier,statsbomb,FB,outfield,2,Defensive full-back,0.1471,2.1423
+statsbomb:31231,Davide Brivio,2015,ITA-Serie A,Atalanta,statsbomb,FB,outfield,2,Defensive full-back,0.0959,2.1439
+statsbomb:3344,Andrew Surman,2015,ENG-Premier League,Bournemouth,statsbomb,DM,outfield,2,Defensive full-back,0.0573,2.1486
+statsbomb:6734,Luisinho,2015,ESP-La Liga,Deportivo La Coruña,statsbomb,W,outfield,2,Defensive full-back,0.0164,2.1493
+statsbomb:27483,Benoît Trémoulinas,2015,ESP-La Liga,Sevilla,statsbomb,FB,outfield,2,Defensive full-back,0.3082,2.1614
+statsbomb:7577,Carles Planas,2015,ESP-La Liga,Celta Vigo,statsbomb,FB,outfield,2,Defensive full-back,0.0832,2.1845
+statsbomb:3261,Benjamin Mendy,2015,FRA-Ligue 1,Marseille,statsbomb,FB,outfield,2,Defensive full-back,0.0605,2.199
+statsbomb:3062,Aaron Cresswell,2015,ENG-Premier League,West Ham United,statsbomb,FB,outfield,2,Defensive full-back,0.2598,2.2081
+statsbomb:7778,Ștefan Radu,2015,ITA-Serie A,Lazio,statsbomb,FB,outfield,2,Defensive full-back,0.0686,2.2105
+statsbomb:7114,Gaetano Letizia,2015,ITA-Serie A,Carpi,statsbomb,FB,outfield,2,Defensive full-back,0.2078,2.2177
+statsbomb:3608,Simon Francis,2015,ENG-Premier League,Bournemouth,statsbomb,CB,outfield,2,Defensive full-back,0.0154,2.2378
+statsbomb:11499,Riccardo Gagliolo,2015,ITA-Serie A,Carpi,statsbomb,CB,outfield,2,Defensive full-back,0.1296,2.2567
+statsbomb:6392,Iñigo Lekue,2015,ESP-La Liga,Athletic Club,statsbomb,FB,outfield,2,Defensive full-back,0.0403,2.2704
+statsbomb:4589,Séamus Coleman,2015,ENG-Premier League,Everton,statsbomb,FB,outfield,2,Defensive full-back,0.1065,2.2776
+statsbomb:3189,Étienne Didot,2015,FRA-Ligue 1,Toulouse,statsbomb,DM,outfield,2,Defensive full-back,0.0529,2.2792
+statsbomb:3446,Djibril Sidibé,2015,FRA-Ligue 1,Lille,statsbomb,FB,outfield,2,Defensive full-back,0.0383,2.2811
+statsbomb:3511,Héctor Bellerín,2015,ENG-Premier League,Arsenal,statsbomb,FB,outfield,2,Defensive full-back,0.0414,2.298
+statsbomb:4895,Henri Bedimo,2015,FRA-Ligue 1,Lyon,statsbomb,FB,outfield,2,Defensive full-back,0.0029,2.3037
+statsbomb:2989,Alexander Djiku,2015,FRA-Ligue 1,Bastia,statsbomb,FB,outfield,2,Defensive full-back,0.1011,2.3229
+statsbomb:25707,Fran Rico,2015,ESP-La Liga,Granada,statsbomb,DM,outfield,2,Defensive full-back,0.041,2.3726
+statsbomb:4270,Jérémy Pied,2015,FRA-Ligue 1,Nice,statsbomb,FB,outfield,2,Defensive full-back,0.1139,2.3783
+statsbomb:16202,Nikola Maksimović,2015,ITA-Serie A,Torino,statsbomb,CB,outfield,2,Defensive full-back,0.1983,2.4122
+statsbomb:40118,Ikechi Anya,2015,ENG-Premier League,Watford,statsbomb,FB,outfield,2,Defensive full-back,0.1093,2.4545
+statsbomb:3541,Chris Brunt,2015,ENG-Premier League,West Bromwich Albion,statsbomb,FB,outfield,2,Defensive full-back,0.1253,2.4814
+statsbomb:6699,Ander Capa,2015,ESP-La Liga,Eibar,statsbomb,FB,outfield,2,Defensive full-back,0.3479,2.4846
+statsbomb:5541,Stephan Lichtsteiner,2015,ITA-Serie A,Juventus,statsbomb,FB,outfield,2,Defensive full-back,0.0632,2.5415
+statsbomb:7005,João Cancelo,2015,ESP-La Liga,Valencia,statsbomb,FB,outfield,2,Defensive full-back,0.2273,2.5601
+statsbomb:3311,Daley Blind,2015,ENG-Premier League,Manchester United,statsbomb,CB,outfield,2,Defensive full-back,0.0885,2.6428
+statsbomb:3812,Christian Fuchs,2015,ENG-Premier League,Leicester City,statsbomb,FB,outfield,2,Defensive full-back,0.2922,2.7216
+statsbomb:20302,Gaël Clichy,2015,ENG-Premier League,Manchester City,statsbomb,FB,outfield,2,Defensive full-back,0.1921,2.7551
+statsbomb:4352,Issiaga Sylla,2015,FRA-Ligue 1,Gazélec Ajaccio,statsbomb,FB,outfield,2,Defensive full-back,0.0617,2.9378
+statsbomb:8661,Daniel Pavlovic,2015,ITA-Serie A,Frosinone,statsbomb,FB,outfield,2,Defensive full-back,0.1375,3.3274
+statsbomb:6320,Filipe Luis,2015,ESP-La Liga,Atlético Madrid,statsbomb,FB,outfield,2,Defensive full-back,0.0746,3.623
+statsbomb:29714,Yacouba Sylla,2015,FRA-Ligue 1,Rennes,statsbomb,DM,outfield,3,Destroyer,0.7402,0.65
+statsbomb:40430,Giuseppe Vives,2015,ITA-Serie A,Torino,statsbomb,DM,outfield,3,Destroyer,0.7363,0.6614
+statsbomb:9649,Jack Colback,2015,ENG-Premier League,Newcastle United,statsbomb,DM,outfield,3,Destroyer,0.6567,0.777
+statsbomb:6745,Mehdi Lacen,2015,ESP-La Liga,Getafe,statsbomb,DM,outfield,3,Destroyer,0.6285,0.7932
+statsbomb:6733,Pedro Mosquera,2015,ESP-La Liga,Deportivo La Coruña,statsbomb,DM,outfield,3,Destroyer,0.6804,0.863
+statsbomb:401512,Lionel Mathis,2015,FRA-Ligue 1,Guingamp,statsbomb,DM,outfield,3,Destroyer,0.6034,0.8843
+statsbomb:3098,Victor Wanyama,2015,ENG-Premier League,Southampton,statsbomb,DM,outfield,3,Destroyer,0.6317,0.9192
+statsbomb:30735,Mato Jajalo,2015,ITA-Serie A,Palermo,statsbomb,DM,outfield,3,Destroyer,0.5397,0.9901
+statsbomb:7815,Antoine Devaux,2015,FRA-Ligue 1,Reims,statsbomb,DM,outfield,3,Destroyer,0.5787,1.0039
+statsbomb:5685,Carlos Sánchez,2015,ENG-Premier League,Aston Villa,statsbomb,DM,outfield,3,Destroyer,0.5689,1.0074
+statsbomb:23806,Álex Bergantiños,2015,ESP-La Liga,Deportivo La Coruña,statsbomb,DM,outfield,3,Destroyer,0.3688,1.04
+statsbomb:3272,Oriol Romeu,2015,ENG-Premier League,Southampton,statsbomb,DM,outfield,3,Destroyer,0.6613,1.043
+statsbomb:4380,Guillaume Gillet,2015,FRA-Ligue 1,Nantes,statsbomb,DM,outfield,3,Destroyer,0.5622,1.0526
+statsbomb:3036,Alexis Blin,2015,FRA-Ligue 1,Toulouse,statsbomb,DM,outfield,3,Destroyer,0.6063,1.0683
+statsbomb:9452,Gary O'Neil,2015,ENG-Premier League,Norwich City,statsbomb,DM,outfield,3,Destroyer,0.3547,1.0783
+statsbomb:2943,Lucas Deaux,2015,FRA-Ligue 1,Nantes,statsbomb,DM,outfield,3,Destroyer,0.3886,1.0898
+statsbomb:4350,Yannick Cahuzac,2015,FRA-Ligue 1,Bastia,statsbomb,DM,outfield,3,Destroyer,0.4791,1.0957
+statsbomb:3721,Étienne Capoue,2015,ENG-Premier League,Watford,statsbomb,CM,outfield,3,Destroyer,0.4721,1.1102
+statsbomb:33311,Ogenyi Onazi,2015,ITA-Serie A,Lazio,statsbomb,DM,outfield,3,Destroyer,0.5501,1.1396
+statsbomb:8284,Amadou Diawara,2015,ITA-Serie A,Bologna,statsbomb,DM,outfield,3,Destroyer,0.4311,1.1515
+statsbomb:7350,Birama Touré,2015,FRA-Ligue 1,Nantes,statsbomb,DM,outfield,3,Destroyer,0.2328,1.168
+statsbomb:4413,Aloïs Confais,2015,FRA-Ligue 1,Troyes,statsbomb,FB,outfield,3,Destroyer,0.5683,1.1811
+statsbomb:30702,Brendan Galloway,2015,ENG-Premier League,Everton,statsbomb,FB,outfield,3,Destroyer,0.3971,1.2249
+statsbomb:46801,Jaba Kankava,2015,FRA-Ligue 1,Reims,statsbomb,DM,outfield,3,Destroyer,0.6001,1.2277
+statsbomb:2961,Yann Bodiger,2015,FRA-Ligue 1,Toulouse,statsbomb,DM,outfield,3,Destroyer,0.4333,1.2353
+statsbomb:16181,Jordy Clasie,2015,ENG-Premier League,Southampton,statsbomb,DM,outfield,3,Destroyer,0.5271,1.2423
+statsbomb:3464,James McArthur,2015,ENG-Premier League,Crystal Palace,statsbomb,DM,outfield,3,Destroyer,0.4456,1.2598
+statsbomb:4669,William Jean Rémy,2015,FRA-Ligue 1,Montpellier,statsbomb,DM,outfield,3,Destroyer,0.0732,1.2618
+statsbomb:6775,Dani García,2015,ESP-La Liga,Eibar,statsbomb,DM,outfield,3,Destroyer,0.1821,1.2636
+statsbomb:6751,Javi Fuego,2015,ESP-La Liga,Valencia,statsbomb,DM,outfield,3,Destroyer,0.5452,1.3025
+statsbomb:16003,Fernando Reges,2015,ENG-Premier League,Manchester City,statsbomb,DM,outfield,3,Destroyer,0.5758,1.3175
+statsbomb:7415,Jessy Pi,2015,FRA-Ligue 1,Troyes,statsbomb,DM,outfield,3,Destroyer,0.421,1.3492
+statsbomb:3897,Pedro Obiang,2015,ENG-Premier League,West Ham United,statsbomb,DM,outfield,3,Destroyer,0.4932,1.3627
+statsbomb:18027,Matteo Brighi,2015,ITA-Serie A,Bologna,statsbomb,CM,outfield,3,Destroyer,0.5156,1.3644
+statsbomb:6952,Alberto Grassi,2015,ITA-Serie A,Atalanta,statsbomb,CM,outfield,3,Destroyer,0.4366,1.3709
+statsbomb:6357,Jonathan dos Santos,2015,ESP-La Liga,Villarreal,statsbomb,CM,outfield,3,Destroyer,0.3898,1.3761
+statsbomb:5690,Yuto Nagatomo,2015,ITA-Serie A,Inter Milan,statsbomb,FB,outfield,3,Destroyer,0.1567,1.3827
+statsbomb:3348,Younousse Sankharé,2015,FRA-Ligue 1,Guingamp,statsbomb,DM,outfield,3,Destroyer,0.3619,1.3885
+statsbomb:3607,James McCarthy,2015,ENG-Premier League,Everton,statsbomb,DM,outfield,3,Destroyer,0.4951,1.393
+statsbomb:5110,Henri Saivet,2015,FRA-Ligue 1,Bordeaux,statsbomb,DM,outfield,3,Destroyer,0.5368,1.4106
+statsbomb:6743,Manuel Iturra,2015,ITA-Serie A,Udinese,statsbomb,DM,outfield,3,Destroyer,0.5695,1.4124
+statsbomb:6599,Rubén Pérez,2015,ESP-La Liga,Granada,statsbomb,DM,outfield,3,Destroyer,0.4401,1.4139
+statsbomb:7041,Nicola Rigoni,2015,ITA-Serie A,Chievo,statsbomb,DM,outfield,3,Destroyer,0.3131,1.4261
+statsbomb:16072,Vurnon Anita,2015,ENG-Premier League,Newcastle United,statsbomb,CM,outfield,3,Destroyer,0.301,1.4347
+statsbomb:22587,Didier Ndong,2015,FRA-Ligue 1,Lorient,statsbomb,DM,outfield,3,Destroyer,0.5238,1.4555
+statsbomb:352172,Raffaele Bianco,2015,ITA-Serie A,Carpi,statsbomb,DM,outfield,3,Destroyer,0.4263,1.4628
+statsbomb:3140,François Bellugou,2015,FRA-Ligue 1,Lorient,statsbomb,DM,outfield,3,Destroyer,0.2642,1.5237
+statsbomb:18925,Nacho Cases,2015,ESP-La Liga,Sporting Gijón,statsbomb,DM,outfield,3,Destroyer,0.4031,1.5301
+statsbomb:32119,Leandro Greco,2015,ITA-Serie A,Hellas Verona,statsbomb,DM,outfield,3,Destroyer,0.3265,1.5324
+statsbomb:4587,Matteo Darmian,2015,ENG-Premier League,Manchester United,statsbomb,FB,outfield,3,Destroyer,0.0218,1.5325
+statsbomb:401509,David Ducourtioux,2015,FRA-Ligue 1,Gazélec Ajaccio,statsbomb,CM,outfield,3,Destroyer,0.2718,1.5327
+statsbomb:7389,Amos Youga,2015,FRA-Ligue 1,Gazélec Ajaccio,statsbomb,CM,outfield,3,Destroyer,0.0584,1.5327
+statsbomb:26607,Raúl Baena,2015,ESP-La Liga,Rayo Vallecano,statsbomb,DM,outfield,3,Destroyer,0.2442,1.5375
+statsbomb:6580,Recio,2015,ESP-La Liga,Málaga,statsbomb,DM,outfield,3,Destroyer,0.1245,1.5377
+statsbomb:7046,Perparim Hetemaj,2015,ITA-Serie A,Chievo,statsbomb,CM,outfield,3,Destroyer,0.3623,1.5379
+statsbomb:12325,Baba Rahman,2015,ENG-Premier League,Chelsea,statsbomb,FB,outfield,3,Destroyer,0.3887,1.5532
+statsbomb:401478,Rémi Gomis,2015,FRA-Ligue 1,Nantes,statsbomb,DM,outfield,3,Destroyer,0.4144,1.5666
+statsbomb:24783,Javi Márquez,2015,ESP-La Liga,Granada,statsbomb,AM,outfield,3,Destroyer,0.2787,1.5667
+statsbomb:6389,Mikel San José,2015,ESP-La Liga,Athletic Club,statsbomb,DM,outfield,3,Destroyer,0.222,1.5707
+statsbomb:10036,Alaixys Romao,2015,FRA-Ligue 1,Marseille,statsbomb,DM,outfield,3,Destroyer,0.4971,1.5896
+statsbomb:40349,Ivaylo Chochev,2015,ITA-Serie A,Palermo,statsbomb,CM,outfield,3,Destroyer,0.4774,1.6023
+statsbomb:3406,Jérémy Toulalan,2015,FRA-Ligue 1,Monaco,statsbomb,DM,outfield,3,Destroyer,0.0083,1.612
+statsbomb:3462,Jack Cork,2015,ENG-Premier League,Swansea City,statsbomb,CM,outfield,3,Destroyer,0.3231,1.6269
+statsbomb:90746,Alassane Touré,2015,FRA-Ligue 1,Gazélec Ajaccio,statsbomb,FB,outfield,3,Destroyer,0.1659,1.6295
+statsbomb:7113,Simone Missiroli,2015,ITA-Serie A,Sassuolo,statsbomb,CM,outfield,3,Destroyer,0.2657,1.6368
+statsbomb:7013,Stefano Sturaro,2015,ITA-Serie A,Juventus,statsbomb,CM,outfield,3,Destroyer,0.0987,1.6375
+statsbomb:11332,Ibrahim Amadou,2015,FRA-Ligue 1,Lille,statsbomb,DM,outfield,3,Destroyer,0.2646,1.6436
+statsbomb:8187,Marcel Büchel,2015,ITA-Serie A,Empoli,statsbomb,CM,outfield,3,Destroyer,0.0924,1.6441
+statsbomb:27526,Rachid Aït-Atmane,2015,ESP-La Liga,Sporting Gijón,statsbomb,DM,outfield,3,Destroyer,0.2316,1.6534
+statsbomb:3030,Somália,2015,FRA-Ligue 1,Toulouse,statsbomb,FB,outfield,3,Destroyer,0.3412,1.6534
+statsbomb:7049,Lucas Castro,2015,ITA-Serie A,Chievo,statsbomb,CM,outfield,3,Destroyer,0.2143,1.6589
+statsbomb:15805,Hernán Santana,2015,ESP-La Liga,Las Palmas,statsbomb,DM,outfield,3,Destroyer,0.182,1.6608
+statsbomb:3600,Morgan Schneiderlin,2015,ENG-Premier League,Manchester United,statsbomb,DM,outfield,3,Destroyer,0.3872,1.6615
+statsbomb:27595,Carlos Carbonero,2015,ITA-Serie A,Sampdoria,statsbomb,W,outfield,3,Destroyer,0.2079,1.6693
+statsbomb:6771,Manu Trigueros,2015,ESP-La Liga,Villarreal,statsbomb,DM,outfield,3,Destroyer,0.1108,1.6768
+statsbomb:6622,Tomás Pina,2015,ESP-La Liga,Villarreal,statsbomb,DM,outfield,3,Destroyer,0.1195,1.6802
+statsbomb:6796,Nemanja Radoja,2015,ESP-La Liga,Celta Vigo,statsbomb,DM,outfield,3,Destroyer,0.4167,1.6833
+statsbomb:27346,Petros,2015,ESP-La Liga,Real Betis,statsbomb,DM,outfield,3,Destroyer,0.4961,1.6984
+statsbomb:3414,Vincent Pajot,2015,FRA-Ligue 1,Saint-Étienne,statsbomb,DM,outfield,3,Destroyer,0.3128,1.7017
+statsbomb:5671,Alfred N'Diaye,2015,ESP-La Liga,Real Betis,statsbomb,DM,outfield,3,Destroyer,0.301,1.7023
+statsbomb:10037,Danilo Barbosa,2015,ESP-La Liga,Valencia,statsbomb,CM,outfield,3,Destroyer,0.3229,1.7086
+statsbomb:7442,Jérémy Clément,2015,FRA-Ligue 1,Saint-Étienne,statsbomb,DM,outfield,3,Destroyer,0.4713,1.7257
+statsbomb:7200,Fabien Lemoine,2015,FRA-Ligue 1,Saint-Étienne,statsbomb,DM,outfield,3,Destroyer,0.0877,1.7383
+statsbomb:36364,Dávid Ivan,2015,ITA-Serie A,Sampdoria,statsbomb,CM,outfield,3,Destroyer,0.53,1.7463
+statsbomb:7012,Vasco Regini,2015,ITA-Serie A,Sampdoria,statsbomb,FB,outfield,3,Destroyer,0.1628,1.7548
+statsbomb:3955,Tiemoué Bakayoko,2015,FRA-Ligue 1,Monaco,statsbomb,DM,outfield,3,Destroyer,0.5082,1.7631
+statsbomb:7147,Andrea Bertolacci,2015,ITA-Serie A,AC Milan,statsbomb,DM,outfield,3,Destroyer,0.0696,1.7924
+statsbomb:3156,Rafael,2015,FRA-Ligue 1,Lyon,statsbomb,FB,outfield,3,Destroyer,0.1244,1.7942
+statsbomb:7460,Isaac Cofie,2015,ITA-Serie A,Carpi,statsbomb,DM,outfield,3,Destroyer,0.4019,1.809
+statsbomb:18398,Omar Mascarell,2015,ESP-La Liga,Sporting Gijón,statsbomb,DM,outfield,3,Destroyer,0.1915,1.8159
+statsbomb:6384,Gabi,2015,ESP-La Liga,Atlético Madrid,statsbomb,DM,outfield,3,Destroyer,0.1934,1.835
+statsbomb:3181,Lass Diarra,2015,FRA-Ligue 1,Marseille,statsbomb,DM,outfield,3,Destroyer,0.2491,1.841
+statsbomb:7009,Édgar Barreto,2015,ITA-Serie A,Sampdoria,statsbomb,CM,outfield,3,Destroyer,0.469,1.8496
+statsbomb:7020,Jacopo Sala,2015,ITA-Serie A,Hellas Verona,statsbomb,FB,outfield,3,Destroyer,0.0945,1.8498
+statsbomb:6659,Víctor Camarasa,2015,ESP-La Liga,Levante,statsbomb,CM,outfield,3,Destroyer,0.0462,1.8522
+statsbomb:6633,Markel Bergara,2015,ESP-La Liga,Real Sociedad,statsbomb,DM,outfield,3,Destroyer,0.3115,1.858
+statsbomb:5741,Enzo Pérez,2015,ESP-La Liga,Valencia,statsbomb,DM,outfield,3,Destroyer,0.2987,1.8633
+statsbomb:3054,Fernandinho,2015,ENG-Premier League,Manchester City,statsbomb,DM,outfield,3,Destroyer,0.1845,1.8687
+statsbomb:40522,Rio Mavuba,2015,FRA-Ligue 1,Lille,statsbomb,DM,outfield,3,Destroyer,0.2163,1.8754
+statsbomb:4631,Leon Britton,2015,ENG-Premier League,Swansea City,statsbomb,DM,outfield,3,Destroyer,0.287,1.8773
+statsbomb:25430,Felipe Melo,2015,ITA-Serie A,Inter Milan,statsbomb,DM,outfield,3,Destroyer,0.3103,1.8817
+statsbomb:7344,Jordan Adéoti,2015,FRA-Ligue 1,Caen,statsbomb,DM,outfield,3,Destroyer,0.2911,1.8817
+statsbomb:7127,Francesco Magnanelli,2015,ITA-Serie A,Sassuolo,statsbomb,DM,outfield,3,Destroyer,0.2452,1.8828
+statsbomb:10783,Lee Cattermole,2015,ENG-Premier League,Sunderland,statsbomb,CM,outfield,3,Destroyer,0.0336,1.8837
+statsbomb:6867,Pape Diop,2015,ESP-La Liga,Espanyol,statsbomb,DM,outfield,3,Destroyer,0.1742,1.8965
+statsbomb:3683,Tom Cleverley,2015,ENG-Premier League,Everton,statsbomb,W,outfield,3,Destroyer,0.1196,1.9024
+statsbomb:3052,Pablo Zabaleta,2015,ENG-Premier League,Manchester City,statsbomb,FB,outfield,3,Destroyer,0.0354,1.9132
+statsbomb:10522,Mehdi Mostefa,2015,FRA-Ligue 1,Bastia,statsbomb,DM,outfield,3,Destroyer,0.1896,1.9153
+statsbomb:16522,Tongo Doumbia,2015,FRA-Ligue 1,Toulouse,statsbomb,CM,outfield,3,Destroyer,0.3475,1.9254
+statsbomb:43081,Almen Abdi,2015,ENG-Premier League,Watford,statsbomb,CM,outfield,3,Destroyer,0.2073,1.928
+statsbomb:23349,Paolo Sammarco,2015,ITA-Serie A,Frosinone,statsbomb,DM,outfield,3,Destroyer,0.1396,1.9294
+statsbomb:6712,Gonzalo Escalante,2015,ESP-La Liga,Eibar,statsbomb,DM,outfield,3,Destroyer,0.3876,1.9362
+statsbomb:3662,Danny Drinkwater,2015,ENG-Premier League,Leicester City,statsbomb,CM,outfield,3,Destroyer,0.044,1.9376
+statsbomb:7154,Sebastián Cristóforo,2015,ESP-La Liga,Sevilla,statsbomb,DM,outfield,3,Destroyer,0.4567,1.9544
+statsbomb:3292,Abdoulaye Doucouré,2015,ESP-La Liga,Granada,statsbomb,DM,outfield,3,Destroyer,0.0196,1.9567
+statsbomb:3343,Dan Gosling,2015,ENG-Premier League,Bournemouth,statsbomb,CM,outfield,3,Destroyer,0.0395,1.971
+statsbomb:3381,Nemanja Matić,2015,ENG-Premier League,Chelsea,statsbomb,DM,outfield,3,Destroyer,0.1217,1.9738
+statsbomb:6736,Álvaro Medrán,2015,ESP-La Liga,Getafe,statsbomb,DM,outfield,3,Destroyer,0.1855,1.9752
+statsbomb:6631,Mathieu Flamini,2015,ENG-Premier League,Arsenal,statsbomb,DM,outfield,3,Destroyer,0.2391,1.9781
+statsbomb:6671,Asier Illarramendi,2015,ESP-La Liga,Real Sociedad,statsbomb,DM,outfield,3,Destroyer,0.2177,1.986
+statsbomb:8851,Saphir Taïder,2015,ITA-Serie A,Bologna,statsbomb,CM,outfield,3,Destroyer,0.1393,2.0035
+statsbomb:3481,Serge Aurier,2015,FRA-Ligue 1,Paris Saint-Germain,statsbomb,FB,outfield,3,Destroyer,0.3095,2.0289
+statsbomb:10956,Eric Dier,2015,ENG-Premier League,Tottenham Hotspur,statsbomb,DM,outfield,3,Destroyer,0.0499,2.0351
+statsbomb:6929,Vicente Gómez,2015,ESP-La Liga,Las Palmas,statsbomb,DM,outfield,3,Destroyer,0.1299,2.0361
+statsbomb:6758,Víctor Sánchez,2015,ESP-La Liga,Espanyol,statsbomb,DM,outfield,3,Destroyer,0.3591,2.0524
+statsbomb:386657,Giampiero Pinzi,2015,ITA-Serie A,Chievo,statsbomb,CM,outfield,3,Destroyer,0.4721,2.0609
+statsbomb:9463,Alexander Tettey,2015,ENG-Premier League,Norwich City,statsbomb,DM,outfield,3,Destroyer,0.1139,2.0653
+statsbomb:13107,Sergio Álvarez,2015,ESP-La Liga,Sporting Gijón,statsbomb,DM,outfield,3,Destroyer,0.4199,2.067
+statsbomb:6982,Maxime Gonalons,2015,FRA-Ligue 1,Lyon,statsbomb,DM,outfield,3,Destroyer,0.3381,2.0674
+statsbomb:20669,Tiago,2015,ESP-La Liga,Atlético Madrid,statsbomb,DM,outfield,3,Destroyer,0.0344,2.0786
+statsbomb:6409,Adam Smith,2015,ENG-Premier League,Bournemouth,statsbomb,FB,outfield,3,Destroyer,0.1911,2.0838
+statsbomb:3277,Yohan Cabaye,2015,ENG-Premier League,Crystal Palace,statsbomb,DM,outfield,3,Destroyer,0.1895,2.1091
+statsbomb:8173,Marco Parolo,2015,ITA-Serie A,Lazio,statsbomb,CM,outfield,3,Destroyer,0.2069,2.1114
+statsbomb:6994,Marten de Roon,2015,ITA-Serie A,Atalanta,statsbomb,DM,outfield,3,Destroyer,0.4501,2.1185
+statsbomb:3684,Cheikhou Kouyaté,2015,ENG-Premier League,West Ham United,statsbomb,CM,outfield,3,Destroyer,0.1827,2.1323
+statsbomb:3437,Francis Joseph Coquelin,2015,ENG-Premier League,Arsenal,statsbomb,DM,outfield,3,Destroyer,0.3746,2.1398
+statsbomb:5539,Casemiro,2015,ESP-La Liga,Real Madrid,statsbomb,DM,outfield,3,Destroyer,0.4253,2.1513
+statsbomb:7704,Alex Ferrari,2015,ITA-Serie A,Bologna,statsbomb,FB,outfield,3,Destroyer,0.1715,2.1564
+statsbomb:7552,Clément Chantôme,2015,FRA-Ligue 1,Bordeaux,statsbomb,DM,outfield,3,Destroyer,0.2994,2.1719
+statsbomb:3967,Claudio Yacob,2015,ENG-Premier League,West Bromwich Albion,statsbomb,DM,outfield,3,Destroyer,0.3244,2.1828
+statsbomb:40698,Nicolas Seube,2015,FRA-Ligue 1,Caen,statsbomb,DM,outfield,3,Destroyer,0.425,2.1904
+statsbomb:7949,Artur Ioniţă,2015,ITA-Serie A,Hellas Verona,statsbomb,DM,outfield,3,Destroyer,0.2664,2.2504
+statsbomb:10503,Billy Jones,2015,ENG-Premier League,Sunderland,statsbomb,FB,outfield,3,Destroyer,0.2309,2.286
+statsbomb:5582,Celso Borges,2015,ESP-La Liga,Deportivo La Coruña,statsbomb,DM,outfield,3,Destroyer,0.0079,2.2912
+statsbomb:5475,John Obi Mikel,2015,ENG-Premier League,Chelsea,statsbomb,DM,outfield,3,Destroyer,0.2194,2.2913
+statsbomb:42900,Cheik Tioté,2015,ENG-Premier League,Newcastle United,statsbomb,DM,outfield,3,Destroyer,0.2857,2.2954
+statsbomb:20169,Seydou Kéita,2015,ITA-Serie A,AS Roma,statsbomb,DM,outfield,3,Destroyer,0.0773,2.3088
+statsbomb:6381,Saúl Ñíguez,2015,ESP-La Liga,Atlético Madrid,statsbomb,CM,outfield,3,Destroyer,0.3388,2.3171
+statsbomb:2990,Benjamin André,2015,FRA-Ligue 1,Rennes,statsbomb,DM,outfield,3,Destroyer,0.3105,2.3324
+statsbomb:4817,Joe Ledley,2015,ENG-Premier League,Crystal Palace,statsbomb,CM,outfield,3,Destroyer,0.0069,2.3543
+statsbomb:16453,Gary Medel,2015,ITA-Serie A,Inter Milan,statsbomb,DM,outfield,3,Destroyer,0.0294,2.374
+statsbomb:24138,Quini,2015,ESP-La Liga,Rayo Vallecano,statsbomb,FB,outfield,3,Destroyer,0.0634,2.3856
+statsbomb:8672,Gelson Fernandes,2015,FRA-Ligue 1,Rennes,statsbomb,DM,outfield,3,Destroyer,0.432,2.4298
+statsbomb:20636,Mirko Gori,2015,ITA-Serie A,Frosinone,statsbomb,DM,outfield,3,Destroyer,0.3568,2.4369
+statsbomb:7780,Lucas Leiva,2015,ENG-Premier League,Liverpool,statsbomb,DM,outfield,3,Destroyer,0.2894,2.4544
+statsbomb:4545,Prince Oniangué,2015,FRA-Ligue 1,Reims,statsbomb,DM,outfield,3,Destroyer,0.1787,2.4718
+statsbomb:7488,Thomas Ayasse,2015,FRA-Ligue 1,Troyes,statsbomb,DM,outfield,3,Destroyer,0.2441,2.4904
+statsbomb:6801,Pablo Hernández,2015,ESP-La Liga,Celta Vigo,statsbomb,CM,outfield,3,Destroyer,0.2275,2.5606
+statsbomb:6830,Facundo Roncaglia,2015,ITA-Serie A,Fiorentina,statsbomb,CB,outfield,3,Destroyer,0.017,2.5809
+statsbomb:5540,Valon Behrami,2015,ENG-Premier League,Watford,statsbomb,CM,outfield,3,Destroyer,0.3824,2.6241
+statsbomb:6669,David Zurutuza,2015,ESP-La Liga,Real Sociedad,statsbomb,W,outfield,3,Destroyer,0.1566,2.6786
+statsbomb:19668,Augusto Fernández,2015,ESP-La Liga,Celta Vigo,statsbomb,DM,outfield,3,Destroyer,0.298,2.7081
+statsbomb:31174,Jean-Daniel Akpa Akpro,2015,FRA-Ligue 1,Toulouse,statsbomb,CM,outfield,3,Destroyer,0.2478,2.7465
+statsbomb:6577,Zdravko Kuzmanović,2015,ITA-Serie A,Udinese,statsbomb,DM,outfield,3,Destroyer,0.0174,2.751
+statsbomb:3200,Renaud Cohade,2015,FRA-Ligue 1,Saint-Étienne,statsbomb,CM,outfield,3,Destroyer,0.2091,2.8162
+statsbomb:3037,Mousa Dembélé,2015,ENG-Premier League,Tottenham Hotspur,statsbomb,DM,outfield,3,Destroyer,0.069,2.9878
+statsbomb:3436,Idrissa Gueye,2015,ENG-Premier League,Aston Villa,statsbomb,CM,outfield,3,Destroyer,0.2721,3.0035
+statsbomb:3961,N'Golo Kanté,2015,ENG-Premier League,Leicester City,statsbomb,CM,outfield,3,Destroyer,0.2415,3.0136
+statsbomb:6352,Ricardo Pereira,2015,FRA-Ligue 1,Nice,statsbomb,FB,outfield,3,Destroyer,0.0301,3.0317
+statsbomb:8234,Ignacio Camacho,2015,ESP-La Liga,Málaga,statsbomb,DM,outfield,3,Destroyer,0.0741,3.0682
+statsbomb:30338,André Poko,2015,FRA-Ligue 1,Bordeaux,statsbomb,FB,outfield,3,Destroyer,0.2246,3.1835
+statsbomb:4264,Vincent Koziello,2015,FRA-Ligue 1,Nice,statsbomb,CM,outfield,3,Destroyer,0.1169,3.4016
+statsbomb:30829,Lorenzo Lollo,2015,ITA-Serie A,Carpi,statsbomb,CM,outfield,3,Destroyer,0.1209,3.4955
+statsbomb:13846,Jan Kirchhoff,2015,ENG-Premier League,Sunderland,statsbomb,DM,outfield,3,Destroyer,0.0313,3.814
+statsbomb:31273,Marco Crimi,2015,ITA-Serie A,Carpi,statsbomb,CM,outfield,3,Destroyer,0.1635,4.4601
+statsbomb:7475,Tomás Rincón,2015,ITA-Serie A,Genoa,statsbomb,DM,outfield,4,Deep playmaker,0.6069,0.9151
+statsbomb:6379,Sergi Roberto,2015,ESP-La Liga,Barcelona,statsbomb,FB,outfield,4,Deep playmaker,0.6238,1.0084
+statsbomb:3361,Clément Grenier,2015,FRA-Ligue 1,Lyon,statsbomb,CM,outfield,4,Deep playmaker,0.61,1.0236
+statsbomb:16586,Fernando,2015,ITA-Serie A,Sampdoria,statsbomb,DM,outfield,4,Deep playmaker,0.5932,1.0932
+statsbomb:42430,Nicolas Maurice-Belay,2015,FRA-Ligue 1,Bordeaux,statsbomb,CM,outfield,4,Deep playmaker,0.5517,1.1073
+statsbomb:6595,Dani Parejo,2015,ESP-La Liga,Valencia,statsbomb,CM,outfield,4,Deep playmaker,0.5029,1.1571
+statsbomb:16308,Leandro Paredes,2015,ITA-Serie A,Empoli,statsbomb,DM,outfield,4,Deep playmaker,0.624,1.2301
+statsbomb:3828,Steven Davis,2015,ENG-Premier League,Southampton,statsbomb,AM,outfield,4,Deep playmaker,0.4282,1.271
+statsbomb:26848,Roberto Trashorras,2015,ESP-La Liga,Rayo Vallecano,statsbomb,DM,outfield,4,Deep playmaker,0.6172,1.284
+statsbomb:26728,Tino Costa,2015,ITA-Serie A,Genoa,statsbomb,DM,outfield,4,Deep playmaker,0.4995,1.2956
+statsbomb:2950,Jonas Martin,2015,FRA-Ligue 1,Montpellier,statsbomb,CM,outfield,4,Deep playmaker,0.4746,1.3131
+statsbomb:3150,Jaroslav Plašil,2015,FRA-Ligue 1,Bordeaux,statsbomb,CM,outfield,4,Deep playmaker,0.2991,1.3356
+statsbomb:8420,Luca Cigarini,2015,ITA-Serie A,Atalanta,statsbomb,CM,outfield,4,Deep playmaker,0.4096,1.38
+statsbomb:5470,Ivan Rakitić,2015,ESP-La Liga,Barcelona,statsbomb,CM,outfield,4,Deep playmaker,0.5502,1.3865
+statsbomb:3211,Florent Balmont,2015,FRA-Ligue 1,Lille,statsbomb,CM,outfield,4,Deep playmaker,0.5724,1.4112
+statsbomb:6962,Radja Nainggolan,2015,ITA-Serie A,AS Roma,statsbomb,CM,outfield,4,Deep playmaker,0.4045,1.4277
+statsbomb:8294,Claudio Marchisio,2015,ITA-Serie A,Juventus,statsbomb,DM,outfield,4,Deep playmaker,0.4425,1.4374
+statsbomb:3874,Mark Noble,2015,ENG-Premier League,West Ham United,statsbomb,CM,outfield,4,Deep playmaker,0.3229,1.4403
+statsbomb:5456,Mateo Kovačić,2015,ESP-La Liga,Real Madrid,statsbomb,CM,outfield,4,Deep playmaker,0.5936,1.4547
+statsbomb:3532,Jordan Henderson,2015,ENG-Premier League,Liverpool,statsbomb,CM,outfield,4,Deep playmaker,0.388,1.4596
+statsbomb:3236,Sergi Darder,2015,FRA-Ligue 1,Lyon,statsbomb,CM,outfield,4,Deep playmaker,0.4503,1.4648
+statsbomb:30704,Gastón Brugman,2015,ITA-Serie A,Palermo,statsbomb,DM,outfield,4,Deep playmaker,0.4141,1.4724
+statsbomb:3168,João Moutinho,2015,FRA-Ligue 1,Monaco,statsbomb,DM,outfield,4,Deep playmaker,0.4551,1.5085
+statsbomb:20048,Gregory van der Wiel,2015,FRA-Ligue 1,Paris Saint-Germain,statsbomb,FB,outfield,4,Deep playmaker,0.3319,1.5265
+statsbomb:16334,Graham Dorrans,2015,ENG-Premier League,Norwich City,statsbomb,DM,outfield,4,Deep playmaker,0.3722,1.5439
+statsbomb:3606,Ander Herrera,2015,ENG-Premier League,Manchester United,statsbomb,AM,outfield,4,Deep playmaker,0.3379,1.5498
+statsbomb:26211,Joan Verdú,2015,ESP-La Liga,Levante,statsbomb,CM,outfield,4,Deep playmaker,0.3508,1.584
+statsbomb:3964,Marcos Alonso,2015,ITA-Serie A,Fiorentina,statsbomb,FB,outfield,4,Deep playmaker,0.4304,1.5937
+statsbomb:6305,Milan Badelj,2015,ITA-Serie A,Fiorentina,statsbomb,DM,outfield,4,Deep playmaker,0.4979,1.6283
+statsbomb:25345,Anderson Hernanes de Carvalho Andrade,2015,ITA-Serie A,Juventus,statsbomb,DM,outfield,4,Deep playmaker,0.5046,1.6377
+statsbomb:4324,Dani Alves,2015,ESP-La Liga,Barcelona,statsbomb,FB,outfield,4,Deep playmaker,0.5186,1.684
+statsbomb:2985,Ludovic Baal,2015,FRA-Ligue 1,Rennes,statsbomb,FB,outfield,4,Deep playmaker,0.2006,1.7318
+statsbomb:25954,Enzo Maresca,2015,ITA-Serie A,Palermo,statsbomb,DM,outfield,4,Deep playmaker,0.1069,1.7343
+statsbomb:6797,Daniel Wass,2015,ESP-La Liga,Celta Vigo,statsbomb,DM,outfield,4,Deep playmaker,0.2218,1.7595
+statsbomb:26192,Matías Fernández,2015,ITA-Serie A,Fiorentina,statsbomb,AM,outfield,4,Deep playmaker,0.3859,1.7622
+statsbomb:7107,Danilo Cataldi,2015,ITA-Serie A,Lazio,statsbomb,DM,outfield,4,Deep playmaker,0.2661,1.7671
+statsbomb:3605,Ki Sung-Yeung,2015,ENG-Premier League,Swansea City,statsbomb,CM,outfield,4,Deep playmaker,0.4674,1.77
+statsbomb:3118,Jordan Ferri,2015,FRA-Ligue 1,Lyon,statsbomb,CM,outfield,4,Deep playmaker,0.5182,1.7921
+statsbomb:5721,Daniel Carvajal,2015,ESP-La Liga,Real Madrid,statsbomb,FB,outfield,4,Deep playmaker,0.4192,1.7988
+statsbomb:3583,Ashley Westwood,2015,ENG-Premier League,Aston Villa,statsbomb,CM,outfield,4,Deep playmaker,0.1778,1.8051
+statsbomb:18414,Bastian Schweinsteiger,2015,ENG-Premier League,Manchester United,statsbomb,DM,outfield,4,Deep playmaker,0.4293,1.8229
+statsbomb:3951,Mario Lemina,2015,ITA-Serie A,Juventus,statsbomb,DM,outfield,4,Deep playmaker,0.0923,1.8236
+statsbomb:25199,Lucas Silva,2015,FRA-Ligue 1,Marseille,statsbomb,DM,outfield,4,Deep playmaker,0.0825,1.829
+statsbomb:24149,Verza,2015,ESP-La Liga,Levante,statsbomb,DM,outfield,4,Deep playmaker,0.2216,1.8363
+statsbomb:3515,Alberto Moreno,2015,ENG-Premier League,Liverpool,statsbomb,FB,outfield,4,Deep playmaker,0.2236,1.8395
+statsbomb:3057,Jonjo Shelvey,2015,ENG-Premier League,Swansea City,statsbomb,CM,outfield,4,Deep playmaker,0.3146,1.8533
+statsbomb:5660,Piotr Zieliński,2015,ITA-Serie A,Empoli,statsbomb,CM,outfield,4,Deep playmaker,0.0901,1.857
+statsbomb:5480,Corentin Tolisso,2015,FRA-Ligue 1,Lyon,statsbomb,CM,outfield,4,Deep playmaker,0.3922,1.8635
+statsbomb:5255,Matías Vecino,2015,ITA-Serie A,Fiorentina,statsbomb,DM,outfield,4,Deep playmaker,0.3534,1.8649
+statsbomb:3002,Benjamin Nivet,2015,FRA-Ligue 1,Troyes,statsbomb,AM,outfield,4,Deep playmaker,0.2644,1.8678
+statsbomb:3345,Charlie Daniels,2015,ENG-Premier League,Bournemouth,statsbomb,FB,outfield,4,Deep playmaker,0.0702,1.8692
+statsbomb:6873,Francisco Portillo,2015,ESP-La Liga,Real Betis,statsbomb,CM,outfield,4,Deep playmaker,0.0816,1.8712
+statsbomb:3359,Jean Michaël Seri,2015,FRA-Ligue 1,Nice,statsbomb,CM,outfield,4,Deep playmaker,0.5088,1.8741
+statsbomb:7301,Lossémy Karaboué,2015,FRA-Ligue 1,Troyes,statsbomb,FB,outfield,4,Deep playmaker,0.2458,1.8763
+statsbomb:3102,Yann Jouffre,2015,FRA-Ligue 1,Lorient,statsbomb,CM,outfield,4,Deep playmaker,0.2704,1.8794
+statsbomb:6964,Alessandro Florenzi,2015,ITA-Serie A,AS Roma,statsbomb,FB,outfield,4,Deep playmaker,0.211,1.9015
+statsbomb:3493,Emre Can,2015,ENG-Premier League,Liverpool,statsbomb,CM,outfield,4,Deep playmaker,0.2085,1.9109
+statsbomb:6759,Roberto Soriano,2015,ITA-Serie A,Sampdoria,statsbomb,CM,outfield,4,Deep playmaker,0.0265,1.9129
+statsbomb:6396,Beñat Etxebarria,2015,ESP-La Liga,Athletic Club,statsbomb,DM,outfield,4,Deep playmaker,0.2712,1.9173
+statsbomb:6928,Tana,2015,ESP-La Liga,Las Palmas,statsbomb,AM,outfield,4,Deep playmaker,0.1656,1.9186
+statsbomb:3304,Harry Arter,2015,ENG-Premier League,Bournemouth,statsbomb,CM,outfield,4,Deep playmaker,0.3069,1.9247
+statsbomb:7031,Elseid Hysaj,2015,ITA-Serie A,Napoli,statsbomb,FB,outfield,4,Deep playmaker,0.1385,1.9339
+statsbomb:40697,Mounir Obbadi,2015,FRA-Ligue 1,Lille,statsbomb,CM,outfield,4,Deep playmaker,0.4258,1.9391
+statsbomb:18874,Mauricio Isla,2015,FRA-Ligue 1,Marseille,statsbomb,DM,outfield,4,Deep playmaker,0.1502,1.9441
+statsbomb:23488,Mario Suárez,2015,ENG-Premier League,Watford,statsbomb,DM,outfield,4,Deep playmaker,0.2086,1.9754
+statsbomb:7153,Jordan Veretout,2015,ENG-Premier League,Aston Villa,statsbomb,CM,outfield,4,Deep playmaker,0.1534,1.9836
+statsbomb:7035,Allan,2015,ITA-Serie A,Napoli,statsbomb,CM,outfield,4,Deep playmaker,0.3436,2.007
+statsbomb:5510,Lucas Biglia,2015,ITA-Serie A,Lazio,statsbomb,DM,outfield,4,Deep playmaker,0.3055,2.0229
+statsbomb:5209,Raphaël Guerreiro,2015,FRA-Ligue 1,Lorient,statsbomb,FB,outfield,4,Deep playmaker,0.1137,2.0263
+statsbomb:6934,Momo,2015,ESP-La Liga,Las Palmas,statsbomb,CM,outfield,4,Deep playmaker,0.2534,2.0438
+statsbomb:5216,Andrés Iniesta,2015,ESP-La Liga,Barcelona,statsbomb,CM,outfield,4,Deep playmaker,0.4814,2.0456
+statsbomb:7785,Senad Lulić,2015,ITA-Serie A,Lazio,statsbomb,FB,outfield,4,Deep playmaker,0.3044,2.059
+statsbomb:5469,Marcelo Brozović,2015,ITA-Serie A,Inter Milan,statsbomb,CM,outfield,4,Deep playmaker,0.3217,2.0609
+statsbomb:40251,Daniele Croce,2015,ITA-Serie A,Empoli,statsbomb,CM,outfield,4,Deep playmaker,0.0752,2.092
+statsbomb:3633,Gareth Barry,2015,ENG-Premier League,Everton,statsbomb,DM,outfield,4,Deep playmaker,0.0327,2.1068
+statsbomb:3610,Roque Mesa,2015,ESP-La Liga,Las Palmas,statsbomb,DM,outfield,4,Deep playmaker,0.3802,2.1343
+statsbomb:3517,Aaron Ramsey,2015,ENG-Premier League,Arsenal,statsbomb,DM,outfield,4,Deep playmaker,0.4624,2.143
+statsbomb:4326,Layvin Kurzawa,2015,FRA-Ligue 1,Paris Saint-Germain,statsbomb,FB,outfield,4,Deep playmaker,0.25,2.1451
+statsbomb:5203,Sergio Busquets,2015,ESP-La Liga,Barcelona,statsbomb,DM,outfield,4,Deep playmaker,0.1786,2.1705
+statsbomb:19047,Fábio Coentrão,2015,FRA-Ligue 1,Monaco,statsbomb,FB,outfield,4,Deep playmaker,0.0333,2.173
+statsbomb:40367,Francesco Lodi,2015,ITA-Serie A,Udinese,statsbomb,DM,outfield,4,Deep playmaker,0.2991,2.2028
+statsbomb:27341,Marcelo Díaz,2015,ESP-La Liga,Celta Vigo,statsbomb,DM,outfield,4,Deep playmaker,0.2177,2.2227
+statsbomb:10966,Wes Hoolahan,2015,ENG-Premier League,Norwich City,statsbomb,AM,outfield,4,Deep playmaker,0.0357,2.2278
+statsbomb:3421,Bryan Dabo,2015,FRA-Ligue 1,Montpellier,statsbomb,CM,outfield,4,Deep playmaker,0.1116,2.2511
+statsbomb:6997,Borja Valero,2015,ITA-Serie A,Fiorentina,statsbomb,DM,outfield,4,Deep playmaker,0.2223,2.2836
+statsbomb:19299,Maicon,2015,ITA-Serie A,AS Roma,statsbomb,FB,outfield,4,Deep playmaker,0.3811,2.338
+statsbomb:4375,Blaise Matuidi,2015,FRA-Ligue 1,Paris Saint-Germain,statsbomb,CM,outfield,4,Deep playmaker,0.4285,2.3452
+statsbomb:5463,Luka Modrić,2015,ESP-La Liga,Real Madrid,statsbomb,CM,outfield,4,Deep playmaker,0.4142,2.3455
+statsbomb:4891,Ibrahim Afellay,2015,ENG-Premier League,Stoke City,statsbomb,AM,outfield,4,Deep playmaker,0.2388,2.3705
+statsbomb:6697,Dani Ceballos,2015,ESP-La Liga,Real Betis,statsbomb,DM,outfield,4,Deep playmaker,0.213,2.4436
+statsbomb:40122,Oscar,2015,ENG-Premier League,Chelsea,statsbomb,AM,outfield,4,Deep playmaker,0.0466,2.456
+statsbomb:6899,Rubén Pardo,2015,ESP-La Liga,Real Sociedad,statsbomb,DM,outfield,4,Deep playmaker,0.0304,2.4741
+statsbomb:3473,James Milner,2015,ENG-Premier League,Liverpool,statsbomb,CM,outfield,4,Deep playmaker,0.0869,2.4908
+statsbomb:3294,Juan Mata,2015,ENG-Premier League,Manchester United,statsbomb,W,outfield,4,Deep playmaker,0.2147,2.5051
+statsbomb:5211,Jordi Alba,2015,ESP-La Liga,Barcelona,statsbomb,FB,outfield,4,Deep playmaker,0.108,2.5464
+statsbomb:4410,Christophe Jallet,2015,FRA-Ligue 1,Lyon,statsbomb,FB,outfield,4,Deep playmaker,0.2913,2.5522
+statsbomb:6999,Davide Santon,2015,ITA-Serie A,Inter Milan,statsbomb,FB,outfield,4,Deep playmaker,0.0762,2.5564
+statsbomb:11516,Manuel Pasqual,2015,ITA-Serie A,Fiorentina,statsbomb,FB,outfield,4,Deep playmaker,0.2427,2.5642
+statsbomb:3612,Ashley Young,2015,ENG-Premier League,Manchester United,statsbomb,FB,outfield,4,Deep playmaker,0.0253,2.5788
+statsbomb:5200,Lucas Vázquez,2015,ESP-La Liga,Real Madrid,statsbomb,W,outfield,4,Deep playmaker,0.1825,2.6011
+statsbomb:7791,Seko Fofana,2015,FRA-Ligue 1,Bastia,statsbomb,DM,outfield,4,Deep playmaker,0.0362,2.603
+statsbomb:7770,Federico Viviani,2015,ITA-Serie A,Hellas Verona,statsbomb,DM,outfield,4,Deep playmaker,0.2832,2.6052
+statsbomb:6589,Geoffrey Kondogbia,2015,ITA-Serie A,Inter Milan,statsbomb,CM,outfield,4,Deep playmaker,0.1656,2.6224
+statsbomb:26613,Maxwell,2015,FRA-Ligue 1,Paris Saint-Germain,statsbomb,FB,outfield,4,Deep playmaker,0.1738,2.6233
+statsbomb:3185,Thomas Mangani,2015,FRA-Ligue 1,Angers,statsbomb,CM,outfield,4,Deep playmaker,0.0724,2.6363
+statsbomb:5596,Aleksandar Kolarov,2015,ENG-Premier League,Manchester City,statsbomb,FB,outfield,4,Deep playmaker,0.0347,2.6411
+statsbomb:3087,Yaya Touré,2015,ENG-Premier League,Manchester City,statsbomb,DM,outfield,4,Deep playmaker,0.2392,2.6526
+statsbomb:5574,Toni Kroos,2015,ESP-La Liga,Real Madrid,statsbomb,DM,outfield,4,Deep playmaker,0.4189,2.7263
+statsbomb:5199,Koke,2015,ESP-La Liga,Atlético Madrid,statsbomb,CM,outfield,4,Deep playmaker,0.1647,2.7566
+statsbomb:6945,Alex Sandro,2015,ITA-Serie A,Juventus,statsbomb,FB,outfield,4,Deep playmaker,0.2129,2.9289
+statsbomb:4506,Nampalys Mendy,2015,FRA-Ligue 1,Nice,statsbomb,DM,outfield,4,Deep playmaker,0.0978,3.043
+statsbomb:8515,Benjamin Stambouli,2015,FRA-Ligue 1,Paris Saint-Germain,statsbomb,DM,outfield,4,Deep playmaker,0.0613,3.1663
+statsbomb:5552,Marcelo,2015,ESP-La Liga,Real Madrid,statsbomb,FB,outfield,4,Deep playmaker,0.2685,3.1677
+statsbomb:4346,Giannelli Imbula,2015,ENG-Premier League,Stoke City,statsbomb,DM,outfield,4,Deep playmaker,0.0387,3.1898
+statsbomb:3026,Adrien Rabiot,2015,FRA-Ligue 1,Paris Saint-Germain,statsbomb,CM,outfield,4,Deep playmaker,0.0776,3.2498
+statsbomb:3478,Cesc Fàbregas,2015,ENG-Premier League,Chelsea,statsbomb,DM,outfield,4,Deep playmaker,0.1901,3.8898
+statsbomb:7024,Jorginho,2015,ITA-Serie A,Napoli,statsbomb,DM,outfield,4,Deep playmaker,0.3065,4.3032
+statsbomb:4325,Thiago Motta,2015,FRA-Ligue 1,Paris Saint-Germain,statsbomb,DM,outfield,4,Deep playmaker,0.2265,4.5464
+statsbomb:3166,Marco Verratti,2015,FRA-Ligue 1,Paris Saint-Germain,statsbomb,CM,outfield,4,Deep playmaker,0.2117,5.6892
+statsbomb:40486,Éric Bauthéac,2015,FRA-Ligue 1,Lille,statsbomb,W,outfield,5,Pressing wide midfielder,0.7243,0.7304
+statsbomb:32807,Fredy Guarín,2015,ITA-Serie A,Inter Milan,statsbomb,CM,outfield,5,Pressing wide midfielder,0.6494,0.8105
+statsbomb:7149,Marco Benassi,2015,ITA-Serie A,Torino,statsbomb,CM,outfield,5,Pressing wide midfielder,0.6234,0.8979
+statsbomb:3049,Matt Ritchie,2015,ENG-Premier League,Bournemouth,statsbomb,CM,outfield,5,Pressing wide midfielder,0.6315,0.9095
+statsbomb:7635,Gaëtan Charbonnier,2015,FRA-Ligue 1,Reims,statsbomb,ST,outfield,5,Pressing wide midfielder,0.6215,0.9951
+statsbomb:3449,Wayne Routledge,2015,ENG-Premier League,Swansea City,statsbomb,W,outfield,5,Pressing wide midfielder,0.6341,1.0027
+statsbomb:4441,Billy Ketkeophomphone,2015,FRA-Ligue 1,Angers,statsbomb,ST,outfield,5,Pressing wide midfielder,0.6367,1.0114
+statsbomb:5687,Takashi Inui,2015,ESP-La Liga,Eibar,statsbomb,W,outfield,5,Pressing wide midfielder,0.507,1.0616
+statsbomb:3490,James Morrison,2015,ENG-Premier League,West Bromwich Albion,statsbomb,CM,outfield,5,Pressing wide midfielder,0.5421,1.1058
+statsbomb:9528,Steven Naismith,2015,ENG-Premier League,Norwich City,statsbomb,AM,outfield,5,Pressing wide midfielder,0.4689,1.1122
+statsbomb:5717,Diego Laxalt,2015,ITA-Serie A,Genoa,statsbomb,FB,outfield,5,Pressing wide midfielder,0.4609,1.1218
+statsbomb:4431,Kévin Monnet-Paquet,2015,FRA-Ligue 1,Saint-Étienne,statsbomb,W,outfield,5,Pressing wide midfielder,0.3679,1.1316
+statsbomb:3636,Charlie Adam,2015,ENG-Premier League,Stoke City,statsbomb,DM,outfield,5,Pressing wide midfielder,0.519,1.1393
+statsbomb:5204,Bruno Fernandes,2015,ITA-Serie A,Udinese,statsbomb,CM,outfield,5,Pressing wide midfielder,0.4231,1.2168
+statsbomb:34565,Anthony Mounier,2015,ITA-Serie A,Bologna,statsbomb,W,outfield,5,Pressing wide midfielder,0.4294,1.2707
+statsbomb:6685,Mikel Oyarzabal,2015,ESP-La Liga,Real Sociedad,statsbomb,W,outfield,5,Pressing wide midfielder,0.3539,1.2732
+statsbomb:3151,Jules Iloki,2015,FRA-Ligue 1,Nantes,statsbomb,W,outfield,5,Pressing wide midfielder,0.2341,1.3162
+statsbomb:6594,Santi Mina,2015,ESP-La Liga,Valencia,statsbomb,W,outfield,5,Pressing wide midfielder,0.4944,1.3575
+statsbomb:7796,Silvan Widmer,2015,ITA-Serie A,Udinese,statsbomb,FB,outfield,5,Pressing wide midfielder,0.3919,1.3664
+statsbomb:3111,Gilles Sunu,2015,FRA-Ligue 1,Angers,statsbomb,W,outfield,5,Pressing wide midfielder,0.4388,1.3709
+statsbomb:8552,Robin Quaison,2015,ITA-Serie A,Palermo,statsbomb,CM,outfield,5,Pressing wide midfielder,0.5354,1.3725
+statsbomb:5724,Fayçal Fajr,2015,ESP-La Liga,Deportivo La Coruña,statsbomb,W,outfield,5,Pressing wide midfielder,0.3158,1.3868
+statsbomb:2992,Vincent Bessat,2015,FRA-Ligue 1,Caen,statsbomb,FB,outfield,5,Pressing wide midfielder,0.3625,1.3932
+statsbomb:4711,Pablo Hernández,2015,ESP-La Liga,Rayo Vallecano,statsbomb,W,outfield,5,Pressing wide midfielder,0.1942,1.4293
+statsbomb:9578,Jonathan Howson,2015,ENG-Premier League,Norwich City,statsbomb,CM,outfield,5,Pressing wide midfielder,0.1904,1.4411
+statsbomb:11729,Luca Rizzo,2015,ITA-Serie A,Bologna,statsbomb,W,outfield,5,Pressing wide midfielder,0.448,1.4486
+statsbomb:5512,Emil Hallfredsson,2015,ITA-Serie A,Hellas Verona,statsbomb,CM,outfield,5,Pressing wide midfielder,0.375,1.4492
+statsbomb:7165,Rodrigo Palacio,2015,ITA-Serie A,Inter Milan,statsbomb,ST,outfield,5,Pressing wide midfielder,0.385,1.4551
+statsbomb:3953,Aaron Lennon,2015,ENG-Premier League,Everton,statsbomb,W,outfield,5,Pressing wide midfielder,0.5101,1.4701
+statsbomb:5554,Blerim Džemaili,2015,ITA-Serie A,Genoa,statsbomb,DM,outfield,5,Pressing wide midfielder,0.2721,1.4759
+statsbomb:7171,Fabio Borini,2015,ENG-Premier League,Sunderland,statsbomb,CM,outfield,5,Pressing wide midfielder,0.2683,1.4894
+statsbomb:3078,Abdoul Camara,2015,FRA-Ligue 1,Angers,statsbomb,W,outfield,5,Pressing wide midfielder,0.2689,1.4918
+statsbomb:19688,Jason Puncheon,2015,ENG-Premier League,Crystal Palace,statsbomb,CM,outfield,5,Pressing wide midfielder,0.3157,1.4986
+statsbomb:6764,Pablo Fornals,2015,ESP-La Liga,Málaga,statsbomb,DM,outfield,5,Pressing wide midfielder,0.2717,1.5104
+statsbomb:9903,Raman Chibsah,2015,ITA-Serie A,Frosinone,statsbomb,DM,outfield,5,Pressing wide midfielder,0.2797,1.5318
+statsbomb:18867,Matías Nahuel,2015,ESP-La Liga,Villarreal,statsbomb,CM,outfield,5,Pressing wide midfielder,0.3152,1.5516
+statsbomb:30512,Aleksandar Trajkovski,2015,ITA-Serie A,Palermo,statsbomb,ST,outfield,5,Pressing wide midfielder,0.2605,1.5608
+statsbomb:3425,Morgan Amalfitano,2015,FRA-Ligue 1,Lille,statsbomb,W,outfield,5,Pressing wide midfielder,0.3225,1.5654
+statsbomb:6847,Adalberto Peñaranda,2015,ESP-La Liga,Granada,statsbomb,ST,outfield,5,Pressing wide midfielder,0.408,1.578
+statsbomb:5683,Keisuke Honda,2015,ITA-Serie A,AC Milan,statsbomb,CM,outfield,5,Pressing wide midfielder,0.2412,1.5934
+statsbomb:29875,Axel Ngando,2015,FRA-Ligue 1,Bastia,statsbomb,CM,outfield,5,Pressing wide midfielder,0.3037,1.5995
+statsbomb:10616,Mohamed Larbi,2015,FRA-Ligue 1,Gazélec Ajaccio,statsbomb,AM,outfield,5,Pressing wide midfielder,0.4247,1.6435
+statsbomb:3520,Jeffrey Schlupp,2015,ENG-Premier League,Leicester City,statsbomb,FB,outfield,5,Pressing wide midfielder,0.2618,1.6448
+statsbomb:7465,Daniele Baselli,2015,ITA-Serie A,Torino,statsbomb,CM,outfield,5,Pressing wide midfielder,0.39,1.6454
+statsbomb:6963,Lorenzo Pellegrini,2015,ITA-Serie A,Sassuolo,statsbomb,CM,outfield,5,Pressing wide midfielder,0.2214,1.6563
+statsbomb:7349,Gaël Danic,2015,FRA-Ligue 1,Bastia,statsbomb,W,outfield,5,Pressing wide midfielder,0.406,1.6712
+statsbomb:6608,Nabil El Zhar,2015,ESP-La Liga,Las Palmas,statsbomb,CM,outfield,5,Pressing wide midfielder,0.1803,1.704
+statsbomb:401477,Johan Audel,2015,FRA-Ligue 1,Nantes,statsbomb,W,outfield,5,Pressing wide midfielder,0.125,1.7063
+statsbomb:11675,Moi Gómez,2015,ESP-La Liga,Getafe,statsbomb,CM,outfield,5,Pressing wide midfielder,0.2531,1.7265
+statsbomb:9931,Hélder Costa,2015,FRA-Ligue 1,Monaco,statsbomb,W,outfield,5,Pressing wide midfielder,0.23,1.7619
+statsbomb:12351,Alejandro Bedoya,2015,FRA-Ligue 1,Nantes,statsbomb,AM,outfield,5,Pressing wide midfielder,0.221,1.7654
+statsbomb:5605,Oscar Hiljemark,2015,ITA-Serie A,Palermo,statsbomb,CM,outfield,5,Pressing wide midfielder,0.4186,1.7718
+statsbomb:6602,Miguel Ángel Guerrero,2015,ESP-La Liga,Sporting Gijón,statsbomb,ST,outfield,5,Pressing wide midfielder,0.1052,1.7741
+statsbomb:6941,Jasmin Kurtič,2015,ITA-Serie A,Atalanta,statsbomb,CM,outfield,5,Pressing wide midfielder,0.1966,1.7897
+statsbomb:2959,Julien Féret,2015,FRA-Ligue 1,Caen,statsbomb,CM,outfield,5,Pressing wide midfielder,0.3655,1.7975
+statsbomb:24722,Emmanuel Agyemang-Badu,2015,ITA-Serie A,Udinese,statsbomb,CM,outfield,5,Pressing wide midfielder,0.2488,1.8171
+statsbomb:11339,Paweł Wszołek,2015,ITA-Serie A,Hellas Verona,statsbomb,CM,outfield,5,Pressing wide midfielder,0.1095,1.8174
+statsbomb:6829,Samu Castillejo,2015,ESP-La Liga,Villarreal,statsbomb,CM,outfield,5,Pressing wide midfielder,0.1093,1.8364
+statsbomb:27148,Abraham González,2015,ESP-La Liga,Espanyol,statsbomb,CM,outfield,5,Pressing wide midfielder,0.3,1.8437
+statsbomb:7474,Afriyie Acquah,2015,ITA-Serie A,Torino,statsbomb,CM,outfield,5,Pressing wide midfielder,0.0774,1.8495
+statsbomb:3245,Thomas Lemar,2015,FRA-Ligue 1,Monaco,statsbomb,AM,outfield,5,Pressing wide midfielder,0.1255,1.8507
+statsbomb:3660,Davide Zappacosta,2015,ITA-Serie A,Torino,statsbomb,FB,outfield,5,Pressing wide midfielder,0.2543,1.8556
+statsbomb:6393,Iñaki Williams,2015,ESP-La Liga,Athletic Club,statsbomb,W,outfield,5,Pressing wide midfielder,0.1626,1.9061
+statsbomb:45591,Franco Brienza,2015,ITA-Serie A,Bologna,statsbomb,AM,outfield,5,Pressing wide midfielder,0.2439,1.9102
+statsbomb:9898,Aleksandar Tonev,2015,ITA-Serie A,Frosinone,statsbomb,W,outfield,5,Pressing wide midfielder,0.282,1.9108
+statsbomb:31572,Luca Marrone,2015,ITA-Serie A,Hellas Verona,statsbomb,DM,outfield,5,Pressing wide midfielder,0.2045,1.9519
+statsbomb:3347,André Ayew,2015,ENG-Premier League,Swansea City,statsbomb,W,outfield,5,Pressing wide midfielder,0.1136,1.9578
+statsbomb:10530,Olivier Ntcham,2015,ITA-Serie A,Genoa,statsbomb,DM,outfield,5,Pressing wide midfielder,0.0337,1.9584
+statsbomb:6852,Jozabed Sánchez,2015,ESP-La Liga,Rayo Vallecano,statsbomb,AM,outfield,5,Pressing wide midfielder,0.1231,1.9595
+statsbomb:7461,Luca Rigoni,2015,ITA-Serie A,Genoa,statsbomb,DM,outfield,5,Pressing wide midfielder,0.2554,1.967
+statsbomb:7468,Iago Falqué,2015,ITA-Serie A,AS Roma,statsbomb,W,outfield,5,Pressing wide midfielder,0.0991,1.9685
+statsbomb:26020,Ángel Lafita,2015,ESP-La Liga,Getafe,statsbomb,W,outfield,5,Pressing wide midfielder,0.0712,1.9726
+statsbomb:4254,Valentin Eysseric,2015,FRA-Ligue 1,Saint-Étienne,statsbomb,AM,outfield,5,Pressing wide midfielder,0.2374,1.9732
+statsbomb:3514,James McClean,2015,ENG-Premier League,West Bromwich Albion,statsbomb,CM,outfield,5,Pressing wide midfielder,0.4041,1.979
+statsbomb:3071,Pierrick Capelle,2015,FRA-Ligue 1,Angers,statsbomb,CM,outfield,5,Pressing wide midfielder,0.1538,1.9986
+statsbomb:6680,Rubén Rochina,2015,ESP-La Liga,Granada,statsbomb,AM,outfield,5,Pressing wide midfielder,0.0131,2.0044
+statsbomb:3076,Ayoze Pérez,2015,ENG-Premier League,Newcastle United,statsbomb,ST,outfield,5,Pressing wide midfielder,0.2051,2.0073
+statsbomb:8280,Godfred Donsah,2015,ITA-Serie A,Bologna,statsbomb,CM,outfield,5,Pressing wide midfielder,0.062,2.0077
+statsbomb:3020,Casimir Ninga,2015,FRA-Ligue 1,Montpellier,statsbomb,ST,outfield,5,Pressing wide midfielder,0.0305,2.0127
+statsbomb:24235,Federico Dionisi,2015,ITA-Serie A,Frosinone,statsbomb,ST,outfield,5,Pressing wide midfielder,0.1179,2.0168
+statsbomb:7054,Manuel Pucciarelli,2015,ITA-Serie A,Empoli,statsbomb,ST,outfield,5,Pressing wide midfielder,0.1755,2.0235
+statsbomb:8793,Oliver Kragl,2015,ITA-Serie A,Frosinone,statsbomb,CM,outfield,5,Pressing wide midfielder,0.4078,2.0597
+statsbomb:15893,Víctor Rodríguez,2015,ESP-La Liga,Getafe,statsbomb,AM,outfield,5,Pressing wide midfielder,0.1467,2.0756
+statsbomb:16503,Pedro Henrique,2015,FRA-Ligue 1,Rennes,statsbomb,W,outfield,5,Pressing wide midfielder,0.1709,2.0756
+statsbomb:23943,Rubén García,2015,ESP-La Liga,Levante,statsbomb,W,outfield,5,Pressing wide midfielder,0.0737,2.0831
+statsbomb:26723,Álvaro Cejudo,2015,ESP-La Liga,Real Betis,statsbomb,W,outfield,5,Pressing wide midfielder,0.2809,2.1104
+statsbomb:22594,Matt Jarvis,2015,ENG-Premier League,Norwich City,statsbomb,CM,outfield,5,Pressing wide midfielder,0.3131,2.1159
+statsbomb:7337,Mohamed Yattara,2015,FRA-Ligue 1,Angers,statsbomb,ST,outfield,5,Pressing wide midfielder,0.1053,2.1226
+statsbomb:7376,Yoann Court,2015,FRA-Ligue 1,Troyes,statsbomb,CM,outfield,5,Pressing wide midfielder,0.178,2.1268
+statsbomb:3293,Jesse Lingard,2015,ENG-Premier League,Manchester United,statsbomb,CM,outfield,5,Pressing wide midfielder,0.1532,2.1296
+statsbomb:3944,Gylfi Sigurðsson,2015,ENG-Premier League,Swansea City,statsbomb,AM,outfield,5,Pressing wide midfielder,0.176,2.1409
+statsbomb:30911,Robert Gucher,2015,ITA-Serie A,Frosinone,statsbomb,DM,outfield,5,Pressing wide midfielder,0.0458,2.1439
+statsbomb:31911,Damjan Đoković,2015,FRA-Ligue 1,Gazélec Ajaccio,statsbomb,CM,outfield,5,Pressing wide midfielder,0.3522,2.1506
+statsbomb:6390,Markel Susaeta,2015,ESP-La Liga,Athletic Club,statsbomb,W,outfield,5,Pressing wide midfielder,0.2126,2.1617
+statsbomb:6356,Michael Krohn-Dehli,2015,ESP-La Liga,Sevilla,statsbomb,W,outfield,5,Pressing wide midfielder,0.0025,2.17
+statsbomb:3567,Georginio Wijnaldum,2015,ENG-Premier League,Newcastle United,statsbomb,AM,outfield,5,Pressing wide midfielder,0.1357,2.1758
+statsbomb:11603,Mario Pašalić,2015,FRA-Ligue 1,Monaco,statsbomb,CM,outfield,5,Pressing wide midfielder,0.1446,2.1916
+statsbomb:2979,Jonathan Delaplace,2015,FRA-Ligue 1,Caen,statsbomb,CM,outfield,5,Pressing wide midfielder,0.0689,2.1987
+statsbomb:6626,Mubarak Wakaso,2015,ESP-La Liga,Las Palmas,statsbomb,CM,outfield,5,Pressing wide midfielder,0.0397,2.2247
+statsbomb:7029,José Callejón,2015,ITA-Serie A,Napoli,statsbomb,W,outfield,5,Pressing wide midfielder,0.0363,2.2379
+statsbomb:10030,Davide Biondini,2015,ITA-Serie A,Sassuolo,statsbomb,CM,outfield,5,Pressing wide midfielder,0.0818,2.2404
+statsbomb:3375,Adrien Thomasson,2015,FRA-Ligue 1,Nantes,statsbomb,W,outfield,5,Pressing wide midfielder,0.0585,2.2542
+statsbomb:4022,Darren Fletcher,2015,ENG-Premier League,West Bromwich Albion,statsbomb,CM,outfield,5,Pressing wide midfielder,0.0307,2.2702
+statsbomb:10967,Robert Brady,2015,ENG-Premier League,Norwich City,statsbomb,FB,outfield,5,Pressing wide midfielder,0.2301,2.3001
+statsbomb:6690,Xabi Prieto,2015,ESP-La Liga,Real Sociedad,statsbomb,W,outfield,5,Pressing wide midfielder,0.1689,2.3256
+statsbomb:6742,Keko,2015,ESP-La Liga,Eibar,statsbomb,CM,outfield,5,Pressing wide midfielder,0.2931,2.3303
+statsbomb:23470,Luca Paganini,2015,ITA-Serie A,Frosinone,statsbomb,CM,outfield,5,Pressing wide midfielder,0.1363,2.3853
+statsbomb:23994,Álex Menéndez,2015,ESP-La Liga,Sporting Gijón,statsbomb,W,outfield,5,Pressing wide midfielder,0.1856,2.3865
+statsbomb:4090,Adam Lallana,2015,ENG-Premier League,Liverpool,statsbomb,AM,outfield,5,Pressing wide midfielder,0.1302,2.3914
+statsbomb:386512,Alessandro Frara,2015,ITA-Serie A,Frosinone,statsbomb,CM,outfield,5,Pressing wide midfielder,0.1955,2.4017
+statsbomb:2991,Hervé Bazile,2015,FRA-Ligue 1,Caen,statsbomb,CM,outfield,5,Pressing wide midfielder,0.2599,2.4113
+statsbomb:7817,Frédéric Bulot,2015,FRA-Ligue 1,Reims,statsbomb,CM,outfield,5,Pressing wide midfielder,0.1317,2.4159
+statsbomb:3083,Son Heung-Min,2015,ENG-Premier League,Tottenham Hotspur,statsbomb,W,outfield,5,Pressing wide midfielder,0.0719,2.4233
+statsbomb:7698,Alfred Duncan,2015,ITA-Serie A,Sassuolo,statsbomb,CM,outfield,5,Pressing wide midfielder,0.1637,2.4275
+statsbomb:3328,James Ward-Prowse,2015,ENG-Premier League,Southampton,statsbomb,CM,outfield,5,Pressing wide midfielder,0.212,2.5176
+statsbomb:7363,Diego,2015,FRA-Ligue 1,Reims,statsbomb,W,outfield,5,Pressing wide midfielder,0.2411,2.567
+statsbomb:4434,Thibault Giresse,2015,FRA-Ligue 1,Guingamp,statsbomb,CM,outfield,5,Pressing wide midfielder,0.3353,2.5749
+statsbomb:3665,Andy King,2015,ENG-Premier League,Leicester City,statsbomb,DM,outfield,5,Pressing wide midfielder,0.0876,2.5889
+statsbomb:5566,Sami Khedira,2015,ITA-Serie A,Juventus,statsbomb,CM,outfield,5,Pressing wide midfielder,0.0626,2.6291
+statsbomb:10919,Juraj Kucka,2015,ITA-Serie A,AC Milan,statsbomb,CM,outfield,5,Pressing wide midfielder,0.0817,2.6955
+statsbomb:10746,Ermir Lenjani,2015,FRA-Ligue 1,Nantes,statsbomb,FB,outfield,5,Pressing wide midfielder,0.1747,2.7096
+statsbomb:387472,Lorenzo Pasciuti,2015,ITA-Serie A,Carpi,statsbomb,CM,outfield,5,Pressing wide midfielder,0.1767,2.7397
+statsbomb:3363,Marcus Coco,2015,FRA-Ligue 1,Guingamp,statsbomb,CM,outfield,5,Pressing wide midfielder,0.2145,2.7711
+statsbomb:9485,Craig Gardner,2015,ENG-Premier League,West Bromwich Albion,statsbomb,CM,outfield,5,Pressing wide midfielder,0.2166,2.8302
+statsbomb:3349,Michail Antonio,2015,ENG-Premier League,West Ham United,statsbomb,FB,outfield,5,Pressing wide midfielder,0.0856,2.8558
+statsbomb:5589,Sergej Milinković-Savić,2015,ITA-Serie A,Lazio,statsbomb,CM,outfield,5,Pressing wide midfielder,0.0933,2.9213
+statsbomb:23848,Carlos Carmona,2015,ESP-La Liga,Sporting Gijón,statsbomb,W,outfield,5,Pressing wide midfielder,0.106,3.2502
+statsbomb:11117,Scott Sinclair,2015,ENG-Premier League,Aston Villa,statsbomb,W,outfield,5,Pressing wide midfielder,0.0267,3.2701
+statsbomb:3307,Marc Albrighton,2015,ENG-Premier League,Leicester City,statsbomb,CM,outfield,5,Pressing wide midfielder,0.0852,3.3161
+statsbomb:9554,Steven Fletcher,2015,ENG-Premier League,Sunderland,statsbomb,ST,outfield,6,Target man,0.7627,0.5779
+statsbomb:20641,Connor Wickham,2015,ENG-Premier League,Crystal Palace,statsbomb,ST,outfield,6,Target man,0.6773,0.7859
+statsbomb:3842,Shane Long,2015,ENG-Premier League,Southampton,statsbomb,ST,outfield,6,Target man,0.5391,1.0367
+statsbomb:23663,Dieumerci Mbokani Bezua,2015,ENG-Premier League,Norwich City,statsbomb,ST,outfield,6,Target man,0.6644,1.0541
+statsbomb:4041,Salomón Rondón,2015,ENG-Premier League,West Bromwich Albion,statsbomb,ST,outfield,6,Target man,0.3473,1.2623
+statsbomb:36770,Mauricio Ricardo Pinilla Ferreira,2015,ITA-Serie A,Atalanta,statsbomb,ST,outfield,6,Target man,0.3418,1.3059
+statsbomb:3246,Guido Carrillo,2015,FRA-Ligue 1,Monaco,statsbomb,ST,outfield,6,Target man,0.6049,1.3626
+statsbomb:3604,Olivier Giroud,2015,ENG-Premier League,Arsenal,statsbomb,ST,outfield,6,Target man,0.5469,1.3764
+statsbomb:7130,Cheick Diabaté,2015,FRA-Ligue 1,Bordeaux,statsbomb,ST,outfield,6,Target man,0.5459,1.3907
+statsbomb:4269,Aleksandar Mitrović,2015,ENG-Premier League,Newcastle United,statsbomb,ST,outfield,6,Target man,0.476,1.3951
+statsbomb:15996,Éder,2015,FRA-Ligue 1,Lille,statsbomb,ST,outfield,6,Target man,0.2408,1.3976
+statsbomb:8180,Leonardo Pavoletti,2015,ITA-Serie A,Genoa,statsbomb,ST,outfield,6,Target man,0.5156,1.4396
+statsbomb:3670,Jonathan Walters,2015,ENG-Premier League,Stoke City,statsbomb,ST,outfield,6,Target man,0.3616,1.4468
+statsbomb:3497,Vicente Iborra,2015,ESP-La Liga,Sevilla,statsbomb,AM,outfield,6,Target man,0.5477,1.4805
+statsbomb:11062,Graziano Pellè,2015,ENG-Premier League,Southampton,statsbomb,ST,outfield,6,Target man,0.5379,1.4841
+statsbomb:6394,Aritz Aduriz,2015,ESP-La Liga,Athletic Club,statsbomb,ST,outfield,6,Target man,0.5319,1.5819
+statsbomb:4807,Cameron Jerome,2015,ENG-Premier League,Norwich City,statsbomb,ST,outfield,6,Target man,0.3912,1.5866
+statsbomb:6707,Charles,2015,ESP-La Liga,Málaga,statsbomb,ST,outfield,6,Target man,0.0844,1.6048
+statsbomb:13613,Daniel Ciofani,2015,ITA-Serie A,Frosinone,statsbomb,ST,outfield,6,Target man,0.3672,1.6284
+statsbomb:6284,Kolbeinn Sigthórsson,2015,FRA-Ligue 1,Nantes,statsbomb,ST,outfield,6,Target man,0.4931,1.64
+statsbomb:20542,Álvaro Negredo,2015,ESP-La Liga,Valencia,statsbomb,ST,outfield,6,Target man,0.5643,1.6754
+statsbomb:7721,John Tshibumbu,2015,FRA-Ligue 1,Gazélec Ajaccio,statsbomb,ST,outfield,6,Target man,0.2126,1.7282
+statsbomb:3962,Diafra Sakho,2015,ENG-Premier League,West Ham United,statsbomb,ST,outfield,6,Target man,0.1185,1.7617
+statsbomb:6700,Sergi Enrich,2015,ESP-La Liga,Eibar,statsbomb,ST,outfield,6,Target man,0.4648,1.7624
+statsbomb:4799,Sloan Privat,2015,FRA-Ligue 1,Guingamp,statsbomb,ST,outfield,6,Target man,0.5669,1.8131
+statsbomb:6973,Edin Džeko,2015,ITA-Serie A,AS Roma,statsbomb,ST,outfield,6,Target man,0.4698,1.8147
+statsbomb:25134,Deyverson,2015,ESP-La Liga,Levante,statsbomb,ST,outfield,6,Target man,0.5594,1.8883
+statsbomb:26690,Manucho Gonçalves,2015,ESP-La Liga,Rayo Vallecano,statsbomb,ST,outfield,6,Target man,0.5694,1.9872
+statsbomb:5472,Mario Mandžukić,2015,ITA-Serie A,Juventus,statsbomb,ST,outfield,6,Target man,0.0359,2.0166
+statsbomb:3486,Fernando Llorente,2015,ESP-La Liga,Sevilla,statsbomb,ST,outfield,6,Target man,0.5732,2.0382
+statsbomb:3671,Leonardo Ulloa,2015,ENG-Premier League,Leicester City,statsbomb,ST,outfield,6,Target man,0.3949,2.0742
+statsbomb:3038,Andy Delort,2015,FRA-Ligue 1,Caen,statsbomb,ST,outfield,6,Target man,0.3033,2.0989
+statsbomb:401541,Evaeverson Lemos da Silva Brandão,2015,FRA-Ligue 1,Bastia,statsbomb,ST,outfield,6,Target man,0.4309,2.1219
+statsbomb:49439,Germán Denis,2015,ITA-Serie A,Atalanta,statsbomb,ST,outfield,6,Target man,0.2885,2.1294
+statsbomb:3454,Troy Deeney,2015,ENG-Premier League,Watford,statsbomb,ST,outfield,6,Target man,0.5066,2.1478
+statsbomb:20252,Luca Toni,2015,ITA-Serie A,Hellas Verona,statsbomb,ST,outfield,6,Target man,0.4258,2.1889
+statsbomb:2955,Ronny Rodelin,2015,FRA-Ligue 1,Caen,statsbomb,CM,outfield,6,Target man,0.2246,2.1973
+statsbomb:5676,Cheikh N'Doye,2015,FRA-Ligue 1,Angers,statsbomb,CM,outfield,6,Target man,0.4028,2.437
+statsbomb:3380,Christian Benteke,2015,ENG-Premier League,Liverpool,statsbomb,ST,outfield,6,Target man,0.4413,2.4468
+statsbomb:3598,Wilfried Bony,2015,ENG-Premier League,Manchester City,statsbomb,ST,outfield,6,Target man,0.1545,2.6123
+statsbomb:4271,Andy Carroll,2015,ENG-Premier League,West Ham United,statsbomb,ST,outfield,6,Target man,0.5047,2.6277
+statsbomb:5726,Khalid Boutaïb,2015,FRA-Ligue 1,Gazélec Ajaccio,statsbomb,ST,outfield,6,Target man,0.157,2.8498
+statsbomb:6391,Raúl García,2015,ESP-La Liga,Athletic Club,statsbomb,AM,outfield,6,Target man,0.0444,3.3254
+statsbomb:19362,Rudy Gestede,2015,ENG-Premier League,Aston Villa,statsbomb,ST,outfield,6,Target man,0.3908,4.2252
+statsbomb:3018,Giovanni Sio,2015,FRA-Ligue 1,Rennes,statsbomb,ST,outfield,7,Poacher,0.8456,0.4236
+statsbomb:8167,Sergio Araujo,2015,ESP-La Liga,Las Palmas,statsbomb,ST,outfield,7,Poacher,0.7899,0.5507
+statsbomb:6862,Cédric Bakambu,2015,ESP-La Liga,Villarreal,statsbomb,ST,outfield,7,Poacher,0.8088,0.5748
+statsbomb:8419,Duje Čop,2015,ESP-La Liga,Málaga,statsbomb,ST,outfield,7,Poacher,0.7078,0.7582
+statsbomb:6721,Willian José,2015,ESP-La Liga,Las Palmas,statsbomb,ST,outfield,7,Poacher,0.6768,0.7644
+statsbomb:6723,Wissam Ben Yedder,2015,FRA-Ligue 1,Toulouse,statsbomb,ST,outfield,7,Poacher,0.7359,0.8047
+statsbomb:33178,Benjamin Moukandjo,2015,FRA-Ligue 1,Lorient,statsbomb,ST,outfield,7,Poacher,0.7297,0.8153
+statsbomb:3679,Souleymane Camara,2015,FRA-Ligue 1,Montpellier,statsbomb,ST,outfield,7,Poacher,0.6345,0.8782
+statsbomb:6600,Claudio Beauvue,2015,FRA-Ligue 1,Lyon,statsbomb,ST,outfield,7,Poacher,0.5738,0.9142
+statsbomb:6038,John Guidetti,2015,ESP-La Liga,Celta Vigo,statsbomb,ST,outfield,7,Poacher,0.6776,0.9206
+statsbomb:3179,Nolan Roux,2015,FRA-Ligue 1,Saint-Étienne,statsbomb,ST,outfield,7,Poacher,0.6505,0.9559
+statsbomb:6948,Sergio Floccari,2015,ITA-Serie A,Bologna,statsbomb,ST,outfield,7,Poacher,0.6236,0.9859
+statsbomb:3210,Valère Germain,2015,FRA-Ligue 1,Nice,statsbomb,ST,outfield,7,Poacher,0.6033,1.0103
+statsbomb:7471,Andrea Belotti,2015,ITA-Serie A,Torino,statsbomb,ST,outfield,7,Poacher,0.6325,1.0176
+statsbomb:10330,Junior Tallo,2015,FRA-Ligue 1,Lille,statsbomb,ST,outfield,7,Poacher,0.6479,1.0233
+statsbomb:6880,Antonio Sanabria,2015,ESP-La Liga,Sporting Gijón,statsbomb,ST,outfield,7,Poacher,0.5533,1.0972
+statsbomb:40252,Massimo Maccarone,2015,ITA-Serie A,Empoli,statsbomb,ST,outfield,7,Poacher,0.6076,1.1669
+statsbomb:30289,Papiss Demba Cissé,2015,ENG-Premier League,Newcastle United,statsbomb,ST,outfield,7,Poacher,0.5221,1.188
+statsbomb:5458,Odion Ighalo,2015,ENG-Premier League,Watford,statsbomb,ST,outfield,7,Poacher,0.6544,1.1889
+statsbomb:27109,Youssef El-Arabi,2015,ESP-La Liga,Granada,statsbomb,ST,outfield,7,Poacher,0.4424,1.1992
+statsbomb:401505,Jacques Zoua Daogari,2015,FRA-Ligue 1,Gazélec Ajaccio,statsbomb,ST,outfield,7,Poacher,0.5962,1.2219
+statsbomb:5688,Carlos Bacca,2015,ITA-Serie A,AC Milan,statsbomb,ST,outfield,7,Poacher,0.6334,1.2278
+statsbomb:8871,Marco Borriello,2015,ITA-Serie A,Atalanta,statsbomb,ST,outfield,7,Poacher,0.5893,1.2421
+statsbomb:8584,Jonathas,2015,ESP-La Liga,Real Sociedad,statsbomb,ST,outfield,7,Poacher,0.3835,1.2549
+statsbomb:4447,Martin Braithwaite,2015,FRA-Ligue 1,Toulouse,statsbomb,ST,outfield,7,Poacher,0.6351,1.3045
+statsbomb:15689,Floyd Ayité,2015,FRA-Ligue 1,Bastia,statsbomb,ST,outfield,7,Poacher,0.3097,1.3128
+statsbomb:26685,Miku Fedor,2015,ESP-La Liga,Rayo Vallecano,statsbomb,ST,outfield,7,Poacher,0.4675,1.3184
+statsbomb:11542,Javi Guerra,2015,ESP-La Liga,Rayo Vallecano,statsbomb,ST,outfield,7,Poacher,0.3104,1.321
+statsbomb:24035,Álvaro Vázquez,2015,ESP-La Liga,Getafe,statsbomb,ST,outfield,7,Poacher,0.5636,1.3351
+statsbomb:12619,Josef Martínez,2015,ITA-Serie A,Torino,statsbomb,ST,outfield,7,Poacher,0.6247,1.3476
+statsbomb:6402,Paco Alcácer,2015,ESP-La Liga,Valencia,statsbomb,ST,outfield,7,Poacher,0.604,1.3512
+statsbomb:7781,Felipe Caicedo,2015,ESP-La Liga,Espanyol,statsbomb,ST,outfield,7,Poacher,0.4928,1.3525
+statsbomb:5217,Iago Aspas,2015,ESP-La Liga,Celta Vigo,statsbomb,ST,outfield,7,Poacher,0.5012,1.4238
+statsbomb:3213,Jimmy Briand,2015,FRA-Ligue 1,Guingamp,statsbomb,ST,outfield,7,Poacher,0.3803,1.4259
+statsbomb:20521,Bafétimbi Gomis,2015,ENG-Premier League,Swansea City,statsbomb,ST,outfield,7,Poacher,0.5288,1.4661
+statsbomb:401506,Grégory Pujol,2015,FRA-Ligue 1,Gazélec Ajaccio,statsbomb,ST,outfield,7,Poacher,0.4147,1.4695
+statsbomb:8103,Mattia Destro,2015,ITA-Serie A,Bologna,statsbomb,ST,outfield,7,Poacher,0.5099,1.4728
+statsbomb:7000,Éder,2015,ITA-Serie A,Sampdoria,statsbomb,W,outfield,7,Poacher,0.4285,1.5045
+statsbomb:8272,Cyril Théréau,2015,ITA-Serie A,Udinese,statsbomb,ST,outfield,7,Poacher,0.4933,1.5084
+statsbomb:21272,Luiz Adriano,2015,ITA-Serie A,AC Milan,statsbomb,ST,outfield,7,Poacher,0.4657,1.5147
+statsbomb:7011,Fabio Quagliarella,2015,ITA-Serie A,Torino,statsbomb,ST,outfield,7,Poacher,0.5006,1.5167
+statsbomb:3451,Alexandre Lacazette,2015,FRA-Ligue 1,Lyon,statsbomb,ST,outfield,7,Poacher,0.5827,1.5275
+statsbomb:6666,Sabin Merino,2015,ESP-La Liga,Athletic Club,statsbomb,W,outfield,7,Poacher,0.3932,1.5342
+statsbomb:7017,Duván Zapata,2015,ITA-Serie A,Udinese,statsbomb,ST,outfield,7,Poacher,0.2936,1.5408
+statsbomb:32608,Jerry Mbakogu,2015,ITA-Serie A,Carpi,statsbomb,ST,outfield,7,Poacher,0.3828,1.5444
+statsbomb:4630,Saido Berahino,2015,ENG-Premier League,West Bromwich Albion,statsbomb,ST,outfield,7,Poacher,0.4132,1.5534
+statsbomb:7615,Majeed Waris,2015,FRA-Ligue 1,Lorient,statsbomb,ST,outfield,7,Poacher,0.5876,1.5778
+statsbomb:30255,Mustapha Yatabaré,2015,FRA-Ligue 1,Montpellier,statsbomb,ST,outfield,7,Poacher,0.4734,1.5796
+statsbomb:386651,Juan Gómez,2015,ITA-Serie A,Hellas Verona,statsbomb,ST,outfield,7,Poacher,0.3252,1.59
+statsbomb:6950,Alberto Paloschi,2015,ITA-Serie A,Chievo,statsbomb,ST,outfield,7,Poacher,0.5365,1.5979
+statsbomb:3552,Benjamin Jeannot,2015,FRA-Ligue 1,Lorient,statsbomb,ST,outfield,7,Poacher,0.3645,1.6087
+statsbomb:19286,Miroslav Klose,2015,ITA-Serie A,Lazio,statsbomb,ST,outfield,7,Poacher,0.2431,1.6117
+statsbomb:7141,Giuseppe Rossi,2015,ESP-La Liga,Levante,statsbomb,ST,outfield,7,Poacher,0.4048,1.6131
+statsbomb:3265,Joselu,2015,ENG-Premier League,Stoke City,statsbomb,ST,outfield,7,Poacher,0.2446,1.6276
+statsbomb:7457,Grégoire Defrel,2015,ITA-Serie A,Sassuolo,statsbomb,ST,outfield,7,Poacher,0.3634,1.6359
+statsbomb:7793,Kevin Lasagna,2015,ITA-Serie A,Carpi,statsbomb,ST,outfield,7,Poacher,0.1922,1.6755
+statsbomb:3457,Michy Batshuayi,2015,FRA-Ligue 1,Marseille,statsbomb,ST,outfield,7,Poacher,0.4933,1.7152
+statsbomb:7043,Roberto Inglese,2015,ITA-Serie A,Chievo,statsbomb,ST,outfield,7,Poacher,0.3252,1.7154
+statsbomb:6766,Gerard Moreno,2015,ESP-La Liga,Espanyol,statsbomb,ST,outfield,7,Poacher,0.3387,1.7275
+statsbomb:3337,Jermain Defoe,2015,ENG-Premier League,Sunderland,statsbomb,ST,outfield,7,Poacher,0.5478,1.7294
+statsbomb:10955,Harry Kane,2015,ENG-Premier League,Tottenham Hotspur,statsbomb,ST,outfield,7,Poacher,0.3765,1.7301
+statsbomb:6987,Mauro Icardi,2015,ITA-Serie A,Inter Milan,statsbomb,ST,outfield,7,Poacher,0.4306,1.7322
+statsbomb:3603,Mame Diouf,2015,ENG-Premier League,Stoke City,statsbomb,ST,outfield,7,Poacher,0.366,1.7417
+statsbomb:3673,Yassine Benzia,2015,FRA-Ligue 1,Lille,statsbomb,ST,outfield,7,Poacher,0.1391,1.7494
+statsbomb:6401,Kévin Gameiro,2015,ESP-La Liga,Sevilla,statsbomb,ST,outfield,7,Poacher,0.4675,1.7533
+statsbomb:2980,Kévin Bérigaud,2015,FRA-Ligue 1,Montpellier,statsbomb,W,outfield,7,Poacher,0.0202,1.7617
+statsbomb:6832,Rubén Castro,2015,ESP-La Liga,Real Betis,statsbomb,ST,outfield,7,Poacher,0.5236,1.7662
+statsbomb:28559,Enner Valencia,2015,ENG-Premier League,West Ham United,statsbomb,ST,outfield,7,Poacher,0.2185,1.7667
+statsbomb:3010,Corentin Jean,2015,FRA-Ligue 1,Troyes,statsbomb,ST,outfield,7,Poacher,0.0333,1.7953
+statsbomb:3668,Theo Walcott,2015,ENG-Premier League,Arsenal,statsbomb,W,outfield,7,Poacher,0.3618,1.8099
+statsbomb:24173,Carlos Castro,2015,ESP-La Liga,Sporting Gijón,statsbomb,ST,outfield,7,Poacher,0.5068,1.8236
+statsbomb:26775,Thievy Bifouma,2015,FRA-Ligue 1,Reims,statsbomb,ST,outfield,7,Poacher,0.1146,1.8239
+statsbomb:3184,Enzo Crivelli,2015,FRA-Ligue 1,Bordeaux,statsbomb,ST,outfield,7,Poacher,0.2047,1.8329
+statsbomb:8193,Maxi López,2015,ITA-Serie A,Torino,statsbomb,ST,outfield,7,Poacher,0.4336,1.8447
+statsbomb:3114,Emiliano Sala,2015,FRA-Ligue 1,Nantes,statsbomb,ST,outfield,7,Poacher,0.2922,1.8502
+statsbomb:6761,Léo Baptistão,2015,ESP-La Liga,Villarreal,statsbomb,ST,outfield,7,Poacher,0.2387,1.8584
+statsbomb:5198,Diego Costa,2015,ENG-Premier League,Chelsea,statsbomb,ST,outfield,7,Poacher,0.386,1.8639
+statsbomb:15415,Matteo Mancosu,2015,ITA-Serie A,Carpi,statsbomb,ST,outfield,7,Poacher,0.3336,1.8754
+statsbomb:6566,Borja Bastón,2015,ESP-La Liga,Eibar,statsbomb,ST,outfield,7,Poacher,0.1439,1.9005
+statsbomb:18751,Jack Rodwell,2015,ENG-Premier League,Sunderland,statsbomb,CM,outfield,7,Poacher,0.1188,1.9178
+statsbomb:7696,Ryder Matos,2015,ITA-Serie A,Carpi,statsbomb,ST,outfield,7,Poacher,0.0732,1.946
+statsbomb:27250,Nabil Ghilas,2015,ESP-La Liga,Levante,statsbomb,ST,outfield,7,Poacher,0.3326,1.949
+statsbomb:6686,Giampaolo Pazzini,2015,ITA-Serie A,Hellas Verona,statsbomb,ST,outfield,7,Poacher,0.3249,1.9506
+statsbomb:23416,Stefan Šćepović,2015,ESP-La Liga,Getafe,statsbomb,ST,outfield,7,Poacher,0.4141,1.9611
+statsbomb:8644,Sergio Pellissier,2015,ITA-Serie A,Chievo,statsbomb,ST,outfield,7,Poacher,0.425,1.9743
+statsbomb:7033,Nikola Kalinić,2015,ITA-Serie A,Fiorentina,statsbomb,ST,outfield,7,Poacher,0.4472,1.997
+statsbomb:27110,Antonio Floro Flores,2015,ITA-Serie A,Chievo,statsbomb,ST,outfield,7,Poacher,0.1209,2.0047
+statsbomb:3810,Shinji Okazaki,2015,ENG-Premier League,Leicester City,statsbomb,ST,outfield,7,Poacher,0.295,2.0072
+statsbomb:6744,Luciano Vietto,2015,ESP-La Liga,Atlético Madrid,statsbomb,ST,outfield,7,Poacher,0.1409,2.0095
+statsbomb:6630,Jorge Molina,2015,ESP-La Liga,Real Betis,statsbomb,ST,outfield,7,Poacher,0.2449,2.0418
+statsbomb:42699,Gabriel Agbonlahor,2015,ENG-Premier League,Aston Villa,statsbomb,ST,outfield,7,Poacher,0.2447,2.0472
+statsbomb:26009,Roberto Soldado,2015,ESP-La Liga,Villarreal,statsbomb,ST,outfield,7,Poacher,0.0952,2.059
+statsbomb:3529,Daniel Sturridge,2015,ENG-Premier League,Liverpool,statsbomb,ST,outfield,7,Poacher,0.4769,2.0614
+statsbomb:6677,Imanol Agirretxe,2015,ESP-La Liga,Real Sociedad,statsbomb,ST,outfield,7,Poacher,0.2371,2.0633
+statsbomb:7788,Ciro Immobile,2015,ITA-Serie A,Torino,statsbomb,ST,outfield,7,Poacher,0.3867,2.0683
+statsbomb:6382,Fernando Torres,2015,ESP-La Liga,Atlético Madrid,statsbomb,ST,outfield,7,Poacher,0.1759,2.1
+statsbomb:3319,Yacine Bammou,2015,FRA-Ligue 1,Nantes,statsbomb,AM,outfield,7,Poacher,0.0654,2.107
+statsbomb:4319,Edinson Cavani,2015,FRA-Ligue 1,Paris Saint-Germain,statsbomb,W,outfield,7,Poacher,0.4734,2.1092
+statsbomb:3289,Romelu Lukaku,2015,ENG-Premier League,Everton,statsbomb,ST,outfield,7,Poacher,0.2359,2.1277
+statsbomb:7430,Kévin Mayi,2015,FRA-Ligue 1,Gazélec Ajaccio,statsbomb,W,outfield,7,Poacher,0.1871,2.1362
+statsbomb:38389,Alberto Gilardino,2015,ITA-Serie A,Palermo,statsbomb,ST,outfield,7,Poacher,0.2427,2.1508
+statsbomb:3278,Benik Afobe,2015,ENG-Premier League,Bournemouth,statsbomb,ST,outfield,7,Poacher,0.254,2.16
+statsbomb:23791,Víctor Casadesús,2015,ESP-La Liga,Levante,statsbomb,ST,outfield,7,Poacher,0.1481,2.1841
+statsbomb:11427,Filip Đorđević,2015,ITA-Serie A,Lazio,statsbomb,ST,outfield,7,Poacher,0.2332,2.222
+statsbomb:5474,Ivan Perišić,2015,ITA-Serie A,Inter Milan,statsbomb,W,outfield,7,Poacher,0.0087,2.2293
+statsbomb:5487,Antoine Griezmann,2015,ESP-La Liga,Atlético Madrid,statsbomb,ST,outfield,7,Poacher,0.0757,2.2305
+statsbomb:8093,Diego Falcinelli,2015,ITA-Serie A,Sassuolo,statsbomb,ST,outfield,7,Poacher,0.2081,2.2567
+statsbomb:10960,Jamie Vardy,2015,ENG-Premier League,Leicester City,statsbomb,ST,outfield,7,Poacher,0.0727,2.2586
+statsbomb:3538,Wayne Rooney,2015,ENG-Premier League,Manchester United,statsbomb,ST,outfield,7,Poacher,0.2083,2.2716
+statsbomb:3477,Álvaro Morata,2015,ITA-Serie A,Juventus,statsbomb,ST,outfield,7,Poacher,0.0598,2.2973
+statsbomb:6557,Adrián González,2015,ESP-La Liga,Eibar,statsbomb,AM,outfield,7,Poacher,0.0748,2.3044
+statsbomb:6732,Lucas Pérez,2015,ESP-La Liga,Deportivo La Coruña,statsbomb,ST,outfield,7,Poacher,0.2374,2.3061
+statsbomb:11643,Riccardo Meggiorini,2015,ITA-Serie A,Chievo,statsbomb,ST,outfield,7,Poacher,0.0019,2.5802
+statsbomb:26696,Arouna Koné,2015,ENG-Premier League,Everton,statsbomb,W,outfield,7,Poacher,0.0308,2.6032
+statsbomb:19677,Karim Benzema,2015,ESP-La Liga,Real Madrid,statsbomb,ST,outfield,7,Poacher,0.3017,2.9707
+statsbomb:5497,Gonzalo Higuaín,2015,ITA-Serie A,Napoli,statsbomb,ST,outfield,7,Poacher,0.2939,3.0624
+statsbomb:3296,Marouane Fellaini,2015,ENG-Premier League,Manchester United,statsbomb,CM,outfield,7,Poacher,0.0623,3.1555
+statsbomb:19846,Antonio Di Natale,2015,ITA-Serie A,Udinese,statsbomb,ST,outfield,7,Poacher,0.212,3.4783
+statsbomb:3237,Sergio Agüero,2015,ENG-Premier League,Manchester City,statsbomb,ST,outfield,7,Poacher,0.1083,3.5708
+statsbomb:5246,Luis Suárez,2015,ESP-La Liga,Barcelona,statsbomb,ST,outfield,7,Poacher,0.2027,3.584
+statsbomb:3672,Zlatan Ibrahimović,2015,FRA-Ligue 1,Paris Saint-Germain,statsbomb,ST,outfield,7,Poacher,0.0675,4.822
+statsbomb:5207,Cristiano Ronaldo,2015,ESP-La Liga,Real Madrid,statsbomb,W,outfield,7,Poacher,0.0986,4.9657
+statsbomb:3325,Marko Arnautović,2015,ENG-Premier League,Stoke City,statsbomb,W,outfield,8,Dribbling winger,0.7862,0.5339
+statsbomb:3286,Nathan Redmond,2015,ENG-Premier League,Norwich City,statsbomb,CM,outfield,8,Dribbling winger,0.6143,0.8344
+statsbomb:6563,Juanpi,2015,ESP-La Liga,Málaga,statsbomb,CM,outfield,8,Dribbling winger,0.5227,0.9075
+statsbomb:7109,Matteo Politano,2015,ITA-Serie A,Sassuolo,statsbomb,W,outfield,8,Dribbling winger,0.691,0.9222
+statsbomb:3963,Victor Moses,2015,ENG-Premier League,West Ham United,statsbomb,W,outfield,8,Dribbling winger,0.6539,1.0073
+statsbomb:3091,Moussa Sissoko,2015,ENG-Premier League,Newcastle United,statsbomb,W,outfield,8,Dribbling winger,0.4715,1.1513
+statsbomb:10448,Adam Ounas,2015,FRA-Ligue 1,Bordeaux,statsbomb,W,outfield,8,Dribbling winger,0.6177,1.1571
+statsbomb:3233,Raheem Sterling,2015,ENG-Premier League,Manchester City,statsbomb,W,outfield,8,Dribbling winger,0.5838,1.1822
+statsbomb:20039,Anthony Martial,2015,ENG-Premier League,Manchester United,statsbomb,W,outfield,8,Dribbling winger,0.6119,1.1855
+statsbomb:3639,Georges-Kevin N'Koudou,2015,FRA-Ligue 1,Marseille,statsbomb,W,outfield,8,Dribbling winger,0.5309,1.2013
+statsbomb:3254,Florian Thauvin,2015,FRA-Ligue 1,Marseille,statsbomb,W,outfield,8,Dribbling winger,0.6124,1.2379
+statsbomb:7777,Federico Bernardeschi,2015,ITA-Serie A,Fiorentina,statsbomb,W,outfield,8,Dribbling winger,0.4481,1.2624
+statsbomb:4317,Kevin Mirallas,2015,ENG-Premier League,Everton,statsbomb,W,outfield,8,Dribbling winger,0.4168,1.2652
+statsbomb:5560,Carlos Vela,2015,ESP-La Liga,Real Sociedad,statsbomb,W,outfield,8,Dribbling winger,0.4512,1.2674
+statsbomb:31687,Adryan,2015,FRA-Ligue 1,Nantes,statsbomb,W,outfield,8,Dribbling winger,0.4439,1.2719
+statsbomb:3302,Nordin Amrabat,2015,ESP-La Liga,Málaga,statsbomb,CM,outfield,8,Dribbling winger,0.4202,1.3044
+statsbomb:15296,Romain Alessandrini,2015,FRA-Ligue 1,Marseille,statsbomb,W,outfield,8,Dribbling winger,0.5481,1.3479
+statsbomb:3469,Bakary Sako,2015,ENG-Premier League,Crystal Palace,statsbomb,W,outfield,8,Dribbling winger,0.35,1.3559
+statsbomb:6668,José Luis Morales,2015,ESP-La Liga,Levante,statsbomb,CM,outfield,8,Dribbling winger,0.579,1.3573
+statsbomb:401470,Fabien Camus,2015,FRA-Ligue 1,Troyes,statsbomb,CM,outfield,8,Dribbling winger,0.1317,1.3829
+statsbomb:3463,Junior Stanislas,2015,ENG-Premier League,Bournemouth,statsbomb,CM,outfield,8,Dribbling winger,0.1295,1.389
+statsbomb:3958,Pedro,2015,ENG-Premier League,Chelsea,statsbomb,W,outfield,8,Dribbling winger,0.3528,1.4019
+statsbomb:6841,Vitolo,2015,ESP-La Liga,Sevilla,statsbomb,W,outfield,8,Dribbling winger,0.2929,1.4358
+statsbomb:3405,François Kamano,2015,FRA-Ligue 1,Bastia,statsbomb,W,outfield,8,Dribbling winger,0.4587,1.5114
+statsbomb:5719,Marco Asensio Willemsen,2015,ESP-La Liga,Espanyol,statsbomb,W,outfield,8,Dribbling winger,0.2169,1.5162
+statsbomb:6658,Cristian Tello,2015,ITA-Serie A,Fiorentina,statsbomb,W,outfield,8,Dribbling winger,0.3748,1.5163
+statsbomb:8184,Marco Dalessandro,2015,ITA-Serie A,Atalanta,statsbomb,W,outfield,8,Dribbling winger,0.3224,1.5175
+statsbomb:3162,Maxwel Cornet,2015,FRA-Ligue 1,Lyon,statsbomb,W,outfield,8,Dribbling winger,0.045,1.5434
+statsbomb:3629,Sadio Mané,2015,ENG-Premier League,Southampton,statsbomb,W,outfield,8,Dribbling winger,0.5365,1.5675
+statsbomb:7702,Alessio Cerci,2015,ITA-Serie A,AC Milan,statsbomb,W,outfield,8,Dribbling winger,0.562,1.5856
+statsbomb:3193,Bernardo Silva,2015,FRA-Ligue 1,Monaco,statsbomb,W,outfield,8,Dribbling winger,0.2956,1.5968
+statsbomb:7006,Papu Gómez,2015,ITA-Serie A,Atalanta,statsbomb,W,outfield,8,Dribbling winger,0.2203,1.607
+statsbomb:3646,Marc Pugh,2015,ENG-Premier League,Bournemouth,statsbomb,CM,outfield,8,Dribbling winger,0.207,1.6087
+statsbomb:6870,José Jurado,2015,ENG-Premier League,Watford,statsbomb,CM,outfield,8,Dribbling winger,0.3023,1.6174
+statsbomb:23761,Lass Bangoura,2015,ESP-La Liga,Rayo Vallecano,statsbomb,W,outfield,8,Dribbling winger,0.5518,1.6206
+statsbomb:6651,Joaquín,2015,ESP-La Liga,Real Betis,statsbomb,CM,outfield,8,Dribbling winger,0.1956,1.6319
+statsbomb:7775,Emanuele Giaccherini,2015,ITA-Serie A,Bologna,statsbomb,W,outfield,8,Dribbling winger,0.3256,1.6444
+statsbomb:3122,Yannis Salibur,2015,FRA-Ligue 1,Guingamp,statsbomb,CM,outfield,8,Dribbling winger,0.4068,1.6544
+statsbomb:2966,Stéphane Sessègnon,2015,ENG-Premier League,West Bromwich Albion,statsbomb,CM,outfield,8,Dribbling winger,0.3997,1.6651
+statsbomb:5718,Rodrigo,2015,ESP-La Liga,Valencia,statsbomb,W,outfield,8,Dribbling winger,0.2357,1.7113
+statsbomb:7131,Domenico Berardi,2015,ITA-Serie A,Sassuolo,statsbomb,W,outfield,8,Dribbling winger,0.2763,1.733
+statsbomb:7900,Bebé,2015,ESP-La Liga,Rayo Vallecano,statsbomb,W,outfield,8,Dribbling winger,0.4593,1.7571
+statsbomb:6624,Burgui,2015,ESP-La Liga,Espanyol,statsbomb,W,outfield,8,Dribbling winger,0.2255,1.7695
+statsbomb:2993,Stéphane Darbion,2015,FRA-Ligue 1,Troyes,statsbomb,W,outfield,8,Dribbling winger,0.119,1.7716
+statsbomb:7105,Fabián Orellana,2015,ESP-La Liga,Celta Vigo,statsbomb,W,outfield,8,Dribbling winger,0.2856,1.7761
+statsbomb:7782,Luis Alberto,2015,ESP-La Liga,Deportivo La Coruña,statsbomb,AM,outfield,8,Dribbling winger,0.2763,1.7841
+statsbomb:27853,Mauro Zárate,2015,ENG-Premier League,West Ham United,statsbomb,W,outfield,8,Dribbling winger,0.5186,1.7855
+statsbomb:6859,Nicola Sansone,2015,ITA-Serie A,Sassuolo,statsbomb,W,outfield,8,Dribbling winger,0.0755,1.802
+statsbomb:4913,Bojan,2015,ENG-Premier League,Stoke City,statsbomb,AM,outfield,8,Dribbling winger,0.4165,1.8145
+statsbomb:6822,Joaquín Correa,2015,ITA-Serie A,Sampdoria,statsbomb,AM,outfield,8,Dribbling winger,0.4786,1.8329
+statsbomb:6609,Denis Suárez,2015,ESP-La Liga,Villarreal,statsbomb,CM,outfield,8,Dribbling winger,0.2682,1.8606
+statsbomb:6907,Pedro León,2015,ESP-La Liga,Getafe,statsbomb,W,outfield,8,Dribbling winger,0.2896,1.8979
+statsbomb:11502,Antonio Di Gaudio,2015,ITA-Serie A,Carpi,statsbomb,CM,outfield,8,Dribbling winger,0.1947,1.903
+statsbomb:4351,Bouna Sarr,2015,FRA-Ligue 1,Marseille,statsbomb,W,outfield,8,Dribbling winger,0.4732,1.9047
+statsbomb:11539,Adri Embarba,2015,ESP-La Liga,Rayo Vallecano,statsbomb,W,outfield,8,Dribbling winger,0.0198,1.9189
+statsbomb:4260,Romain Hamouma,2015,FRA-Ligue 1,Saint-Étienne,statsbomb,W,outfield,8,Dribbling winger,0.2608,1.9303
+statsbomb:6334,Luis Muriel,2015,ITA-Serie A,Sampdoria,statsbomb,ST,outfield,8,Dribbling winger,0.1649,1.9418
+statsbomb:6918,Isaac Success,2015,ESP-La Liga,Granada,statsbomb,W,outfield,8,Dribbling winger,0.4331,1.9446
+statsbomb:23785,Théo Bongonda Mbul'Ofeko Batombo,2015,ESP-La Liga,Celta Vigo,statsbomb,W,outfield,8,Dribbling winger,0.3333,1.9667
+statsbomb:5477,Ousmane Dembélé,2015,FRA-Ligue 1,Rennes,statsbomb,W,outfield,8,Dribbling winger,0.4049,1.9695
+statsbomb:5667,Kamil Grosicki,2015,FRA-Ligue 1,Rennes,statsbomb,W,outfield,8,Dribbling winger,0.2296,1.9741
+statsbomb:3525,Alex Oxlade-Chamberlain,2015,ENG-Premier League,Arsenal,statsbomb,W,outfield,8,Dribbling winger,0.2663,1.9823
+statsbomb:2988,Memphis Depay,2015,ENG-Premier League,Manchester United,statsbomb,W,outfield,8,Dribbling winger,0.3384,2.0475
+statsbomb:6926,Alen Halilović,2015,ESP-La Liga,Sporting Gijón,statsbomb,AM,outfield,8,Dribbling winger,0.4544,2.0491
+statsbomb:3230,Alassane Pléa,2015,FRA-Ligue 1,Nice,statsbomb,ST,outfield,8,Dribbling winger,0.1533,2.0534
+statsbomb:3531,Mohamed Salah,2015,ITA-Serie A,AS Roma,statsbomb,W,outfield,8,Dribbling winger,0.182,2.054
+statsbomb:3589,Yannick Bolasie,2015,ENG-Premier League,Crystal Palace,statsbomb,W,outfield,8,Dribbling winger,0.4297,2.0592
+statsbomb:8522,Bruma,2015,ESP-La Liga,Real Sociedad,statsbomb,W,outfield,8,Dribbling winger,0.4174,2.0632
+statsbomb:6842,Iker Muniain,2015,ESP-La Liga,Athletic Club,statsbomb,W,outfield,8,Dribbling winger,0.1401,2.0653
+statsbomb:4831,Nacer Chadli,2015,ENG-Premier League,Tottenham Hotspur,statsbomb,W,outfield,8,Dribbling winger,0.1109,2.0759
+statsbomb:5661,M'Baye Niang,2015,ITA-Serie A,AC Milan,statsbomb,ST,outfield,8,Dribbling winger,0.3466,2.0909
+statsbomb:3533,Xherdan Shaqiri,2015,ENG-Premier League,Stoke City,statsbomb,W,outfield,8,Dribbling winger,0.2254,2.1277
+statsbomb:6838,Hernán Pérez,2015,ESP-La Liga,Espanyol,statsbomb,W,outfield,8,Dribbling winger,0.291,2.1392
+statsbomb:3814,Riyad Mahrez,2015,ENG-Premier League,Leicester City,statsbomb,CM,outfield,8,Dribbling winger,0.193,2.1537
+statsbomb:10802,André Gomes,2015,ESP-La Liga,Valencia,statsbomb,CM,outfield,8,Dribbling winger,0.0934,2.1558
+statsbomb:5727,Nabil Dirar,2015,FRA-Ligue 1,Monaco,statsbomb,W,outfield,8,Dribbling winger,0.1254,2.1883
+statsbomb:16457,Jeremain Lens,2015,ENG-Premier League,Sunderland,statsbomb,CM,outfield,8,Dribbling winger,0.1076,2.1892
+statsbomb:3094,Dele Alli,2015,ENG-Premier League,Tottenham Hotspur,statsbomb,AM,outfield,8,Dribbling winger,0.1599,2.1999
+statsbomb:6581,Jony,2015,ESP-La Liga,Sporting Gijón,statsbomb,W,outfield,8,Dribbling winger,0.3113,2.2042
+statsbomb:7338,Romain Philippoteaux,2015,FRA-Ligue 1,Lorient,statsbomb,CM,outfield,8,Dribbling winger,0.1087,2.2119
+statsbomb:6800,Carles Gil,2015,ENG-Premier League,Aston Villa,statsbomb,W,outfield,8,Dribbling winger,0.2222,2.2379
+statsbomb:7336,Jimmy Cabot,2015,FRA-Ligue 1,Lorient,statsbomb,CM,outfield,8,Dribbling winger,0.2568,2.2704
+statsbomb:4909,Jérémie Boga,2015,FRA-Ligue 1,Rennes,statsbomb,W,outfield,8,Dribbling winger,0.3709,2.2821
+statsbomb:6719,Franco Vázquez,2015,ITA-Serie A,Palermo,statsbomb,AM,outfield,8,Dribbling winger,0.3025,2.2998
+statsbomb:7776,Antonio Candreva,2015,ITA-Serie A,Lazio,statsbomb,W,outfield,8,Dribbling winger,0.2015,2.3057
+statsbomb:11608,Danilo Soddimo,2015,ITA-Serie A,Frosinone,statsbomb,CM,outfield,8,Dribbling winger,0.0867,2.3164
+statsbomb:6377,Ángel Correa,2015,ESP-La Liga,Atlético Madrid,statsbomb,CM,outfield,8,Dribbling winger,0.3445,2.326
+statsbomb:11494,Luca Siligardi,2015,ITA-Serie A,Hellas Verona,statsbomb,CM,outfield,8,Dribbling winger,0.0418,2.3418
+statsbomb:8172,Felipe Anderson,2015,ITA-Serie A,Lazio,statsbomb,W,outfield,8,Dribbling winger,0.3731,2.3462
+statsbomb:7063,Jefferson Montero,2015,ENG-Premier League,Swansea City,statsbomb,W,outfield,8,Dribbling winger,0.3685,2.3494
+statsbomb:3145,Keita Baldé,2015,ITA-Serie A,Lazio,statsbomb,W,outfield,8,Dribbling winger,0.2882,2.3573
+statsbomb:6720,Pablo Sarabia,2015,ESP-La Liga,Getafe,statsbomb,W,outfield,8,Dribbling winger,0.0212,2.3612
+statsbomb:3595,Manuel Lanzini,2015,ENG-Premier League,West Ham United,statsbomb,CM,outfield,8,Dribbling winger,0.1891,2.3752
+statsbomb:7045,Valter Birsa,2015,ITA-Serie A,Chievo,statsbomb,AM,outfield,8,Dribbling winger,0.015,2.3861
+statsbomb:6979,Stephan El Shaarawy,2015,ITA-Serie A,AS Roma,statsbomb,W,outfield,8,Dribbling winger,0.0823,2.3867
+statsbomb:4383,Nicolas de Préville,2015,FRA-Ligue 1,Reims,statsbomb,W,outfield,8,Dribbling winger,0.1777,2.4702
+statsbomb:20004,Paul Pogba,2015,ITA-Serie A,Juventus,statsbomb,CM,outfield,8,Dribbling winger,0.1893,2.484
+statsbomb:22281,Duncan Watmore,2015,ENG-Premier League,Sunderland,statsbomb,CM,outfield,8,Dribbling winger,0.1444,2.484
+statsbomb:3346,Joshua King,2015,ENG-Premier League,Bournemouth,statsbomb,ST,outfield,8,Dribbling winger,0.0526,2.537
+statsbomb:4900,Paul-Georges Ntep,2015,FRA-Ligue 1,Rennes,statsbomb,W,outfield,8,Dribbling winger,0.0622,2.5514
+statsbomb:5689,Juan Cuadrado,2015,ITA-Serie A,Juventus,statsbomb,FB,outfield,8,Dribbling winger,0.0744,2.5625
+statsbomb:6965,Bruno Peres,2015,ITA-Serie A,Torino,statsbomb,FB,outfield,8,Dribbling winger,0.3036,2.5696
+statsbomb:3507,Wilfried Zaha,2015,ENG-Premier League,Crystal Palace,statsbomb,W,outfield,8,Dribbling winger,0.3843,2.5894
+statsbomb:3601,Charly Musonda,2015,ESP-La Liga,Real Betis,statsbomb,CM,outfield,8,Dribbling winger,0.3021,2.59
+statsbomb:8523,Yevgen Konoplyanka,2015,ESP-La Liga,Sevilla,statsbomb,W,outfield,8,Dribbling winger,0.0624,2.659
+statsbomb:15818,Gervinho,2015,ITA-Serie A,AS Roma,statsbomb,W,outfield,8,Dribbling winger,0.2245,2.6666
+statsbomb:16462,Hatem Ben Arfa,2015,FRA-Ligue 1,Nice,statsbomb,AM,outfield,8,Dribbling winger,0.2963,2.6713
+statsbomb:6739,Diego Rolán,2015,FRA-Ligue 1,Bordeaux,statsbomb,W,outfield,8,Dribbling winger,0.0155,2.686
+statsbomb:3420,Rémy Cabella,2015,FRA-Ligue 1,Marseille,statsbomb,AM,outfield,8,Dribbling winger,0.0546,2.7218
+statsbomb:18724,Sofiane Feghouli,2015,ESP-La Liga,Valencia,statsbomb,W,outfield,8,Dribbling winger,0.0734,2.7327
+statsbomb:3635,Jordon Ibe,2015,ENG-Premier League,Liverpool,statsbomb,W,outfield,8,Dribbling winger,0.3393,2.7422
+statsbomb:6728,Fede Cartabia,2015,ESP-La Liga,Deportivo La Coruña,statsbomb,W,outfield,8,Dribbling winger,0.2441,2.8174
+statsbomb:5633,Yannick Carrasco,2015,ESP-La Liga,Atlético Madrid,statsbomb,CM,outfield,8,Dribbling winger,0.3027,2.8183
+statsbomb:3297,Andros Townsend,2015,ENG-Premier League,Newcastle United,statsbomb,W,outfield,8,Dribbling winger,0.1784,2.8566
+statsbomb:24070,Saúl Berjón,2015,ESP-La Liga,Eibar,statsbomb,W,outfield,8,Dribbling winger,0.0593,2.868
+statsbomb:3450,Jordan Ayew,2015,ENG-Premier League,Aston Villa,statsbomb,ST,outfield,8,Dribbling winger,0.1565,2.9764
+statsbomb:3434,Stevan Jovetić,2015,ITA-Serie A,Inter Milan,statsbomb,ST,outfield,8,Dribbling winger,0.074,3.0028
+statsbomb:27092,Abdoul Karim Yoda,2015,ESP-La Liga,Getafe,statsbomb,FB,outfield,8,Dribbling winger,0.1567,3.3354
+statsbomb:19847,Alessandro Diamanti,2015,ITA-Serie A,Atalanta,statsbomb,AM,outfield,9,Chance creator,0.5752,1.1706
+statsbomb:3472,Willian,2015,ENG-Premier League,Chelsea,statsbomb,W,outfield,9,Chance creator,0.561,1.1817
+statsbomb:3372,Rachid Ghezzal,2015,FRA-Ligue 1,Lyon,statsbomb,W,outfield,9,Chance creator,0.6059,1.2931
+statsbomb:3043,Christian Eriksen,2015,ENG-Premier League,Tottenham Hotspur,statsbomb,W,outfield,9,Chance creator,0.6262,1.3557
+statsbomb:7150,Riccardo Saponara,2015,ITA-Serie A,Empoli,statsbomb,AM,outfield,9,Chance creator,0.1857,1.5336
+statsbomb:7022,Suso,2015,ITA-Serie A,Genoa,statsbomb,ST,outfield,9,Chance creator,0.225,1.5919
+statsbomb:6661,Ryad Boudebouz,2015,FRA-Ligue 1,Montpellier,statsbomb,AM,outfield,9,Chance creator,0.5892,1.6041
+statsbomb:7026,Giacomo Bonaventura,2015,ITA-Serie A,AC Milan,statsbomb,CM,outfield,9,Chance creator,0.1331,1.6529
+statsbomb:6821,Jesús Navas,2015,ENG-Premier League,Manchester City,statsbomb,W,outfield,9,Chance creator,0.2322,1.7802
+statsbomb:7456,Diego Perotti,2015,ITA-Serie A,AS Roma,statsbomb,ST,outfield,9,Chance creator,0.3796,1.8088
+statsbomb:10755,Jonathan Viera,2015,ESP-La Liga,Las Palmas,statsbomb,CM,outfield,9,Chance creator,0.1068,1.8639
+statsbomb:3501,Philippe Coutinho,2015,ENG-Premier League,Liverpool,statsbomb,W,outfield,9,Chance creator,0.2965,1.8844
+statsbomb:3745,Lucas Moura,2015,FRA-Ligue 1,Paris Saint-Germain,statsbomb,W,outfield,9,Chance creator,0.1427,1.9063
+statsbomb:18868,Mathieu Valbuena,2015,FRA-Ligue 1,Lyon,statsbomb,AM,outfield,9,Chance creator,0.5739,1.9524
+statsbomb:5587,Adem Ljajić,2015,ITA-Serie A,Inter Milan,statsbomb,CM,outfield,9,Chance creator,0.5037,1.9576
+statsbomb:5504,Éver Banega,2015,ESP-La Liga,Sevilla,statsbomb,AM,outfield,9,Chance creator,0.3362,2.002
+statsbomb:3089,Kevin De Bruyne,2015,ENG-Premier League,Manchester City,statsbomb,W,outfield,9,Chance creator,0.5578,2.0092
+statsbomb:3064,David Silva,2015,ENG-Premier League,Manchester City,statsbomb,AM,outfield,9,Chance creator,0.3897,2.0785
+statsbomb:16418,Adrien Regattin,2015,FRA-Ligue 1,Toulouse,statsbomb,W,outfield,9,Chance creator,0.1584,2.0822
+statsbomb:7567,Maxime Barthelmé,2015,FRA-Ligue 1,Lorient,statsbomb,CM,outfield,9,Chance creator,0.0765,2.1223
+statsbomb:6724,Nolito,2015,ESP-La Liga,Celta Vigo,statsbomb,W,outfield,9,Chance creator,0.1636,2.1578
+statsbomb:7139,Josip Iličić,2015,ITA-Serie A,Fiorentina,statsbomb,AM,outfield,9,Chance creator,0.2288,2.1949
+statsbomb:4926,Isco,2015,ESP-La Liga,Real Madrid,statsbomb,CM,outfield,9,Chance creator,0.2833,2.3006
+statsbomb:7037,Lorenzo Insigne,2015,ITA-Serie A,Napoli,statsbomb,W,outfield,9,Chance creator,0.405,2.324
+statsbomb:4275,Ross Barkley,2015,ENG-Premier League,Everton,statsbomb,AM,outfield,9,Chance creator,0.0618,2.3504
+statsbomb:3385,Alexis Sánchez,2015,ENG-Premier League,Arsenal,statsbomb,W,outfield,9,Chance creator,0.3145,2.3579
+statsbomb:5630,Dries Mertens,2015,ITA-Serie A,Napoli,statsbomb,W,outfield,9,Chance creator,0.1967,2.3731
+statsbomb:23816,José Antonio Reyes,2015,ESP-La Liga,Sevilla,statsbomb,W,outfield,9,Chance creator,0.249,2.4004
+statsbomb:6947,Miralem Pjanić,2015,ITA-Serie A,AS Roma,statsbomb,CM,outfield,9,Chance creator,0.1794,2.4018
+statsbomb:3585,Erik Lamela,2015,ENG-Premier League,Tottenham Hotspur,statsbomb,W,outfield,9,Chance creator,0.2745,2.4223
+statsbomb:3831,Dušan Tadić,2015,ENG-Premier League,Southampton,statsbomb,W,outfield,9,Chance creator,0.3546,2.4503
+statsbomb:3491,Dimitri Payet,2015,ENG-Premier League,West Ham United,statsbomb,W,outfield,9,Chance creator,0.4726,2.5251
+statsbomb:12759,Maximiliano Moralez,2015,ITA-Serie A,Atalanta,statsbomb,W,outfield,9,Chance creator,0.172,2.5745
+statsbomb:6740,Chory Castro,2015,ESP-La Liga,Málaga,statsbomb,CM,outfield,9,Chance creator,0.103,2.6628
+statsbomb:7766,Walid Mesloub,2015,FRA-Ligue 1,Lorient,statsbomb,DM,outfield,9,Chance creator,0.0508,2.704
+statsbomb:6399,Gareth Bale,2015,ESP-La Liga,Real Madrid,statsbomb,W,outfield,9,Chance creator,0.2235,2.7115
+statsbomb:3196,Wahbi Khazri,2015,FRA-Ligue 1,Bordeaux,statsbomb,CM,outfield,9,Chance creator,0.1329,2.7301
+statsbomb:5743,Paulo Dybala,2015,ITA-Serie A,Juventus,statsbomb,ST,outfield,9,Chance creator,0.2639,2.7583
+statsbomb:25859,Duda,2015,ESP-La Liga,Málaga,statsbomb,CM,outfield,9,Chance creator,0.3492,2.8058
+statsbomb:11540,Óscar Trejo,2015,FRA-Ligue 1,Toulouse,statsbomb,AM,outfield,9,Chance creator,0.0982,2.8104
+statsbomb:5695,James Rodríguez,2015,ESP-La Liga,Real Madrid,statsbomb,CM,outfield,9,Chance creator,0.4569,2.8443
+statsbomb:3301,Nicolas Benezet,2015,FRA-Ligue 1,Guingamp,statsbomb,CM,outfield,9,Chance creator,0.0523,2.8595
+statsbomb:19850,Antonio Cassano,2015,ITA-Serie A,Sampdoria,statsbomb,ST,outfield,9,Chance creator,0.3443,2.8975
+statsbomb:23933,Abdelaziz Barrada,2015,FRA-Ligue 1,Marseille,statsbomb,CM,outfield,9,Chance creator,0.4228,2.954
+statsbomb:42902,Adam Johnson,2015,ENG-Premier League,Sunderland,statsbomb,W,outfield,9,Chance creator,0.0085,3.0185
+statsbomb:3621,Eden Hazard,2015,ENG-Premier League,Chelsea,statsbomb,W,outfield,9,Chance creator,0.2199,3.0328
+statsbomb:3726,Gerard Deulofeu,2015,ENG-Premier League,Everton,statsbomb,W,outfield,9,Chance creator,0.2299,3.2171
+statsbomb:3535,Roberto Firmino,2015,ENG-Premier League,Liverpool,statsbomb,ST,outfield,9,Chance creator,0.0917,3.2721
+statsbomb:7025,Marek Hamšík,2015,ITA-Serie A,Napoli,statsbomb,CM,outfield,9,Chance creator,0.221,3.3096
+statsbomb:3625,Sofiane Boufal,2015,FRA-Ligue 1,Lille,statsbomb,W,outfield,9,Chance creator,0.0347,3.4584
+statsbomb:11386,Santi Cazorla,2015,ENG-Premier League,Arsenal,statsbomb,DM,outfield,9,Chance creator,0.1168,3.4763
+statsbomb:3496,Mesut Özil,2015,ENG-Premier League,Arsenal,statsbomb,AM,outfield,9,Chance creator,0.4109,3.5499
+statsbomb:2995,Ángel Di María,2015,FRA-Ligue 1,Paris Saint-Germain,statsbomb,W,outfield,9,Chance creator,0.3712,4.5786
+statsbomb:4320,Neymar,2015,ESP-La Liga,Barcelona,statsbomb,W,outfield,9,Chance creator,0.182,4.857
+statsbomb:5503,Lionel Messi,2015,ESP-La Liga,Barcelona,statsbomb,W,outfield,9,Chance creator,0.1658,5.4874
+statsbomb:3099,Hugo Lloris,2015,ENG-Premier League,Tottenham Hotspur,statsbomb,GK,gk,100,Protected high-save keeper,0.7912,0.5024
+statsbomb:3543,Steve Mandanda,2015,FRA-Ligue 1,Marseille,statsbomb,GK,gk,100,Protected high-save keeper,0.692,0.711
+statsbomb:4257,Yoan Cardinale,2015,FRA-Ligue 1,Nice,statsbomb,GK,gk,100,Protected high-save keeper,0.3911,1.0436
+statsbomb:5597,Keylor Navas,2015,ESP-La Liga,Real Madrid,statsbomb,GK,gk,100,Protected high-save keeper,0.6125,1.118
+statsbomb:7132,Andrea Consigli,2015,ITA-Serie A,Sassuolo,statsbomb,GK,gk,100,Protected high-save keeper,0.4878,1.1251
+statsbomb:4259,Stéphane Ruffier,2015,FRA-Ligue 1,Saint-Étienne,statsbomb,GK,gk,100,Protected high-save keeper,0.3426,1.1699
+statsbomb:5577,Guillermo Ochoa,2015,ESP-La Liga,Málaga,statsbomb,GK,gk,100,Protected high-save keeper,0.4185,1.2682
+statsbomb:3461,Petr Čech,2015,ENG-Premier League,Arsenal,statsbomb,GK,gk,100,Protected high-save keeper,0.2736,1.4225
+statsbomb:7036,Gianluigi Donnarumma,2015,ITA-Serie A,AC Milan,statsbomb,GK,gk,100,Protected high-save keeper,0.306,1.5497
+statsbomb:5669,Wojciech Szczęsny,2015,ITA-Serie A,AS Roma,statsbomb,GK,gk,100,Protected high-save keeper,0.3316,1.8504
+statsbomb:6576,Gorka Iraizoz,2015,ESP-La Liga,Athletic Club,statsbomb,GK,gk,100,Protected high-save keeper,0.3084,1.8598
+statsbomb:3333,David de Gea,2015,ENG-Premier League,Manchester United,statsbomb,GK,gk,100,Protected high-save keeper,0.387,1.8598
+statsbomb:3291,Joe Hart,2015,ENG-Premier League,Manchester City,statsbomb,GK,gk,100,Protected high-save keeper,0.1977,2.0125
+statsbomb:2947,Anthony Lopes,2015,FRA-Ligue 1,Lyon,statsbomb,GK,gk,100,Protected high-save keeper,0.2554,2.0767
+statsbomb:12491,Federico Marchetti,2015,ITA-Serie A,Lazio,statsbomb,GK,gk,100,Protected high-save keeper,0.1569,2.0817
+statsbomb:7001,Samir Handanovič,2015,ITA-Serie A,Inter Milan,statsbomb,GK,gk,100,Protected high-save keeper,0.3847,2.1007
+statsbomb:25377,Rémy Riou,2015,FRA-Ligue 1,Nantes,statsbomb,GK,gk,100,Protected high-save keeper,0.2898,2.1548
+statsbomb:40484,Vincent Enyeama,2015,FRA-Ligue 1,Lille,statsbomb,GK,gk,100,Protected high-save keeper,0.1569,2.3148
+statsbomb:4547,Ludovic Butelle,2015,FRA-Ligue 1,Angers,statsbomb,GK,gk,100,Protected high-save keeper,0.4192,2.3915
+statsbomb:4440,Kevin Trapp,2015,FRA-Ligue 1,Paris Saint-Germain,statsbomb,GK,gk,100,Protected high-save keeper,0.4676,2.6105
+statsbomb:3112,Ciprian Tătăruşanu,2015,ITA-Serie A,Fiorentina,statsbomb,GK,gk,100,Protected high-save keeper,0.3554,2.6405
+statsbomb:4691,Claudio Bravo,2015,ESP-La Liga,Barcelona,statsbomb,GK,gk,100,Protected high-save keeper,0.4415,2.6515
+statsbomb:3539,Simon Mignolet,2015,ENG-Premier League,Liverpool,statsbomb,GK,gk,100,Protected high-save keeper,0.0814,2.6967
+statsbomb:6378,Jan Oblak,2015,ESP-La Liga,Atlético Madrid,statsbomb,GK,gk,100,Protected high-save keeper,0.3332,2.7814
+statsbomb:3970,Fraser Forster,2015,ENG-Premier League,Southampton,statsbomb,GK,gk,100,Protected high-save keeper,0.0283,2.9353
+statsbomb:20201,Maarten Stekelenburg,2015,ENG-Premier League,Southampton,statsbomb,GK,gk,100,Protected high-save keeper,0.1969,3.0843
+statsbomb:7028,Pepe Reina,2015,ITA-Serie A,Napoli,statsbomb,GK,gk,100,Protected high-save keeper,0.3719,3.5335
+statsbomb:6949,Gianluigi Buffon,2015,ITA-Serie A,Juventus,statsbomb,GK,gk,100,Protected high-save keeper,0.4049,3.5381
+statsbomb:3623,Adrián,2015,ENG-Premier League,West Ham United,statsbomb,GK,gk,101,Balanced keeper,0.6832,0.7098
+statsbomb:3432,Alexandre Letellier,2015,FRA-Ligue 1,Angers,statsbomb,GK,gk,101,Balanced keeper,0.5838,0.7854
+statsbomb:3509,Thibaut Courtois,2015,ENG-Premier League,Chelsea,statsbomb,GK,gk,101,Balanced keeper,0.701,0.8243
+statsbomb:6823,Sergio Rico,2015,ESP-La Liga,Sevilla,statsbomb,GK,gk,101,Balanced keeper,0.6859,0.8736
+statsbomb:27305,Germán Lux,2015,ESP-La Liga,Deportivo La Coruña,statsbomb,GK,gk,101,Balanced keeper,0.4869,1.1598
+statsbomb:2963,Rémy Vercoutre,2015,FRA-Ligue 1,Caen,statsbomb,GK,gk,101,Balanced keeper,0.3978,1.1727
+statsbomb:3537,Jack Butland,2015,ENG-Premier League,Stoke City,statsbomb,GK,gk,101,Balanced keeper,0.5988,1.1886
+statsbomb:3354,Benoît Guy Robert Costil,2015,FRA-Ligue 1,Rennes,statsbomb,GK,gk,101,Balanced keeper,0.2684,1.209
+statsbomb:6694,Gero Rulli,2015,ESP-La Liga,Real Sociedad,statsbomb,GK,gk,101,Balanced keeper,0.2522,1.2645
+statsbomb:3444,Danijel Subašić,2015,FRA-Ligue 1,Monaco,statsbomb,GK,gk,101,Balanced keeper,0.4228,1.3046
+statsbomb:7174,Antonio Mirante,2015,ITA-Serie A,Bologna,statsbomb,GK,gk,101,Balanced keeper,0.4115,1.3584
+statsbomb:3322,Jonas Lössl,2015,FRA-Ligue 1,Guingamp,statsbomb,GK,gk,101,Balanced keeper,0.2795,1.4052
+statsbomb:7803,Albano Bizzarri,2015,ITA-Serie A,Chievo,statsbomb,GK,gk,101,Balanced keeper,0.5129,1.4083
+statsbomb:7148,Mattia Perin,2015,ITA-Serie A,Genoa,statsbomb,GK,gk,101,Balanced keeper,0.4463,1.4264
+statsbomb:7157,Marco Sportiello,2015,ITA-Serie A,Atalanta,statsbomb,GK,gk,101,Balanced keeper,0.1719,1.4489
+statsbomb:8662,Vid Belec,2015,ITA-Serie A,Carpi,statsbomb,GK,gk,101,Balanced keeper,0.2396,1.4566
+statsbomb:6884,Sergio Álvarez,2015,ESP-La Liga,Celta Vigo,statsbomb,GK,gk,101,Balanced keeper,0.2472,1.4849
+statsbomb:38312,Eugenio Lamanna,2015,ITA-Serie A,Genoa,statsbomb,GK,gk,101,Balanced keeper,0.3046,1.5794
+statsbomb:26753,Javi Varas,2015,ESP-La Liga,Las Palmas,statsbomb,GK,gk,101,Balanced keeper,0.3771,1.6945
+statsbomb:5108,Boaz Myhill,2015,ENG-Premier League,West Bromwich Albion,statsbomb,GK,gk,101,Balanced keeper,0.3876,1.7358
+statsbomb:16309,Joel Robles,2015,ENG-Premier League,Everton,statsbomb,GK,gk,101,Balanced keeper,0.2532,1.7487
+statsbomb:3980,Johny Placide,2015,FRA-Ligue 1,Reims,statsbomb,GK,gk,101,Balanced keeper,0.3191,1.7816
+statsbomb:3262,Łukasz Fabiański,2015,ENG-Premier League,Swansea City,statsbomb,GK,gk,101,Balanced keeper,0.4142,1.7905
+statsbomb:7018,Emiliano Viviano,2015,ITA-Serie A,Sampdoria,statsbomb,GK,gk,101,Balanced keeper,0.2573,1.8193
+statsbomb:4053,Ben Foster,2015,ENG-Premier League,West Bromwich Albion,statsbomb,GK,gk,101,Balanced keeper,0.2675,1.9318
+statsbomb:40533,Cédric Carrasso,2015,FRA-Ligue 1,Bordeaux,statsbomb,GK,gk,101,Balanced keeper,0.1479,1.9863
+statsbomb:13042,Tim Howard,2015,ENG-Premier League,Everton,statsbomb,GK,gk,101,Balanced keeper,0.2705,2.1054
+statsbomb:3488,Wayne Hennessey,2015,ENG-Premier League,Crystal Palace,statsbomb,GK,gk,101,Balanced keeper,0.2414,2.1218
+statsbomb:34881,Daniele Padelli,2015,ITA-Serie A,Torino,statsbomb,GK,gk,101,Balanced keeper,0.1296,2.2131
+statsbomb:7282,Jean-Louis Leca,2015,FRA-Ligue 1,Bastia,statsbomb,GK,gk,101,Balanced keeper,0.2782,2.3352
+statsbomb:3815,Kasper Schmeichel,2015,ENG-Premier League,Leicester City,statsbomb,GK,gk,101,Balanced keeper,0.248,2.3526
+statsbomb:6654,Antonio Adán,2015,ESP-La Liga,Real Betis,statsbomb,GK,gk,101,Balanced keeper,0.0787,2.4559
+statsbomb:2981,Alban Lafont,2015,FRA-Ligue 1,Toulouse,statsbomb,GK,gk,101,Balanced keeper,0.0969,2.5159
+statsbomb:3522,Heurelho Gomes,2015,ENG-Premier League,Watford,statsbomb,GK,gk,101,Balanced keeper,0.2607,2.5624
+statsbomb:9539,Vito Mannone,2015,ENG-Premier League,Sunderland,statsbomb,GK,gk,101,Balanced keeper,0.2714,2.5636
+statsbomb:11508,Łukasz Skorupski,2015,ITA-Serie A,Empoli,statsbomb,GK,gk,101,Balanced keeper,0.0931,2.6421
+statsbomb:40645,Laurent Pionnier,2015,FRA-Ligue 1,Montpellier,statsbomb,GK,gk,101,Balanced keeper,0.2016,2.6429
+statsbomb:6898,Jaume Doménech,2015,ESP-La Liga,Valencia,statsbomb,GK,gk,101,Balanced keeper,0.2483,2.7083
+statsbomb:26103,Carlos Kameni,2015,ESP-La Liga,Málaga,statsbomb,GK,gk,101,Balanced keeper,0.041,2.7736
+statsbomb:25144,Diego Alves,2015,ESP-La Liga,Valencia,statsbomb,GK,gk,101,Balanced keeper,0.0442,3.3529
+statsbomb:3379,Alphonse Areola,2015,ESP-La Liga,Villarreal,statsbomb,GK,gk,101,Balanced keeper,0.1303,3.3668
+statsbomb:4509,Jérôme Prior,2015,FRA-Ligue 1,Bordeaux,statsbomb,GK,gk,101,Balanced keeper,0.0838,3.581
+statsbomb:5653,Mouez Hassen,2015,FRA-Ligue 1,Nice,statsbomb,GK,gk,101,Balanced keeper,0.2311,3.7456
+statsbomb:6792,Pau López,2015,ESP-La Liga,Espanyol,statsbomb,GK,gk,102,Busy low-save keeper,0.6376,0.9494
+statsbomb:8697,Andrés Fernández,2015,ESP-La Liga,Granada,statsbomb,GK,gk,102,Busy low-save keeper,0.5874,1.0118
+statsbomb:6625,Vicente Guaita,2015,ESP-La Liga,Getafe,statsbomb,GK,gk,102,Busy low-save keeper,0.4452,1.319
+statsbomb:32037,Nicola Leali,2015,ITA-Serie A,Frosinone,statsbomb,GK,gk,102,Busy low-save keeper,0.519,1.4444
+statsbomb:8274,Pierluigi Gollini,2015,ITA-Serie A,Hellas Verona,statsbomb,GK,gk,102,Busy low-save keeper,0.4108,1.4792
+statsbomb:34953,Denis Petrić,2015,FRA-Ligue 1,Troyes,statsbomb,GK,gk,102,Busy low-save keeper,0.5526,1.4815
+statsbomb:3096,Rob Elliot,2015,ENG-Premier League,Newcastle United,statsbomb,GK,gk,102,Busy low-save keeper,0.4493,1.5513
+statsbomb:7055,Stefano Sorrentino,2015,ITA-Serie A,Palermo,statsbomb,GK,gk,102,Busy low-save keeper,0.3637,1.5831
+statsbomb:12608,Brad Guzan,2015,ENG-Premier League,Aston Villa,statsbomb,GK,gk,102,Busy low-save keeper,0.5621,1.6035
+statsbomb:3742,Orestis Karnezis,2015,ITA-Serie A,Udinese,statsbomb,GK,gk,102,Busy low-save keeper,0.2426,1.6055
+statsbomb:23843,Diego Mariño,2015,ESP-La Liga,Levante,statsbomb,GK,gk,102,Busy low-save keeper,0.3832,1.6528
+statsbomb:6730,Rubén Martínez,2015,ESP-La Liga,Levante,statsbomb,GK,gk,102,Busy low-save keeper,0.4798,1.781
+statsbomb:9014,Declan Rudd,2015,ENG-Premier League,Norwich City,statsbomb,GK,gk,102,Busy low-save keeper,0.5189,1.8333
+statsbomb:7193,Paul Bernardoni,2015,FRA-Ligue 1,Troyes,statsbomb,GK,gk,102,Busy low-save keeper,0.518,2.0215
+statsbomb:3339,Asmir Begović,2015,ENG-Premier League,Chelsea,statsbomb,GK,gk,102,Busy low-save keeper,0.1132,2.0837
+statsbomb:23635,John Ruddy,2015,ENG-Premier League,Norwich City,statsbomb,GK,gk,102,Busy low-save keeper,0.2352,2.0897
+statsbomb:9887,Rafael,2015,ITA-Serie A,Hellas Verona,statsbomb,GK,gk,102,Busy low-save keeper,0.1725,2.2452
+statsbomb:401508,Clément Maury,2015,FRA-Ligue 1,Gazélec Ajaccio,statsbomb,GK,gk,102,Busy low-save keeper,0.2549,2.2829
+statsbomb:6610,Pichu,2015,ESP-La Liga,Sporting Gijón,statsbomb,GK,gk,102,Busy low-save keeper,0.1549,2.291
+statsbomb:7641,Johann Carrasso,2015,FRA-Ligue 1,Reims,statsbomb,GK,gk,102,Busy low-save keeper,0.4954,2.344
+statsbomb:3008,Benjamin Lecomte,2015,FRA-Ligue 1,Lorient,statsbomb,GK,gk,102,Busy low-save keeper,0.1046,2.3886
+statsbomb:18672,Mark Bunn,2015,ENG-Premier League,Aston Villa,statsbomb,GK,gk,102,Busy low-save keeper,0.2654,2.4871
+statsbomb:10763,Asier Riesgo,2015,ESP-La Liga,Eibar,statsbomb,GK,gk,102,Busy low-save keeper,0.1866,2.5703
+statsbomb:6871,Costel Pantilimon,2015,ENG-Premier League,Sunderland,statsbomb,GK,gk,102,Busy low-save keeper,0.2805,2.7122
+statsbomb:20074,Artur Boruc,2015,ENG-Premier League,Bournemouth,statsbomb,GK,gk,102,Busy low-save keeper,0.1922,2.7442
+statsbomb:24255,Juan Carlos,2015,ESP-La Liga,Rayo Vallecano,statsbomb,GK,gk,102,Busy low-save keeper,0.3208,3.1143
+statsbomb:36553,Matthieu Dreyer,2015,FRA-Ligue 1,Troyes,statsbomb,GK,gk,102,Busy low-save keeper,0.3693,3.3164

@@ -53,9 +53,13 @@ class SimilarityResult(BaseModel):
     season: str
     league: str  # the target's own league
     pool_leagues: list[str]  # the leagues the position group was pooled from
-    position_group_fine: str
+    position_group_fine: str  # the target's own position group
     position_group_fine_share: float
-    group_size: int  # qualifying players in the (pooled) position group, target included
+    pool_kind: str = "position_group"  # "archetype" or "position_group": what was searched
+    archetype_id: int | None = None  # the target's archetype (only when pool_kind == "archetype")
+    archetype_label: str | None = None
+    cluster_confidence: float | None = None  # margin to the next archetype, 0-1 (archetypes.py)
+    group_size: int  # players in the searched pool (archetype or position group), target included
     candidates_considered: int  # after filters, target excluded
     features_used: list[str]
     features_dropped: dict[str, str]  # metric -> why it was left out for this group

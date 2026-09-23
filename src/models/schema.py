@@ -251,6 +251,36 @@ class IngestLog(Base):
     error: Mapped[str | None] = mapped_column(String, nullable=True)
 
 
+class PlayerArchetype(Base):
+    """One row per qualifying player per season: the playing archetype his metrics cluster into.
+
+    Built by `src/analytics/archetypes.py` (`--rebuild`). `archetype_id` is unique across pools
+    (outfield ids from 0, goalkeeper ids from 100). `cluster_confidence` is 0 on the boundary
+    between two archetypes and tends to 1 deep inside one; `distance_to_centroid` is measured in
+    the PCA space the clusters were fitted in. `position_group_fine` is kept for reference only
+    and is never a clustering feature.
+    """
+
+    __tablename__ = "player_archetypes"
+    __table_args__ = (
+        UniqueConstraint("source", "player_id", "season", name="uq_player_archetype"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    player_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
+    player_name: Mapped[str] = mapped_column(String, nullable=False)
+    season: Mapped[str] = mapped_column(String, nullable=False, index=True)
+    league: Mapped[str] = mapped_column(String, nullable=False)
+    team: Mapped[str] = mapped_column(String, nullable=False)
+    source: Mapped[str] = mapped_column(String, nullable=False)
+    position_group_fine: Mapped[str | None] = mapped_column(String, nullable=True)
+    pool: Mapped[str] = mapped_column(String, nullable=False)  # 'outfield' or 'gk'
+    archetype_id: Mapped[int] = mapped_column(Integer, nullable=False, index=True)
+    archetype_label: Mapped[str] = mapped_column(String, nullable=False)
+    cluster_confidence: Mapped[float] = mapped_column(Float, nullable=False)
+    distance_to_centroid: Mapped[float] = mapped_column(Float, nullable=False)
+
+
 def build_team_id(*, league: str, season: str, name: str) -> str:
     """Deterministic, source-independent team_id (`name` must be canonical).
 

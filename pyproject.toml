@@ -10,6 +10,7 @@ dependencies = [
     "numpy>=1.26",
     "scikit-learn>=1.5",
     "plotly>=5.22",
+    "matplotlib>=3.9",
     "streamlit>=1.38",
     "pydantic>=2.8",
     "pydantic-settings>=2.4",
