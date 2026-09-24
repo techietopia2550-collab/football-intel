@@ -33,6 +33,7 @@ BG_PRIMARY, BG_SECONDARY, BG_TERTIARY = "#0E1117", "#1A1D23", "#252932"
 BORDER = "#2E323C"
 TEXT_PRIMARY, TEXT_SECONDARY, TEXT_TERTIARY = "#E8EAED", "#9AA0A6", "#5F6368"
 POSITIVE, NEGATIVE, NEUTRAL, HIGHLIGHT, WARNING = "#3FB950", "#F85149", "#8B949E", "#58A6FF", "#D29922"
+LOGO_BG = "#F0F0F0"  # light disc behind club crests so dark ones (Spurs, Verona) stay visible
 
 POSITION_COLORS: dict[str, str] = {
     "GK": "#F0883E", "CB": "#58A6FF", "FB": "#79C0FF", "DM": "#3FB950",
@@ -288,6 +289,25 @@ def player_avatar(name: str, size: int, src: str | None = None) -> str:
     return (
         f'<img class="fi-avatar" src="{src}" width="{size}" height="{size}" '
         f'style="width:{size}px;height:{size}px" alt="Photo of {esc(name)}" loading="lazy">'
+    )
+
+
+def team_logo(team_name: str, size: int) -> str:
+    """A club crest of `size` px on a light circular disc (the FotMob / Sofascore pattern), so dark
+    crests read on the dark theme. Decorative: the club name is always written next to it. Reads
+    the local logo cache only (the generic badge when there is none), never the network."""
+    from src.app import player_images  # local import: keeps design.py free of I/O at import
+
+    uri = player_images.team_logo_uri(team_name, size)
+    if not uri:
+        return ""
+    pad = min(SP_XS, size // 10)  # 4 px, eased on tiny icons so the crest keeps ~80-90% of the disc
+    return (
+        f'<span class="fi-logo" style="display:inline-flex;align-items:center;justify-content:center;'
+        f"width:{size}px;height:{size}px;padding:{pad}px;box-sizing:border-box;border-radius:50%;"
+        f'background:{LOGO_BG};vertical-align:middle;flex:none">'
+        f'<img src="{uri}" alt="" style="width:100%;height:100%;object-fit:contain;display:block">'
+        "</span>"
     )
 
 

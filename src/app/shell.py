@@ -93,22 +93,6 @@ def open_match(player_id: str, match_id: int) -> None:
     st.switch_page("pages/7_match.py")
 
 
-def team_logo_uri(team_name: str, px: int) -> str:
-    """Data URI of the club's logo (a generic badge while it is fetched, or if there is none)."""
-    return player_images.team_logo_uri(team_name, px)
-
-
-def team_logo_img(team_name: str, px: int) -> str:
-    """Inline <img> of the club's logo, decorative (the club name is always written next to it)."""
-    uri = team_logo_uri(team_name, px)
-    if not uri:
-        return ""
-    return (
-        f'<img src="{uri}" width="{px}" height="{px}" alt="" '
-        f'style="vertical-align:middle;object-fit:contain">'
-    )
-
-
 def open_compare(player_ids: list[str]) -> None:
     st.session_state["compare_ids"] = player_ids[:5]
     st.switch_page("pages/3_compare.py")

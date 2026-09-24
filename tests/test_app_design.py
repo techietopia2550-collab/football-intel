@@ -56,6 +56,14 @@ def test_avatar_falls_back_to_silhouette_and_is_never_broken(tmp_path: Path) -> 
     assert 'alt="Photo of' in design.player_avatar("N'Golo Kanté", 64)
 
 
+def test_team_logo_sits_on_a_light_disc_at_the_requested_size() -> None:
+    html = design.team_logo("Nowhere FC", 32)  # no cached logo: the placeholder badge is used
+    assert f"background:{design.LOGO_BG}" in html and "border-radius:50%" in html
+    assert "width:32px;height:32px" in html and "object-fit:contain" in html
+    assert "data:image/png" in html
+    assert "padding:4px" in design.team_logo("Nowhere FC", 48)
+
+
 def test_heatmap_figure_covers_the_pitch() -> None:
     grid = [[0.0] * 12 for _ in range(8)]
     grid[4][6] = 5.0

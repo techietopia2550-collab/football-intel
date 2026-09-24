@@ -114,7 +114,7 @@ def _hero(row: pd.Series, table: pd.DataFrame) -> None:
                 f"{design.position_badge(group)}"
                 + (design.badge(f"Archetype: {arch}", "highlight") if arch else "")
                 + "</div>"
-                f'<div class="fi-body">{shell.team_logo_img(row["team"], 24)} '
+                f'<div class="fi-body">{design.team_logo(row["team"], 24)} '
                 f'{design.esc(row["team"])} · '
                 f"{design.esc(shell.LEAGUE_SHORT[row['league']])} · {data.SEASON_LABEL}</div>"
                 + (f'<div class="fi-body" style="margin-top:{design.SP_XS}px">{bio}</div>' if bio else "")

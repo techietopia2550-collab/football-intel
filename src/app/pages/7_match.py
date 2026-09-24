@@ -114,7 +114,7 @@ def _header(r: MatchReport) -> None:
     if r.match_week:
         meta.append(f"Matchweek {r.match_week}")
     team = lambda name: (  # noqa: E731
-        f'<div class="mr-team">{shell.team_logo_img(name, 64)}<span class="fi-name">{design.esc(name)}</span></div>'
+        f'<div class="mr-team">{design.team_logo(name, 64)}<span class="fi-name">{design.esc(name)}</span></div>'
     )
     design.render(
         design.card(
@@ -153,7 +153,7 @@ def _timeline(r: MatchReport, sb_id: int | None) -> None:
             f'<span class="mr-min">{ev.minute}\'</span><span aria-hidden="true">{_ICON[ev.kind]}</span>'
             f'<div><b>{design.esc(ev.player_name)}</b>'
             + (f'<div class="mr-ev-sub">{design.esc(sub)}</div>' if sub else "")
-            + f"</div>{shell.team_logo_img(ev.team, 20)}</div>"
+            + f"</div>{design.team_logo(ev.team, 20)}</div>"
         )
     design.render(design.card(None, f'<div class="mr-tl">{"".join(rows)}</div>'))
 
@@ -288,7 +288,7 @@ def _player_card_html(p: LineupPlayer, sb_id: int | None, bench: bool) -> str:
 def _lineup_column(lineup: TeamLineup, sb_id: int | None) -> None:
     formation = f'<span class="mr-form">{design.esc(lineup.formation)}</span>' if lineup.formation else ""
     design.render(
-        f'<div class="mr-side">{shell.team_logo_img(lineup.team, 32)}'
+        f'<div class="mr-side">{design.team_logo(lineup.team, 32)}'
         f'<span class="fi-name">{design.esc(lineup.team)}</span>{formation}</div>'
     )
     design.render("".join(_player_card_html(p, sb_id, False) for p in lineup.starters))

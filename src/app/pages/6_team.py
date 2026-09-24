@@ -53,7 +53,7 @@ def _hero(p: TeamProfile) -> None:
         left, right = st.columns([3, 2], vertical_alignment="center")
         with left:
             design.render(
-                f'<h1 class="fi-h1">{shell.team_logo_img(p.team_name, 48)} {design.esc(p.team_name)}</h1>'
+                f'<h1 class="fi-h1">{design.team_logo(p.team_name, 48)} {design.esc(p.team_name)}</h1>'
                 f'<div class="fi-body">{design.esc(shell.LEAGUE_SHORT.get(p.league, p.league))} · '
                 f"{data.SEASON_LABEL}</div>"
                 '<div class="fi-row" style="margin-top:8px">'
@@ -132,7 +132,7 @@ def _similar_section(p: TeamProfile) -> None:
         with cols[i % 2], st.container(key=f"ficard_simteam_{i}"):
             why = f"Closest on: {', '.join(s.closest_axes)}. Biggest gaps: {', '.join(s.biggest_gaps)}."
             design.render(
-                f'<div class="fi-mini" title="{design.esc(why)}">{shell.team_logo_img(s.team_name, 32)}'
+                f'<div class="fi-mini" title="{design.esc(why)}">{design.team_logo(s.team_name, 32)}'
                 f'<div class="fi-col" style="flex:1"><span class="fi-name" style="font-size:{design.SIZE_BODY}px">'
                 f"{s.rank}. {design.esc(s.team_name)}</span>"
                 f'<span class="fi-muted">{design.esc(shell.LEAGUE_SHORT.get(s.league, s.league))} · '
