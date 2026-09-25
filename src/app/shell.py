@@ -109,6 +109,25 @@ def has_photo(player_id: str) -> bool:
     return player_images.has_credit(player_id)
 
 
+def wage_line(team_name: str, league: str) -> str:
+    """'Team wage bill: £XXXm/year (rank N of M, source: X — estimate)' as HTML, labelled as team
+    context. Says 'not available' when no source gives a figure: it is never estimated."""
+    ctx = data.team_wage(team_name, league)
+    tip = "The club's total annual wage bill: team context, not any individual player's wage."
+    if ctx.wage_bill_annual_gbp is None:
+        body = 'Team wage bill: <span class="fi-muted">not available</span>'
+    else:
+        of = f"{ctx.teams_ranked}" + (
+            f" with data, {ctx.teams_in_season} clubs" if ctx.teams_ranked < ctx.teams_in_season else ""
+        )
+        body = (
+            f"Team wage bill: £{ctx.wage_bill_annual_gbp / 1e6:,.0f}m/year "
+            f'<span class="fi-muted">(rank {ctx.rank} of {of}, source: '
+            f"{design.esc(ctx.source or 'unknown')} — {design.esc(ctx.confidence or 'unknown')})</span>"
+        )
+    return f'<span title="{design.esc(tip)}">{body}</span> ' + design.badge("team context", "neutral", tip)
+
+
 def fail(message: str) -> None:
     design.render(design.note(f"<b>Something went wrong.</b> {design.esc(message)}"))
     st.stop()

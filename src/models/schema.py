@@ -296,6 +296,35 @@ class PlayerBio(Base):
     fetched_at: Mapped[datetime] = mapped_column(DateTime, nullable=False)
 
 
+class TeamFinance(Base):
+    """One row per club per league-season: the annual wage bill (team level, never player level).
+
+    Written by `src/ingest/finance.py`. `season` and `league` use the same codes as every other
+    table ("2015", "ENG-Premier League"). `wage_bill_annual_gbp` is NULL when no source gives a
+    value: it is never estimated. `exchange_rate_used` is the GBP-per-unit rate applied to
+    `wage_bill_original_amount`, NULL when no conversion was made. `confidence` is one of
+    `FINANCE_CONFIDENCE`. See ANALYTICS_DECISIONS.md section 24.
+    """
+
+    __tablename__ = "team_finance"
+    __table_args__ = (
+        UniqueConstraint("team_name", "season", "league", name="uq_team_finance_season"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    team_name: Mapped[str] = mapped_column(String, nullable=False, index=True)
+    season: Mapped[str] = mapped_column(String, nullable=False, index=True)
+    league: Mapped[str] = mapped_column(String, nullable=False)
+    wage_bill_annual_gbp: Mapped[float | None] = mapped_column(Float, nullable=True)
+    wage_bill_currency_original: Mapped[str | None] = mapped_column(String, nullable=True)
+    wage_bill_original_amount: Mapped[float | None] = mapped_column(Float, nullable=True)
+    exchange_rate_used: Mapped[float | None] = mapped_column(Float, nullable=True)
+    source: Mapped[str] = mapped_column(String, nullable=False)
+    source_url: Mapped[str | None] = mapped_column(String, nullable=True)
+    confidence: Mapped[str] = mapped_column(String, nullable=False, default="unknown")
+    updated_at: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+
+
 def build_team_id(*, league: str, season: str, name: str) -> str:
     """Deterministic, source-independent team_id (`name` must be canonical).
 

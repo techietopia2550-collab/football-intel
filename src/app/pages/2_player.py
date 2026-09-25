@@ -118,6 +118,8 @@ def _hero(row: pd.Series, table: pd.DataFrame) -> None:
                 f'{design.esc(row["team"])} · '
                 f"{design.esc(shell.LEAGUE_SHORT[row['league']])} · {data.SEASON_LABEL}</div>"
                 + (f'<div class="fi-body" style="margin-top:{design.SP_XS}px">{bio}</div>' if bio else "")
+                + f'<div class="fi-body" style="margin-top:{design.SP_XS}px">'
+                f"{shell.wage_line(row['team'], row['league'])}</div>"
             )
             if st.button(f"Plays for → {row['team']}", key=f"team_link_{pid}"):
                 shell.open_team(row["team"])

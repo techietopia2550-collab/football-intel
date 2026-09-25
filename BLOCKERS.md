@@ -445,3 +445,36 @@ same role. Cross-position pairs inside the same archetype score high even when a
 them different roles. The UI now shows position context on similar-player cards so users can judge
 for themselves. The similarity engine is NOT tuned to chase the labels — see ANALYTICS_DECISIONS.md
 section 23.
+
+## 19. Team wage bills: Capology unreachable, manual CSV required (2026-09-25)
+
+**Status: no automated source for 2015/16 club wage bills.** The `team_finance` table, importer and UI
+lines are built (ANALYTICS_DECISIONS.md section 24) but the table is empty until the manual CSV is filled.
+
+- **FBref wages pages: blocked.** `GET https://fbref.com/robots.txt` and
+  `GET https://fbref.com/en/comps/9/2015-2016/wages/` (plain `requests`, 3 s apart) both returned
+  `403`, `cf-mitigated: challenge`, "Just a moment..." (Cloudflare JavaScript challenge). Same block as
+  section 1. The other three leagues were not requested, since the whole domain is challenged.
+- **Capology: blocked.** `GET https://www.capology.com/robots.txt` (plain `requests`, User-Agent
+  `FootballIntel/0.1 (football research project; plain requests, rate-limited)`) returned `403`,
+  `server: cloudflare`, `cf-mitigated: challenge`, `cType: 'managed'`: a managed challenge page with
+  "Enable JavaScript and cookies to continue". Because robots.txt itself was challenged, no wage page was
+  requested: the rules could not be read, and the brief was to stop at that point. So whether Capology
+  has archived 2015/16 payroll pages, and what they look like, is **unknown**, not "no".
+- **Not tried, on purpose:** Selenium, headless browsers, cookies, cf-clearance tokens, curl_cffi,
+  cloudscraper, FlareSolverr, or any other challenge workaround.
+- **Code:** `src.ingest.finance.fetch_capology` checks robots.txt, raises `SourceBlocked` on a challenge
+  (tested offline) and has **no page parser**, because no page structure has ever been seen.
+  `python -m src.ingest.finance --source capology ...` exits with code 2 and this explanation.
+
+**Next step: fill `data/manual/team_finance.csv` by hand**, one row per club (80 for 2015/16), every
+figure from a citable document (`source`, `source_url`, `confidence`), then
+`python -m src.ingest.finance --import-csv data/manual/team_finance.csv`. Suggested sources, best first:
+club annual reports / Companies House filings (EPL wages are public in the accounts: `official`), the
+Deloitte Football Money League and UEFA Club Licensing Benchmarking Report (`official`/`aggregated`),
+and published press compilations (`estimate`). No value is to be filled in from memory. Clubs with no
+citable figure get a row with blank amounts and `confidence = unknown` (stored as NULL).
+
+Note that club accounts cover the financial year (often July to June, but not for every club) and
+usually include staff other than players, so they are not the same thing as a player payroll. Record
+which one a row uses in `source`.

@@ -56,6 +56,7 @@ def _hero(p: TeamProfile) -> None:
                 f'<h1 class="fi-h1">{design.team_logo(p.team_name, 48)} {design.esc(p.team_name)}</h1>'
                 f'<div class="fi-body">{design.esc(shell.LEAGUE_SHORT.get(p.league, p.league))} · '
                 f"{data.SEASON_LABEL}</div>"
+                f'<div class="fi-body" style="margin-top:4px">{shell.wage_line(p.team_name, p.league)}</div>'
                 '<div class="fi-row" style="margin-top:8px">'
                 + "".join(design.badge(f, "highlight") for f in p.headline_facts)
                 + "</div>"

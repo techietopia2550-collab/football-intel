@@ -695,3 +695,40 @@ see section 23.** This section is the methodology as fixed before any label was 
   score does not make a same-role pair more likely than a middling one. With 100 LLM-labelled
   pairs the intervals are about +/-15 points; a human relabel should be run before these numbers
   go in the paper.
+
+## 24. Team wage bills: methodology (`team_finance`, 2026-09-25)
+
+Team context for the future Tactical Composer (budget fit). **Club-level annual wage bills only: there
+are no player wages anywhere in the project, and none are to be derived** (dividing a bill by squad
+size, say, would be invention).
+
+- **Table `team_finance`** (`src/models/schema.py`), one row per (team_name, season, league), unique.
+  `season` and `league` use the codes every other table uses (`"2015"`, `"ENG-Premier League"`), so it
+  joins on them directly. The CSV and CLI also accept `2015-2016`, `2015/16`, `EPL`, `La Liga`, etc.
+  Team names go through `team_identity`; an unknown name is stored as given and logged.
+- **Created by `init_db`** (`create_all`, `checkfirst`), so the migration is idempotent like the rest.
+- **Currency.** Every bill is stored in GBP (`wage_bill_annual_gbp`), with the source's own figure in
+  `wage_bill_original_amount` and `wage_bill_currency_original`. EUR converts at a fixed
+  **1 EUR = 0.75 GBP** for 2015/16 (`EXCHANGE_RATES_TO_GBP`), a round season average: EUR/GBP ran
+  roughly 0.70-0.80 over July 2015 to June 2016, so a single rate can put a Continental bill a few percent
+  off against an English one. `exchange_rate_used` records the rate applied (1.0 for GBP). When a row
+  supplies both a GBP figure and a foreign original, the source's GBP figure is kept, no rate is recorded,
+  and a warning is logged if it strays more than 2% from 0.75. A season with no rate cannot be imported.
+- **Missing is NULL.** A blank amount stays NULL, is logged at import, and is left out of the ranking.
+  Nothing is interpolated, averaged or estimated. Bad rows (unknown league, non-consecutive season,
+  non-numeric or negative amount, an amount without a currency, a blank `source`, a `confidence`
+  outside the four values) stop the import with the line number rather than being skipped.
+- **Confidence** is one of `official` (club accounts, regulator filings), `aggregated` (a body such as
+  UEFA or Deloitte compiling official figures), `estimate` (payroll trackers such as Capology, press)
+  and `unknown`. It is shown next to every figure in the UI.
+- **Rank** (`src/analytics/finance.py`) is 1 = highest bill across all four leagues of the season, over
+  clubs with a known bill only. The UI says "rank N of M" and, while coverage is partial, "of M with
+  data, 80 clubs", so a rank is never read against clubs we have no number for.
+- **UI.** Player profile hero and Team Fingerprint hero: "Team wage bill: £XXXm/year (rank N of M,
+  source: X — confidence)", with a "team context" badge and a tooltip saying it is not the player's
+  wage. With no figure it reads "Team wage bill: not available".
+- **Known comparability limits.** Accounts report the club's financial year and usually include all
+  staff, not only players; payroll trackers estimate players only. Mixing them in one ranking mixes two
+  quantities, so a row's `source` should say which it is, and the Composer should prefer rows of one kind.
+- **Sources.** FBref wages pages and Capology are both behind a Cloudflare challenge (BLOCKERS.md
+  section 19), so the table is filled from the hand-made `data/manual/team_finance.csv`.

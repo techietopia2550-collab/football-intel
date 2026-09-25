@@ -11,6 +11,7 @@ import streamlit as st
 from sqlalchemy import Engine
 
 from src.analytics import directory as analytics_dir
+from src.analytics import finance as finance_mod
 from src.analytics import games as games_mod
 from src.analytics import heatmaps as heatmaps_mod
 from src.analytics import match_report as match_report_mod
@@ -18,6 +19,7 @@ from src.analytics import team_profile as team_profile_mod
 from src.analytics.profile import classify
 from src.analytics.similarity import find_similar
 from src.analytics.team_similarity import find_similar_teams
+from src.models.finance import TeamWageContext
 from src.models.match import PlayerGames, SeasonGameStats
 from src.models.match_report import MatchReport
 from src.models.schema import get_engine
@@ -160,6 +162,12 @@ def similar_teams(team_name: str, n: int = 10) -> SimilarTeamsResult:
 @st.cache_data(show_spinner=False)
 def team_key_players(team_name: str, league: str) -> tuple[list[KeyPlayer], str]:
     return team_profile_mod.key_players(team_name, league, SEASON, engine())
+
+
+@st.cache_data(show_spinner=False)
+def team_wage(team_name: str, league: str) -> TeamWageContext:
+    """The club's wage bill and its rank (team context, never a player's wage)."""
+    return finance_mod.team_wage_context(team_name, league, SEASON, engine())
 
 
 # ---- matches (src.analytics.games / heatmaps) -------------------------------------------------
