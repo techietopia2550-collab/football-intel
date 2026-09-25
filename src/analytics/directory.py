@@ -328,6 +328,29 @@ def load_heatmap(
     return grid, int(df["event_count"].iloc[0])
 
 
+SIDE_SHARE = 0.55  # share of a wide player's events on one half of the pitch to call it his side
+
+
+def side_from_grid(grid: np.ndarray, share: float = SIDE_SHARE) -> str | None:
+    """'left' or 'right' from where a heatmap's events fall (grid rows run from the left touchline
+    to the right), or None for an empty grid or a near-even split."""
+    total = grid.sum()
+    if total <= 0:
+        return None
+    left = grid[: grid.shape[0] // 2].sum() / total
+    return "left" if left >= share else "right" if left <= 1 - share else None
+
+
+def side_detection(
+    player_id: str, season: str = DEFAULT_SEASON, engine: Engine | None = None
+) -> str | None:
+    """A player's preferred flank from his all-actions heatmap, or None with no heatmap."""
+    hm = load_heatmap(player_id, "all_actions", season, engine)
+    if hm is None or hm[1] == 0:
+        return None
+    return side_from_grid(hm[0])
+
+
 def has_heatmaps(
     player_ids: list[str], season: str = DEFAULT_SEASON, engine: Engine | None = None
 ) -> set[str]:

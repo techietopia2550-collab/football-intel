@@ -85,7 +85,7 @@ st.markdown(
 - **Data flaws.** 16 of 1,517 matches are affected by StatsBomb lineup-clock errors: 10 could not
   be repaired and are left out, and 6 stored matches carry small minutes errors (0.6 to 3.5
   minutes). Repaired lineups are counted on the affected players' profiles.
-- **Heatmaps** exist for Premier League players only so far.
+- **Heatmaps** exist for players in all four leagues (Premier League, La Liga, Serie A, Ligue 1).
 - **No current-season data, no ages, no career history.** StatsBomb's open data has no birth
   dates, so age filters are unavailable. Career and transfers are a placeholder.
 - **Leagues are pooled as one population.** Whether tagging or pace of play differ enough between

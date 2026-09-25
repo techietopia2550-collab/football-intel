@@ -207,3 +207,16 @@ def test_run_without_stored_matches_fails_loudly(engine: Engine) -> None:
         conn.execute(text("DELETE FROM matches"))
     with pytest.raises(LookupError):
         heatmaps.run(SEASON, LEAGUE, engine=engine, load_events=lambda m: [])
+
+
+def test_side_from_grid() -> None:
+    from src.analytics.directory import side_from_grid
+
+    grid = np.zeros((8, 12))
+    assert side_from_grid(grid) is None
+    grid[:4] = 1.0
+    assert side_from_grid(grid) == "left"
+    grid[4:] = 1.0
+    assert side_from_grid(grid) is None  # even split
+    grid[:4] = 0.2
+    assert side_from_grid(grid) == "right"

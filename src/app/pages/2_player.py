@@ -1,4 +1,4 @@
-"""Player profile in three tabs. Profile: hero, quick radar, position, full radar, strengths and
+"""Player profile: a hero card above three tabs. Profile: quick radar, position, full radar, strengths and
 weaknesses, heatmap, similar players, transfer value. Matches: standout games. Stats: full table."""
 
 from __future__ import annotations
@@ -216,26 +216,10 @@ def _quick_radar(row: pd.Series) -> None:
     st.caption(caption)
 
 
-SIDE_SHARE = 0.55  # share of a wide player's events on one half of the pitch to call it his side
-
-
-def _preferred_side(pid: str) -> str | None:
-    """'left' or 'right' from where his all-actions heatmap events fall (grid rows run from the left
-    touchline to the right), or None with no heatmap or a near-even split. A display reading of the
-    stored grid, like the heatmap's text alternative."""
-    hm = data.heatmap(pid, "all_actions")
-    if hm is None or hm[1] == 0:
-        return None
-    grid = hm[0]
-    half = grid.shape[0] // 2
-    left = grid[:half].sum() / grid.sum()
-    return "left" if left >= SIDE_SHARE else "right" if left <= 1 - SIDE_SHARE else None
-
-
 def _position_section(row: pd.Series) -> None:
     group, pid = row["position_group_fine"], row["player_id"]
     wide = isinstance(design.POSITION_SPOTS[group][1], tuple)
-    side = _preferred_side(pid) if wide else None
+    side = data.side(pid) if wide else None
     notes = []
     if wide and side is None:
         notes.append("No clear side: both flanks shown.")
@@ -337,8 +321,7 @@ def _heatmap_section(row: pd.Series) -> None:
                 design.render(
                     design.empty_state(
                         "No data for this heatmap type",
-                        "Heatmaps are only generated for Premier League players so far."
-                        if row["league"] != "ENG-Premier League" else "",
+                        "This player has no events of this type in the 2015/16 data.",
                     )
                 )
                 continue
@@ -552,7 +535,7 @@ def _quality_notes(row: pd.Series) -> None:
             design.render(design.note(n))
     else:
         design.render(design.note("No data-quality flags for this player.", kind="info"))
-    st.page_link("pages/5_methodology.py", label="Methodology and known limitations →")
+    shell.methodology_link("Methodology and known limitations →")
 
 
 # ---- page ------------------------------------------------------------------------------------
@@ -573,9 +556,9 @@ except Exception:  # noqa: BLE001 - a clear message, not a traceback
     shell.fail(f"Could not load the stats for {row['player_name']}.")
     st.stop()
 
+_hero(row, table)
 profile_tab, matches_tab, stats_tab = st.tabs(["Profile", "Matches", "Stats"])
 with profile_tab:
-    _hero(row, table)
     _quick_radar(row)
     _position_section(row)
     _radar_section(row, table)

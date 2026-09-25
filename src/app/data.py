@@ -65,6 +65,11 @@ def heatmap(player_id: str, heatmap_type: str) -> tuple[np.ndarray, int] | None:
 
 
 @st.cache_data(show_spinner=False)
+def side(player_id: str) -> str | None:
+    return analytics_dir.side_detection(player_id, SEASON, engine())
+
+
+@st.cache_data(show_spinner=False)
 def players_with_heatmaps() -> set[str]:
     return analytics_dir.has_heatmaps(directory()["player_id"].tolist(), SEASON, engine())
 

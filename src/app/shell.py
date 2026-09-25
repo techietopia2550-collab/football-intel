@@ -8,6 +8,7 @@ from dataclasses import dataclass
 
 import pandas as pd
 import streamlit as st
+from streamlit.errors import StreamlitAPIException
 
 from src.analytics import directory as analytics_dir
 from src.app import data, design, player_images
@@ -74,7 +75,16 @@ def sidebar() -> None:
                 "leadership, communication or off-ball reading of the game. Archetype "
                 "boundaries are soft."
             )
-            st.page_link("pages/5_methodology.py", label="Read the methodology →")
+            methodology_link("Read the methodology →")
+
+
+def methodology_link(label: str) -> None:
+    """A link to the Methodology page. A page run on its own (`streamlit run src/app/pages/...`)
+    has no page registry, so st.page_link raises; show a plain pointer there instead."""
+    try:
+        st.page_link("pages/5_methodology.py", label=label)
+    except StreamlitAPIException:
+        st.caption(f"{label.rstrip(' →')}: open the Methodology page from the full app.")
 
 
 def open_player(player_id: str) -> None:
