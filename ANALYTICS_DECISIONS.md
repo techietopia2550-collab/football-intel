@@ -732,3 +732,67 @@ size, say, would be invention).
   quantities, so a row's `source` should say which it is, and the Composer should prefer rows of one kind.
 - **Sources.** FBref wages pages and Capology are both behind a Cloudflare challenge (BLOCKERS.md
   section 19), so the table is filled from the hand-made `data/manual/team_finance.csv`.
+
+## 25. Market values: Transfermarkt snapshot for 2015/16 (`player_market_values`, 2026-09-26)
+
+Code: `src/transform/market_values.py` (snapshot, matching, table), `src/analytics/market_values.py`
+(player value, club sum, coverage). Run: `python -m src.transform.market_values`.
+
+- **Source.** The dcaribou *transfermarkt-datasets* dump, Kaggle `davidcariboo/player-scores`,
+  downloaded by hand and read from `data/raw/transfermarkt/` (gitignored, never committed). Only local
+  files are read: nothing is scraped or downloaded by code. Files used: `player_valuations.csv`
+  (656,301 rows, 2000-01-20 to 2026-06-12), `players.csv` (50,149), `games.csv` and `appearances.csv`
+  (for 2015/16 club membership). `clubs.csv` is not needed: `games.csv` names the 80 clubs of the four
+  2015/16 leagues directly (`competition_id` GB1, ES1, IT1, FR1; Transfermarkt season code 2015).
+- **License.** The dataset and pipeline are released CC0. CC0 covers the uploader's own work and cannot
+  waive Transfermarkt's rights in its database (EU sui-generis database right). Treated as low-risk for
+  non-commercial research, **not legally cleared** for commercial use (BLOCKERS.md sections 20 and 21).
+- **What a value is.** Transfermarkt's community estimate of a transfer fee on a date. Not a wage, not a
+  fee paid, not a model of ours.
+- **Snapshot.** Per Transfermarkt player, the latest valuation dated 2015-10-01 to 2016-03-01, both
+  inclusive (14,388 rows in the window). None in the window -> no value (NULL). On two valuations with the
+  same date, the later row in the file wins. In practice each league's values come from one league-wide
+  Transfermarkt update: Serie A 2016-01-04, Ligue 1 2016-02-04, EPL 2016-02-09, La Liga 2016-02-22 (a
+  handful of players carry another date), so the leagues are compared at dates up to seven weeks apart,
+  all after the January window opened. This replaces the "on or before 2016-01-01" proposal of BLOCKERS.md
+  section 20.
+- **Currency.** Stored in EUR (`market_value_eur`) and in GBP at the fixed 2015/16 rate of section 24
+  (1 EUR = 0.75 GBP, `exchange_rate_used`). The UI shows EUR.
+- **Match method.** `players.transfermarkt_id` was 0% populated and StatsBomb has no birth dates, so
+  matching is by name, restricted to the player's club:
+  1. *Candidates* are Transfermarkt players with an appearance for a club in a 2015/16 league game of the
+     four leagues (`appearances` + `games`: all 1,520 games, 2,175 players). Club names are mapped to our
+     canonical names through `team_identity` (18 Transfermarkt spellings added as aliases, e.g. "Arsenal FC",
+     "Associazione Sportiva Roma"). A profiled player is compared only with candidates of his own club(s)
+     (every club in `team_split` for winter movers). A name is never matched across a club conflict.
+  2. *Names* are compared in every spelling Transfermarkt gives (`players.name`, first + last name, the
+     appearance name) after `normalize_name`: casefold, accents stripped (plus ø, ł, đ, ß, æ, œ, ı),
+     apostrophes and dots dropped, hyphens and other punctuation as spaces, suffixes Jr/Sr/II/III/IV
+     dropped ("Junior" is kept: it is often a real name).
+  3. *Stages*, the first that hits wins: **exact** (same name ignoring case), **normalized** (equal after
+     normalization, or equal with spaces removed), **fuzzy** (one name's words all inside the other's with a
+     4+ letter word, e.g. "José Giménez" / "José María Giménez"; same surname with one first name a 3+ letter
+     prefix of the other, e.g. "Maxi" / "Maximiliano"; or a difflib ratio of at least 0.85, as written or
+     with the words sorted, e.g. "Ki Sung-Yeung" / "Sung-yueng Ki"). `match_score` records the containment
+     share, prefix share or ratio.
+  4. *No guessing.* Two or more candidates at the best stage -> unmatched and noted as ambiguous (a fuzzy
+     leader needs a 0.10 lead). A Transfermarkt player claimed by two profiles keeps the stronger match; the
+     other is unmatched.
+- **Result (real numbers, not tuned to a target).** 1,331 of 1,337 profiled players matched (**99.6%**);
+  1,326 have a value in the window (**99.2%**). Matched / valued of profiled: EPL 323 / 323 of 324; La Liga
+  335 / 333 of 340; Ligue 1 336 / 334 of 336; Serie A 337 / 336 of 337. By method: exact 1,212, normalized
+  65, fuzzy 54, unmatched 6. All 54 fuzzy matches were read by eye and look right. The rate is high because
+  the club restriction shrinks each search to about 25-30 names; it says nothing about how a club-free match
+  would do.
+- **Missing is NULL.** Unmatched players (6) and matched players with no valuation in the window (5) have
+  every value field NULL, a `match_note` saying which, and show "no value available" in the UI, never 0.
+  Unmatched players are listed by minutes in `data/processed/unmatched_market_values.csv`.
+- **Club sum.** The Team Fingerprint shows "Profiled players' market value": the sum of the known values
+  of the club's profiled players (900+ minutes), each counted at his main club only, with "N of M profiled
+  players". It is **not a squad value**: fringe players are not profiled. Atlético Madrid: EUR 317m from 15
+  of 15 profiled players, against EUR 387.5m for the 24 valued of the 25 Transfermarkt players with an
+  Atlético league appearance. Below 80% of profiled players valued, the line adds "partial, coverage is thin".
+- **`valuation_club`** stores Transfermarkt's club on the valuation date. It differs from our main club
+  for 69 players: 37 are spellings only ("Bologna FC 1909", "Carpi FC 1909"), the rest moved in January, so
+  the value was set at the new club (e.g. Khazri at Sunderland). The value is kept: it is still that
+  player's 2015/16 valuation.

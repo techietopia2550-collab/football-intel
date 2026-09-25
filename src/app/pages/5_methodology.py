@@ -8,7 +8,7 @@ from pathlib import Path
 
 import streamlit as st
 
-from src.app import design, shell
+from src.app import data, design, shell
 from src.utils.config import PROJECT_ROOT
 
 STATSBOMB_LOGO = shell.STATSBOMB_LOGO
@@ -88,6 +88,8 @@ st.markdown(
 - **Heatmaps** exist for players in all four leagues (Premier League, La Liga, Serie A, Ligue 1).
 - **No current-season data, no ages, no career history.** StatsBomb's open data has no birth
   dates, so age filters are unavailable. Career and transfers are a placeholder.
+- **Market values** are Transfermarkt snapshots from Oct 2015 to Mar 2016, matched by name within
+  the player's club (see *Market values* below).
 - **Leagues are pooled as one population.** Whether tagging or pace of play differ enough between
   leagues to bias comparisons has not been checked.
 - **Similarity is statistical, not categorical.** On a 100-pair test the match % did not separate
@@ -104,6 +106,42 @@ st.markdown(
     "WhoScored and Sofascore need browser automation. StatsBomb's free open data is the one legal "
     "source with event-level detail for full leagues, and its complete league coverage is 2015/16."
 )
+
+design.render(design.section_header("Market values"))
+_cov = data.market_value_coverage()
+if _cov.n_profiled:
+    _rows = [
+        f"| {shell.LEAGUE_SHORT.get(lg, lg)} | {n} | {m} ({m / n:.1%}) | {v} ({v / n:.1%}) |"
+        for lg, (n, m, v) in sorted(_cov.by_league.items())
+    ]
+    st.markdown(
+        "**Source:** the dcaribou *transfermarkt-datasets* dump (Kaggle `davidcariboo/player-scores`, "
+        "released as CC0), read from local files; nothing is scraped. A market value is "
+        "Transfermarkt's community estimate of a transfer fee, not a wage and not a fee that was paid. "
+        "The CC0 release cannot waive Transfermarkt's own database rights: fine for non-commercial "
+        "research, not legally cleared for commercial use."
+    )
+    st.markdown("**Snapshot:** each player's latest valuation dated 1 Oct 2015 to 1 Mar 2016.")
+    st.markdown(
+        "**Matching:** no shared id exists, so players are matched by name, only against "
+        "Transfermarkt players who played for the same club in a 2015/16 league game (exact, then "
+        "accent- and punctuation-normalized, then fuzzy). An ambiguous name is left unmatched. "
+        "Unmatched or unvalued players show *no value available*, never zero."
+    )
+    st.markdown(
+        f"**Match rate:** {_cov.n_matched} of {_cov.n_profiled} profiled players matched "
+        f"({_cov.n_matched / _cov.n_profiled:.1%}); {_cov.n_valued} have a value in the window "
+        f"({_cov.n_valued / _cov.n_profiled:.1%})."
+    )
+    st.markdown(
+        "\n".join(["| League | Profiled | Matched | With a value |", "|---|---|---|---|", *_rows])
+    )
+    st.markdown(
+        "A club's *profiled players' market value* sums only its profiled players (900+ minutes, each "
+        "counted at his main club), so it is not a full squad value. See ANALYTICS_DECISIONS section 25."
+    )
+else:
+    st.markdown("Market values are not loaded yet (`python -m src.transform.market_values`).")
 
 design.render(design.section_header("Similarity engine, step by step"))
 st.markdown(

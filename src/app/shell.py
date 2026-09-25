@@ -11,6 +11,7 @@ import streamlit as st
 from streamlit.errors import StreamlitAPIException
 
 from src.analytics import directory as analytics_dir
+from src.analytics import market_values as market_values_mod
 from src.app import data, design, player_images
 from src.utils.config import PROJECT_ROOT
 
@@ -117,6 +118,44 @@ def photo_uri(player_id: str, name: str, px: int, want_bio: bool = False) -> str
 
 def has_photo(player_id: str) -> bool:
     return player_images.has_credit(player_id)
+
+
+MV_TIP = (
+    "Transfermarkt market value: its community's transfer-fee estimate, not a wage or a fee paid. "
+    "Latest valuation between 1 Oct 2015 and 1 Mar 2016. See Methodology."
+)
+
+
+def market_value_line(player_id: str) -> str:
+    """'Market value: €60m (Feb 2016)' as HTML, or 'no value available' (never 0, never hidden)."""
+    mv = data.player_market_value(player_id)
+    if mv is None or mv.market_value_eur is None or mv.valuation_date is None:
+        body = 'Market value: <span class="fi-muted">no value available</span>'
+    else:
+        body = (
+            f"Market value: {design.fmt_eur(mv.market_value_eur)} "
+            f'<span class="fi-muted">({mv.valuation_date:%b %Y}, Transfermarkt)</span>'
+        )
+    return f'<span title="{design.esc(MV_TIP)}">{body}</span>'
+
+
+def squad_value_line(team_name: str, league: str) -> str:
+    """'Market value of profiled players: €XXXm (N of M valued)' as HTML, flagged when partial."""
+    sv = data.squad_market_value(team_name, league)
+    tip = (
+        "Sum of the Transfermarkt values of this club's profiled players (900+ minutes, counted "
+        "at their main club). Not a full squad value. See Methodology."
+    )
+    if sv.total_eur is None:
+        body = "Profiled players' market value: <span class=\"fi-muted\">no value available</span>"
+    else:
+        partial = " — partial, coverage is thin" if market_values_mod.coverage_is_thin(sv) else ""
+        body = (
+            f"Profiled players' market value: {design.fmt_eur(sv.total_eur)} "
+            f'<span class="fi-muted">(estimated from {sv.n_valued} of {sv.n_profiled} '
+            f"profiled players{partial})</span>"
+        )
+    return f'<span title="{design.esc(tip)}">{body}</span>'
 
 
 def wage_line(team_name: str, league: str) -> str:

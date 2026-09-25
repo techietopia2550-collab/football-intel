@@ -121,6 +121,8 @@ def _hero(row: pd.Series, table: pd.DataFrame) -> None:
                 + (f'<div class="fi-body" style="margin-top:{design.SP_XS}px">{bio}</div>' if bio else "")
                 + f'<div class="fi-body" style="margin-top:{design.SP_XS}px">'
                 f"{shell.wage_line(row['team'], row['league'])}</div>"
+                + f'<div class="fi-body" style="margin-top:{design.SP_XS}px">'
+                f"{shell.market_value_line(pid)}</div>"
             )
             if st.button(f"Plays for → {row['team']}", key=f"team_link_{pid}"):
                 shell.open_team(row["team"])
@@ -396,6 +398,10 @@ def _why(shared: list) -> str:
 
 
 @st.fragment
+def _value_text(eur: float | None) -> str:
+    return f"Market value {design.fmt_eur(eur)}" if eur is not None else "Market value: no value available"
+
+
 def _similar_section(row: pd.Series) -> None:
     pid, name, group = row["player_id"], row["player_name"], row["position_group_fine"]
     design.render(
@@ -426,6 +432,7 @@ def _similar_section(row: pd.Series) -> None:
         design.render(design.empty_state("No similar players with these filters.", "Loosen a filter."))
         return
     directory = shell.load_directory().set_index("player_id")
+    values = data.market_value_map()
     cols = st.columns(2)
     for i, s in enumerate(res.similar):
         with cols[i % 2], st.container(key=f"ficard_sim_{s.player_id}"):
@@ -444,6 +451,7 @@ def _similar_section(row: pd.Series) -> None:
                 f"{s.rank}. {design.esc(s.player_name)} · "
                 f"{design.position_badge(s.position_group_fine)}</span>"
                 f'<span class="fi-muted">{design.esc(s.team)} · {design.esc(league)}</span>'
+                f'<span class="fi-muted">{_value_text(values.get(s.player_id))}</span>'
                 f"{cross_html}</div>"
                 f'<div class="fi-stat" style="min-width:64px"><div class="fi-num" style="font-size:{design.SIZE_H3}px">'
                 f'{design.fmt_match_pct(s.similarity)}</div><div class="fi-stat-label">match</div>'
@@ -493,19 +501,33 @@ def _career_placeholder() -> None:
         st.button("Learn more", disabled=True, key="career_more")
 
 
-def _transfer_value_placeholder() -> None:
-    with st.container(key="ficard_transfer_value"):
-        design.render(
-            '<div class="fi-card-title">Transfer value</div>'
-            '<div class="fi-muted">Market value data is not yet ingested. See roadmap.</div>'
+def _transfer_value(pid: str) -> None:
+    mv = data.player_market_value(pid)
+    if mv is not None and mv.market_value_eur is not None and mv.valuation_date is not None:
+        body = (
+            f'<div class="fi-num" style="font-size:{design.SIZE_H2}px">'
+            f"{design.fmt_eur(mv.market_value_eur)}</div>"
+            f'<div class="fi-muted">Market value, {mv.valuation_date:%d %b %Y} (Transfermarkt)</div>'
         )
-        with st.expander("Why?"):
-            st.write(
-                "No free source we are allowed to use gives 2015/16 market values for these "
-                "players yet. Transfermarkt publishes market values (transfer-fee estimates, not "
-                "wages), but its terms forbid scraping, so no value is shown and none is "
-                "estimated. The source audit and the plan are in BLOCKERS.md section 20."
-            )
+        why = (
+            "Transfermarkt's community estimate of his transfer fee on that date: not a wage and "
+            "not a fee that was paid. It is the latest valuation between 1 Oct 2015 and 1 Mar 2016. "
+            f"Matched to Transfermarkt's '{mv.transfermarkt_name}' by name within his club "
+            f"({mv.match_method} match). Source, licence and match rate: Methodology."
+        )
+    else:
+        body = '<div class="fi-name">No value available</div>'
+        why = (
+            "He could not be matched to a Transfermarkt player at his club with confidence, so no "
+            "value is shown and none is estimated."
+            if mv is None or mv.match_method == "unmatched"
+            else "He was matched to Transfermarkt, but it has no valuation for him between "
+            "1 Oct 2015 and 1 Mar 2016, so no value is shown and none is estimated."
+        )
+    with st.container(key="ficard_transfer_value"):
+        design.render('<div class="fi-card-title">Transfer value</div>' + body)
+        with st.expander("About this value"):
+            st.write(why)
 
 
 def _quality_notes(row: pd.Series) -> None:
@@ -567,7 +589,7 @@ with profile_tab:
     _similar_section(row)
     _career_placeholder()
     _quality_notes(row)
-    _transfer_value_placeholder()
+    _transfer_value(row["player_id"])
 with matches_tab:
     _games_section(row)
 with stats_tab:

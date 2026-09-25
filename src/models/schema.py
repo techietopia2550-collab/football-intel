@@ -325,6 +325,39 @@ class TeamFinance(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime, nullable=False)
 
 
+class PlayerMarketValue(Base):
+    """One row per profiled player per season: his Transfermarkt market value snapshot.
+
+    Written by `src/transform/market_values.py` from the local dcaribou Transfermarkt dataset.
+    Every profiled player gets a row; `match_method` is "unmatched" (and every Transfermarkt field
+    NULL) when no Transfermarkt player could be matched, and `market_value_eur` is NULL when a
+    matched player has no valuation in the snapshot window. Nothing is estimated. See
+    ANALYTICS_DECISIONS.md section 25.
+    """
+
+    __tablename__ = "player_market_values"
+    __table_args__ = (UniqueConstraint("player_id", "season", name="uq_player_market_value"),)
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    player_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
+    player_name: Mapped[str] = mapped_column(String, nullable=False)
+    season: Mapped[str] = mapped_column(String, nullable=False, index=True)
+    league: Mapped[str] = mapped_column(String, nullable=False)
+    team: Mapped[str] = mapped_column(String, nullable=False)
+    transfermarkt_id: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    transfermarkt_name: Mapped[str | None] = mapped_column(String, nullable=True)
+    match_method: Mapped[str] = mapped_column(String, nullable=False)  # exact|normalized|fuzzy|unmatched
+    match_score: Mapped[float | None] = mapped_column(Float, nullable=True)
+    match_note: Mapped[str | None] = mapped_column(String, nullable=True)
+    valuation_date: Mapped[date | None] = mapped_column(Date, nullable=True)
+    valuation_club: Mapped[str | None] = mapped_column(String, nullable=True)
+    market_value_eur: Mapped[float | None] = mapped_column(Float, nullable=True)
+    market_value_gbp: Mapped[float | None] = mapped_column(Float, nullable=True)
+    exchange_rate_used: Mapped[float | None] = mapped_column(Float, nullable=True)
+    source: Mapped[str] = mapped_column(String, nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+
+
 def build_team_id(*, league: str, season: str, name: str) -> str:
     """Deterministic, source-independent team_id (`name` must be canonical).
 

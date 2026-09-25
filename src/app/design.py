@@ -258,6 +258,16 @@ def cross_position_note(group: str | None, source_group: str | None) -> str:
     return f"cross-position ({group} vs {source_group})"
 
 
+def fmt_eur(value: float | None) -> str:
+    """'€60m', '€1.5m', '€750k'; '' for a missing value (callers say "no value available")."""
+    if value is None or (isinstance(value, float) and np.isnan(value)):
+        return ""
+    if value >= 1e6:
+        m = value / 1e6
+        return f"€{m:,.0f}m" if m >= 10 or m == int(m) else f"€{m:.1f}m"
+    return f"€{value / 1e3:,.0f}k"
+
+
 def fmt_value(value: float | None, unit: str = "") -> str:
     if value is None or (isinstance(value, float) and np.isnan(value)):
         return "–"

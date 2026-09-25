@@ -561,3 +561,40 @@ None needs a paid key.
   pages), one row per player, with the snapshot URL and date recorded on every row.
 - **Rejected:** the live Transfermarkt site and ceapi (ToS, AWS WAF), live-scraping wrappers
   (felipeall/transfermarkt-api, transfermarkt-scraper), and unlicensed mirrors (salimt).
+
+## 21. Market values ingested from the dcaribou Transfermarkt dataset (2026-09-26)
+
+**Status: done.** Section 20's primary recommendation is built (ANALYTICS_DECISIONS.md section 25).
+The Kaggle dataset `davidcariboo/player-scores` is in `data/raw/transfermarkt/` (12 CSVs, about 915 MB,
+gitignored). It was first placed in `football csv files/` at the repo root, which was **not** gitignored,
+and was moved to `data/raw/transfermarkt/` before anything was committed. An earlier attempt had the GitHub
+code repo instead (`transfermarkt-datasets-master/`: no data, only DVC pointers) and was stopped.
+`player_valuations.csv`: 656,301 rows, 2000-01-20 to 2026-06-12, 14,388 rows in 2015-10-01..2016-03-01.
+
+- **Match rate, as measured:** 1,331 of 1,337 profiled players matched (99.6%), 1,326 valued (99.2%).
+  Matched: EPL 323/324, La Liga 335/340, Ligue 1 336/336, Serie A 337/337. Not adjusted to any target.
+- **Unmatched (6), left NULL on purpose:**
+  - *Nicknames the rules do not bridge* (the probable Transfermarkt player is at the club, but only a
+    person should confirm it): Robert Brady (Norwich; TM "Robbie Brady", 128229), Jonny Castro (Celta; TM
+    "Jonny Otto", 175446), Kolo (Sevilla; TM "Timothée Kolodziejczak", 84085). A reviewed manual-override
+    file could add them; none exists, and they are not matched in code.
+  - *No 2015/16 league appearance in the Transfermarkt data*, so no club evidence: Markel Susaeta (Athletic;
+    exists as TM 54245), Pichu (Sporting Gijón; TM "Pichu Atienza", 59337), Juan Carlos (Málaga; 14
+    Transfermarkt players are called "Juan Carlos", so he could not be disambiguated by name either). The
+    appearances table misses some players' games; name-only matching is not allowed.
+- **Matched but no valuation in the window (5):** Matthieu Saunier (Troyes), Milan Biševac (Lazio), Alexis
+  Ruano (Getafe), Abdoul Camara (Angers), Ángel Lafita (Getafe). Shown as "no value available".
+- **Weaker matches worth knowing.** 54 fuzzy matches, all read by eye. The lowest-scoring are full legal
+  names against short names (João Miranda de Souza Filho / "Miranda", Alex Rodrigo Dias da Costa / "Alex",
+  Evaeverson Lemos da Silva Brandão / "Brandão", Maximiliano Moralez / "Maxi Moralez"), accepted only because
+  each was the one such name at the club. The two "Juanfran"s (Atlético: Torres; Deportivo: Moreno) were kept
+  apart by the club restriction. No match was ambiguous or double-claimed.
+- **Snapshot dates differ by league** (Serie A 4 Jan, Ligue 1 4 Feb, EPL 9 Feb, La Liga 22 Feb 2016): up to
+  seven weeks apart.
+- **Club totals are partial by design:** only profiled (900+ minute) players are summed. Atlético EUR 317m
+  (15/15 profiled) vs EUR 387.5m over its 24 valued Transfermarkt appearance-makers.
+- **Licensing:** CC0 from the uploader, but the data is Transfermarkt's. Low-risk for non-commercial
+  research, **not legally cleared**; get a legal check before any commercial use (section 20.B).
+- **Not done:** `players.transfermarkt_id` is still empty (the id lives in `player_market_values` only).
+  `rapidfuzz` is declared in `pyproject.toml` but not installed in `.venv`; stdlib `difflib` is used, so no
+  dependency was added or installed.

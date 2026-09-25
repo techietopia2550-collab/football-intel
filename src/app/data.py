@@ -14,12 +14,14 @@ from src.analytics import directory as analytics_dir
 from src.analytics import finance as finance_mod
 from src.analytics import games as games_mod
 from src.analytics import heatmaps as heatmaps_mod
+from src.analytics import market_values as market_values_mod
 from src.analytics import match_report as match_report_mod
 from src.analytics import team_profile as team_profile_mod
 from src.analytics.profile import classify
 from src.analytics.similarity import find_similar
 from src.analytics.team_similarity import find_similar_teams
 from src.models.finance import TeamWageContext
+from src.models.market_value import MarketValueCoverage, PlayerMarketValue, SquadMarketValue
 from src.models.match import PlayerGames, SeasonGameStats
 from src.models.match_report import MatchReport
 from src.models.schema import get_engine
@@ -167,6 +169,28 @@ def similar_teams(team_name: str, n: int = 10) -> SimilarTeamsResult:
 @st.cache_data(show_spinner=False)
 def team_key_players(team_name: str, league: str) -> tuple[list[KeyPlayer], str]:
     return team_profile_mod.key_players(team_name, league, SEASON, engine())
+
+
+@st.cache_data(show_spinner=False)
+def market_values() -> pd.DataFrame:
+    return market_values_mod.load_market_values(SEASON, engine())
+
+
+def player_market_value(player_id: str) -> PlayerMarketValue | None:
+    return market_values_mod.player_value(player_id, market_values())
+
+
+@st.cache_data(show_spinner=False)
+def market_value_map() -> dict[str, float | None]:
+    return market_values_mod.values_by_player(market_values())
+
+
+def market_value_coverage() -> MarketValueCoverage:
+    return market_values_mod.coverage(market_values())
+
+
+def squad_market_value(team_name: str, league: str) -> SquadMarketValue:
+    return market_values_mod.squad_value(team_name, league, market_values())
 
 
 @st.cache_data(show_spinner=False)
