@@ -154,3 +154,11 @@ def test_match_tier_edges() -> None:
     assert design.fmt_match(0.72) == "72% · Fair"
     assert design.fmt_match(float("nan")) == "–"
     assert "Weak" in design.match_tier_badge(0.3) and design.match_tier_badge(None) == ""
+
+
+def test_cross_position_note() -> None:
+    from src.app import design
+
+    assert design.cross_position_note("AM", "W") == "cross-position (AM vs W)"
+    assert design.cross_position_note("W", "W") == ""
+    assert design.cross_position_note(None, "W") == ""

@@ -54,7 +54,7 @@ def _player_chips(directory: pd.DataFrame, ids: list[str]) -> None:
         color = design.COMPARE_COLORS[i % len(design.COMPARE_COLORS)]
         chips.append(
             f'<span class="fi-badge" style="color:{color};background:{color}22;border-color:{color}66">'
-            f"● {i + 1}. {design.esc(r['player_name'])} ({design.esc(r['position_group_fine'])})</span>"
+            f"● {i + 1}. {design.esc(r['player_name'])} · {design.esc(r['position_group_fine'])}</span>"
         )
     design.render('<div class="fi-badges">' + "".join(chips) + "</div>")
 
@@ -142,7 +142,9 @@ def _heatmaps(directory: pd.DataFrame, ids: list[str]) -> None:
 
 def _matrix(directory: pd.DataFrame, ids: list[str]) -> None:
     design.render(design.section_header("Pairwise similarity", "How close two players' profiles are, as a match % (heuristic)"))
-    names = tuple(analytics_dir.player_row(directory, i)["player_name"] for i in ids)
+    rows = [analytics_dir.player_row(directory, i) for i in ids]
+    names = tuple(r["player_name"] for r in rows)
+    labels = [f"{r['player_name']} · {r['position_group_fine']}" for r in rows]
     tab_a, tab_b = st.tabs(["Archetype-weighted", "Position group"])
     for tab, arch in ((tab_a, True), (tab_b, False)):
         with tab:
@@ -160,7 +162,7 @@ def _matrix(directory: pd.DataFrame, ids: list[str]) -> None:
                     ]
                     for i, row in enumerate(mat.to_numpy())
                 ],
-                index=mat.index, columns=mat.columns,
+                index=labels, columns=labels,
             )
             st.dataframe(shown, use_container_width=True)
             st.caption(

@@ -357,11 +357,11 @@ def _why(shared: list) -> str:
 
 @st.fragment
 def _similar_section(row: pd.Series) -> None:
-    pid, name = row["player_id"], row["player_name"]
+    pid, name, group = row["player_id"], row["player_name"], row["position_group_fine"]
     design.render(
         design.section_header(
             "Similar players",
-            "Ranked inside his archetype on the metrics that define it (a heuristic, not validated)",
+            "Ranked inside his archetype by statistical closeness, not by role (see Methodology)",
             anchor="similar-players",
         )
     )
@@ -391,13 +391,20 @@ def _similar_section(row: pd.Series) -> None:
         with cols[i % 2], st.container(key=f"ficard_sim_{s.player_id}"):
             league = shell.LEAGUE_SHORT.get(directory.loc[s.player_id, "league"], "")
             why = _why(s.shared_metrics)
+            cross = design.cross_position_note(s.position_group_fine, group)
+            cross_html = (
+                f'<span class="fi-muted" style="font-style:italic">{design.esc(cross)}</span>'
+                if cross
+                else ""
+            )
             design.render(
                 f'<div class="fi-mini" title="{design.esc(why)}">'
                 + design.player_avatar(s.player_name, 32, shell.photo_uri(s.player_id, s.player_name, 32))
                 + f'<div class="fi-col" style="flex:1"><span class="fi-name" style="font-size:{design.SIZE_BODY}px">'
-                f"{s.rank}. {design.esc(s.player_name)}</span>"
-                f'<span class="fi-muted">{design.position_badge(s.position_group_fine)} '
-                f"{design.esc(s.team)} · {design.esc(league)}</span></div>"
+                f"{s.rank}. {design.esc(s.player_name)} · "
+                f"{design.position_badge(s.position_group_fine)}</span>"
+                f'<span class="fi-muted">{design.esc(s.team)} · {design.esc(league)}</span>'
+                f"{cross_html}</div>"
                 f'<div class="fi-stat" style="min-width:64px"><div class="fi-num" style="font-size:{design.SIZE_H3}px">'
                 f'{design.fmt_match_pct(s.similarity)}</div><div class="fi-stat-label">match</div>'
                 f"{design.match_tier_badge(s.similarity)}</div></div>"
@@ -417,8 +424,9 @@ def _similar_section(row: pd.Series) -> None:
             )
         with c_txt:
             design.render(
-                f'<div class="fi-name">Closest profile match: {design.esc(top.player_name)} '
-                f"({design.esc(top.team)}) &mdash; {design.fmt_match_pct(top.similarity)} match "
+                f'<div class="fi-name">Closest profile match: {design.esc(top.player_name)} · '
+                f"{design.position_badge(top.position_group_fine)} ({design.esc(top.team)}) &mdash; "
+                f"{design.fmt_match_pct(top.similarity)} match "
                 f"{design.match_tier_badge(top.similarity)}</div>"
             )
         if c_btn.button("View profile", key=f"closest_open_{pid}_{top.player_id}"):
@@ -426,7 +434,8 @@ def _similar_section(row: pd.Series) -> None:
     st.caption(
         f"Pool: {res.group_size} players in the '{res.archetype_label}' archetype, "
         f"{res.candidates_considered} after filters. Match % shows how close the playing profile is: 100% would be an identical profile. "
-        f"{design.MATCH_TIER_NOTE}"
+        f"{design.MATCH_TIER_NOTE} Position is context only: the score does not use it, so "
+        "'cross-position' marks a statistically close player in another position group."
     )
 
 

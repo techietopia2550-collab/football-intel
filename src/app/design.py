@@ -250,6 +250,14 @@ def fmt_match(similarity: float | None) -> str:
     return f"{fmt_match_pct(similarity)} · {tier[0]}" if tier else fmt_match_pct(similarity)
 
 
+def cross_position_note(group: str | None, source_group: str | None) -> str:
+    """'cross-position (AM vs W)' when a similar player's position group differs from the source
+    player's, else ''. Informational only: similarity scores ignore position inside an archetype."""
+    if not group or not source_group or group == source_group:
+        return ""
+    return f"cross-position ({group} vs {source_group})"
+
+
 def fmt_value(value: float | None, unit: str = "") -> str:
     if value is None or (isinstance(value, float) and np.isnan(value)):
         return "–"

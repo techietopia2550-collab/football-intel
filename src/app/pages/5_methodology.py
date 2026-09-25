@@ -90,9 +90,10 @@ st.markdown(
   dates, so age filters are unavailable. Career and transfers are a placeholder.
 - **Leagues are pooled as one population.** Whether tagging or pace of play differ enough between
   leagues to bias comparisons has not been checked.
-- **Similarity is a heuristic.** It has been read against a handful of known players; no accuracy is
-  claimed or measured. Weak archetypes (defensive full-back, destroyer, pressing wide midfielder)
-  give less reliable lists.
+- **Similarity is statistical, not categorical.** On a 100-pair test the match % did not separate
+  same-role from different-role pairs: precision is roughly 50% at every threshold (see *What the %
+  means* below). Weak archetypes (defensive full-back, destroyer, pressing wide midfielder) give
+  less reliable lists.
 """
 )
 
@@ -114,6 +115,13 @@ st.markdown(
 5. **Cosine similarity** between the target and each candidate, ranked.
 6. **Explain:** the score splits exactly into per-metric shares, so each result can say why.
 """
+)
+st.markdown(
+    "**What the % means:** the match % is cosine similarity of statistical profiles within an "
+    "archetype. It does not measure role equivalence. A 90% match can be two players in the same "
+    "archetype who play different positions. Position context is shown on each similar-player "
+    "card. The % was validated on a 100-pair sample (ANALYTICS_DECISIONS section 23): precision is "
+    "roughly 50% across thresholds, and this is documented as a known limitation."
 )
 
 design.render(design.section_header("Read the full documents"))

@@ -436,3 +436,12 @@ No loaded source provides them (StatsBomb Open Data has match events only; Trans
 scope). The profile shows none and invents none; the "Career context" card stays a placeholder. Bio
 is limited to birth date and nationality from Wikipedia/Wikidata, and is absent for players whose
 page is missing or ambiguous.
+
+## Similarity score is statistical, not categorical
+
+The 100-pair threshold evaluation (commit ee44078) shows precision is flat (~40-52%) across all
+thresholds. The score measures statistical closeness of profiles, not whether two players fill the
+same role. Cross-position pairs inside the same archetype score high even when a human would call
+them different roles. The UI now shows position context on similar-player cards so users can judge
+for themselves. The similarity engine is NOT tuned to chase the labels — see ANALYTICS_DECISIONS.md
+section 23.
