@@ -478,3 +478,86 @@ citable figure get a row with blank amounts and `confidence = unknown` (stored a
 Note that club accounts cover the financial year (often July to June, but not for every club) and
 usually include staff other than players, so they are not the same thing as a player payroll. Record
 which one a row uses in `source`.
+
+## 20. Market values for 2015/16: source audit (2026-09-25, nothing downloaded or scraped)
+
+**Scope.** Transfermarkt publishes *market values* (its community's transfer-fee estimates), not wages.
+This audit looks for a free, legal source of 2015/16 market values for the 1,337 profiled players, as
+the budget metric for the future Tactical Composer. No scraper was built and no dataset was downloaded.
+The profile page shows a "Transfer value: not yet ingested" placeholder until this is resolved.
+
+### A. Existing data
+`players.transfermarkt_id` is populated for **0 of 2,735** rows, so **0 of the 1,337** profiled
+players (0%). Any source keyed on Transfermarkt ids needs an identity-matching step first
+(name + club + birth date; `player_bio` has birth dates for the players Wikidata knows).
+
+### B. Kaggle (metadata read through Kaggle's public `api/v1/datasets/view` endpoint; no files fetched)
+
+| Dataset | Coverage | License | Access | Last updated |
+|---|---|---|---|---|
+| **davidcariboo/player-scores** "Football Data from Transfermarkt" (source code: GitHub `dcaribou/transfermarkt-datasets`) | Player-level. `player_valuations.csv` (39.6 MB, 650k+ rows: `player_id, date, market_value_in_eur, current_club_id, ...`) is built from Transfermarkt's per-player market-value history, so it holds each player's full valuation history. The pipeline's `config.yml` lists seasons 2012-2025 for GB1, ES1, IT1, FR1 (our Big-4). Also `players`, `transfers`, `appearances`. | CC0 (dataset and repo) | Kaggle API / web download (914 MB total); also direct CSV and DuckDB links from the repo | Version 679, 2026-09-05. **Updates are paused** (data current to 2026-07-06), which doesn't matter for 2015/16 |
+| mexwell/football-data-from-transfermarkt | An older (2023) re-upload of the same dcaribou data, 400k valuations | CC0 | Kaggle | 2023-10-02 |
+| mexwell/football-transfer-dataset | Transfers 2009-2021, 7 leagues, with `market_val_amnt` **at the time of each transfer** only. Players who didn't move in 2015/16 get no value | "Other (in description)" | Kaggle | 2024-03-27 |
+| kanchana1990/football-transfer-value-intelligence-2024 ("...2026") | 508 current top-5-league players, with career value histories (9,779 points). Few 2015/16 squad players | CC BY-SA 4.0 | Kaggle | 2026-02-21 |
+| kberkek00/transfermarkt-datas | Current squads with current market value (player_bio); no dated history found in the description | Apache 2.0 | Kaggle | 2026-04-15 |
+
+**The data is Transfermarkt's, whatever the uploader's license says.** CC0 covers the uploader's
+own work. It can't waive Transfermarkt's rights in its database (Transfermarkt is German, so the EU
+sui-generis database right applies). This is the same question that ruled out the Kaggle FBref mirrors
+(section 5), with one difference: there Opta had demanded deletion. We know of no Transfermarkt takedown
+of the dcaribou dataset, which has been public since about 2020 (97k downloads). That makes it a low-risk
+option for **non-commercial research**, but not a cleared one. Get a legal check before any commercial use.
+
+### C. Transfermarkt internal API (one request)
+`GET https://www.transfermarkt.com/ceapi/marketValueDevelopment/graph/28003` (Messi's well-known id;
+plain `requests`, project User-Agent, 3 s delay): **HTTP 405**, `server: CloudFront`,
+`x-cache: Error from cloudfront`, body titled "Human Verification" (an **AWS WAF** challenge, not
+Cloudflare). Blocked. No second request was sent and no workaround was tried. Whether it carries data
+back to 2015/16 is therefore unverified from here. The dcaribou pipeline reads the same history,
+so it very likely does.
+
+### D. Wayback Machine (CDX index queries to web.archive.org only; no snapshot pages were fetched)
+Unique 200-status snapshots between 2015-07 and 2016-06 (`collapse=digest`):
+
+| Page | URL pattern | Snapshots |
+|---|---|---|
+| EPL league page, season 2015 | `transfermarkt.co.uk/premier-league/startseite/wettbewerb/GB1/saison_id/2015` | 17 (182 for any GB1 league-page variant) |
+| Man Utd squad | `transfermarkt.co.uk/manchester-united/kader/verein/985` | 49 |
+| Atlético squad / club page | `transfermarkt.com/atletico-madrid/kader/verein/13` / `.../startseite/verein/13` | 21 / 89 |
+| Juventus club page | `transfermarkt.com/juventus-turin/startseite/verein/506` | 27 |
+| PSG club page | `transfermarkt.com/fc-paris-saint-germain/startseite/verein/583` | 17 |
+| Eibar / Gazélec Ajaccio club page | `.../sd-eibar/startseite/verein/1533` / `.../gfc-ajaccio/startseite/verein/3558` | 22 / 17 |
+| Watford squad / any Watford page | `transfermarkt.co.uk/fc-watford/kader/verein/1010` / `.../fc-watford/` | 9 / 216 |
+| Carpi club page (slug not confirmed) | `transfermarkt.com/carpi-fc-1909/startseite/verein/1066` | 0 |
+| Messi profile | `transfermarkt.com/lionel-messi/profil/spieler/28003` | 43 |
+
+Club squad (`kader`) and club (`startseite`) pages list every player's market value, so one snapshot
+per club, about 80 in all, would cover the whole dataset. Coverage is good for big clubs and thinner for
+small ones (Watford has 9 squad snapshots; the Carpi query returned 0, possibly because of the URL slug).
+**Scrapeable?** Technically yes: archive.org serves plain HTML with no challenge. But automated
+extraction of Transfermarkt content through the archive is still scraping Transfermarkt's data, so we
+treat it like the live site. Manual lookup, with the snapshot URL recorded per row, is acceptable.
+
+### E. GitHub projects
+- **dcaribou/transfermarkt-datasets**: the pipeline behind the Kaggle dataset. CC0, 510 stars, pushed
+  2026-09-05. No key needed. Recommended (B).
+- **dcaribou/transfermarkt-scraper**: the scraper itself. No license file. Not for us (it scrapes).
+- **felipeall/transfermarkt-api**: MIT, 453 stars, a self-hosted FastAPI service that scrapes
+  Transfermarkt live. No key, but it is a scraper and would hit the same AWS WAF. Rejected.
+- **salimt/football-datasets**: 93k players, 901k market-value rows with a `season` column, mirrored
+  on Kaggle. **No LICENSE file** (all rights reserved by default). Rejected unless a license is added.
+- **ewenme/transfers**: transfers since 1992/93 with fees, not market values. No license. Not suitable.
+None needs a paid key.
+
+### F. Recommendation
+- **Primary: dcaribou "Football Data from Transfermarkt"** (`player_valuations.csv` + `players.csv`),
+  downloaded once from Kaggle in a later session, for non-commercial research use with attribution to
+  Transfermarkt and the dataset. Use the latest valuation on or before a fixed reference date
+  (proposal: 2016-01-01, mid-season) as the "2015/16 market value". Match players to Transfermarkt ids by
+  name, club and birth date, and leave unmatched players NULL (logged, never guessed). Before building:
+  confirm on the downloaded file that 2015/16 valuations exist for the Big-4 (the pipeline config says
+  they should), and record the legal caveat above in ANALYTICS_DECISIONS.md.
+- **Fallback: manual CSV from Wayback Machine snapshots** of each club's 2015/16 squad page (about 80
+  pages), one row per player, with the snapshot URL and date recorded on every row.
+- **Rejected:** the live Transfermarkt site and ceapi (ToS, AWS WAF), live-scraping wrappers
+  (felipeall/transfermarkt-api, transfermarkt-scraper), and unlicensed mirrors (salimt).

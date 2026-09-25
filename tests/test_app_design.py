@@ -91,3 +91,38 @@ def test_score_flips_lower_is_better_and_skips_descriptive() -> None:
     assert directory.score_of("gk_goals_conceded_p90", 10.0) == 90.0
     assert directory.score_of("tackles_p90", 10.0) == 10.0
     assert directory.score_of("fouls_committed_p90", 10.0) is None
+
+
+def test_quick_radar_has_six_ranked_metrics_per_position() -> None:
+    from src.analytics.metrics import METRICS_BY_NAME
+    from src.app.labels import QUICK_RADAR
+
+    assert set(QUICK_RADAR) == set(design.POSITION_COLORS)
+    for group, axes in QUICK_RADAR.items():
+        metrics = [m for m, _ in axes]
+        assert len(metrics) == 6 and len(set(metrics)) == 6, group
+        assert all(m in METRICS_BY_NAME for m in metrics), group
+
+
+def test_quick_radar_is_a_closed_hexagon_with_numbers_and_na() -> None:
+    items = [{"label": f"M{i}", "percentile": 10.0 * i, "score": 10.0 * i} for i in range(5)]
+    items.append({"label": "Missing", "percentile": None, "score": None})
+    fig = design.quick_profile_radar(items, "CB")
+    trace = fig.data[0]
+    assert len(trace.r) == 7 and trace.r[0] == trace.r[-1]  # closed shape
+    assert trace.r[5] == 0.0 and "n/a" in trace.theta[5]
+    assert "<b>40</b>" in trace.theta[4]
+    assert fig.layout.polar.gridshape == "linear"
+    assert trace.line.color == design.POSITION_COLORS["CB"]
+
+
+def test_position_pitch_places_the_dot() -> None:
+    cb = design.position_pitch("CB").data[0]
+    assert (list(cb.x), list(cb.y)) == ([18], [40])
+    left = design.position_pitch("W", "left").data[0]
+    assert (list(left.x), list(left.y)) == ([80], [15])
+    right = design.position_pitch("FB", "right").data[0]
+    assert list(right.y) == [65]
+    unknown = design.position_pitch("W", None).data[0]
+    assert list(unknown.y) == [15, 65]  # both flanks, drawn hollow
+    assert unknown.marker.color == design.BG_SECONDARY

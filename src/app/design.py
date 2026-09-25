@@ -576,3 +576,101 @@ def percentile_styles(scores: Sequence[float | None]) -> list[str]:
         fg, bg = TONES[tone]
         out.append(f"color:{fg};background-color:{bg};font-weight:{WEIGHT_NUMBER}")
     return out
+
+
+def quick_profile_radar(items: Sequence[dict[str, Any]], position_group: str) -> go.Figure:
+    """A compact six-axis hexagon, FotMob style: each axis label carries its percentile as a big
+    number. `items`: {label, percentile, score} with `score` the good-end percentile (None when the
+    metric has no percentile, drawn at 0 and labelled "n/a"). Filled in the position colour."""
+    color = position_color(position_group)
+    theta = []
+    for it in items:
+        pct = it["percentile"]
+        num = "n/a" if pct is None else f"{pct:.0f}"
+        theta.append(
+            f"{esc(it['label'])}<br>"
+            f"<span style='font-size:{SIZE_H2}px;color:{color}'><b>{num}</b></span>"
+        )
+    r = [0.0 if it["score"] is None else float(it["score"]) for it in items]
+    hover = ["no percentile (sample too small)" if it["percentile"] is None
+             else f"{it['percentile']:.0f}th percentile" for it in items]  # fmt: skip
+    fig = go.Figure(
+        go.Scatterpolar(
+            r=[*r, r[0]], theta=[*theta, theta[0]], fill="toself", mode="lines+markers",
+            line=dict(color=color, width=2), fillcolor=_rgba(color, 0.30),
+            marker=dict(size=6, color=color), customdata=[*hover, hover[0]],
+            hovertemplate="%{customdata}<extra></extra>",
+        )
+    )  # fmt: skip
+    fig.update_layout(
+        polar=dict(
+            bgcolor="rgba(0,0,0,0)", gridshape="linear",
+            radialaxis=dict(range=[0, 100], tickvals=[25, 50, 75, 100], showticklabels=False,
+                            gridcolor=BORDER, linecolor=BORDER, angle=90),
+            angularaxis=dict(gridcolor=BORDER, linecolor=BORDER, rotation=90, direction="clockwise",
+                             tickfont=dict(size=SIZE_SMALL, color=TEXT_PRIMARY)),
+        ),
+        showlegend=False,
+    )  # fmt: skip
+    fig = _base_layout(fig, 360)
+    fig.update_layout(margin=dict(l=SP_XXL * 2, r=SP_XXL * 2, t=SP_XL + SP_M, b=SP_XL + SP_M))
+    return fig
+
+
+# Where each position group plays, in StatsBomb yards (x 0-120 towards goal, y 0-80 from the
+# team's left touchline). Full-backs and wingers have a left (y=15) and a right (y=65) spot.
+POSITION_SPOTS: dict[str, tuple[float, float | tuple[float, float]]] = {
+    "GK": (5, 40), "CB": (18, 40), "FB": (25, (15, 65)), "DM": (35, 40),
+    "CM": (50, 40), "AM": (65, 40), "W": (80, (15, 65)), "ST": (100, 40),
+}  # fmt: skip
+
+
+def position_pitch(position_group: str, side: str | None = None, height: int = 200) -> go.Figure:
+    """A small dark full pitch with a dot where the position plays (attacking left to right).
+    For a wide position `side` is "left" or "right"; None draws both spots as hollow rings."""
+    color = position_color(position_group)
+    x, y = POSITION_SPOTS[position_group]
+    wide = isinstance(y, tuple)
+    if wide and side in ("left", "right"):
+        ys, hollow = [y[0] if side == "left" else y[1]], False
+    else:
+        ys, hollow = (list(y) if isinstance(y, tuple) else [y]), wide
+    fig = go.Figure(
+        go.Scatter(
+            x=[x] * len(ys), y=ys, mode="markers", hoverinfo="skip",
+            marker=dict(size=18, color=BG_SECONDARY if hollow else color,
+                        line=dict(color=color, width=3)),
+        )
+    )  # fmt: skip
+    fig.update_layout(shapes=_pitch_shapes(), showlegend=False)
+    fig.update_xaxes(range=[-2, PITCH_LENGTH + 2], visible=False, fixedrange=True)
+    fig.update_yaxes(range=[PITCH_WIDTH + 2, -2], visible=False, scaleanchor="x", fixedrange=True)
+    fig = _base_layout(fig, height)
+    fig.update_layout(
+        margin=dict(l=SP_XS, r=SP_XS, t=SP_XS, b=SP_XS), plot_bgcolor=BG_SECONDARY
+    )  # fmt: skip
+    return fig
+
+
+def position_card(position_group: str, side: str | None, note: str = "", key: str = "") -> None:
+    """The "Position" card: the position name on the left, a mini pitch with its spot on the right.
+    `note` (plain text) is shown muted under the name, e.g. for a player with a mixed role."""
+    with st.container(key=f"ficard_position_{key}"):
+        left, right = st.columns([2, 3], vertical_alignment="center")
+        with left:
+            where = {"left": "Left side", "right": "Right side"}.get(side or "", "")
+            render(
+                '<div class="fi-card-title">Position</div>'
+                f'<div class="fi-name">{esc(POSITION_NAMES.get(position_group, position_group))}'
+                "</div>"
+                f'<div class="fi-row" style="margin-top:{SP_XS}px">{position_badge(position_group)}'
+                + (f'<span class="fi-muted">{esc(where)}</span>' if where else "")
+                + "</div>"
+                + (f'<div class="fi-muted" style="margin-top:{SP_S}px">{esc(note)}</div>'
+                   if note else "")
+            )
+        with right:
+            st.plotly_chart(
+                position_pitch(position_group, side), use_container_width=True,
+                config={"displayModeBar": False, "staticPlot": True}, key=f"pos_pitch_{key}",
+            )  # fmt: skip

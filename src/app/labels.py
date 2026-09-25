@@ -58,3 +58,41 @@ def metric_description(name: str) -> str:
     if metric and metric.note:
         return metric.note
     return "Per 90 minutes." if name.endswith("_p90") else "Season ratio."
+
+
+# The six axes of the profile page's quick hexagon radar, per position group: (metric, short label).
+# Only metrics with a stored percentile can appear. Where the spec asked for a metric the dataset
+# does not rank, the nearest ranked one stands in and QUICK_RADAR_STAND_INS names the swap.
+QUICK_RADAR: dict[str, tuple[tuple[str, str], ...]] = {
+    "GK": (("gk_save_pct", "Save %"), ("gk_goals_prevented_p90", "Goals prevented"),
+           ("gk_pass_completion_pct", "Pass completion"), ("gk_claims_p90", "Claims"),
+           ("gk_sweeper_actions_p90", "Sweeper actions"), ("gk_saves_p90", "Saves")),
+    "CB": (("aerials_won_p90", "Aerials won"), ("tackles_p90", "Tackles"),
+           ("interceptions_p90", "Interceptions"), ("clearances_p90", "Clearances"),
+           ("progressive_passes_p90", "Prog. passes"), ("pass_completion_pct", "Pass completion")),
+    "FB": (("tackles_p90", "Tackles"), ("interceptions_p90", "Interceptions"),
+           ("progressive_passes_p90", "Prog. passes"), ("passes_into_box_p90", "Passes into box"),
+           ("key_passes_p90", "Key passes"), ("pass_completion_pct", "Pass completion")),
+    "DM": (("tackles_p90", "Tackles"), ("interceptions_p90", "Interceptions"),
+           ("pressures_p90", "Pressures"), ("progressive_passes_p90", "Prog. passes"),
+           ("pass_completion_pct", "Pass completion"), ("ball_recoveries_p90", "Recoveries")),
+    "CM": (("progressive_passes_p90", "Prog. passes"), ("key_passes_p90", "Key passes"),
+           ("tackles_p90", "Tackles"), ("interceptions_p90", "Interceptions"),
+           ("pass_completion_pct", "Pass completion"), ("carries_p90", "Carries")),
+    "AM": (("key_passes_p90", "Key passes"), ("xa_p90", "xA"),
+           ("progressive_passes_p90", "Prog. passes"), ("dribbles_p90", "Dribbles"),
+           ("shots_p90", "Shots"), ("pass_completion_pct", "Pass completion")),
+    "W": (("dribbles_p90", "Dribbles"), ("xa_p90", "xA"), ("key_passes_p90", "Key passes"),
+          ("shots_p90", "Shots"), ("progressive_carries_p90", "Prog. carries"),
+          ("pass_completion_pct", "Pass completion")),
+    "ST": (("goals_p90", "Goals"), ("xg_p90", "xG"), ("shots_p90", "Shots"),
+           ("shot_accuracy", "Shot accuracy"), ("aerials_won_p90", "Aerials won"),
+           ("progressive_carries_p90", "Prog. carries")),
+}  # fmt: skip
+
+QUICK_RADAR_STAND_INS: dict[str, str] = {
+    "GK": "Clean sheet %, crosses stopped and a minutes percentile are not ranked in the dataset; "
+          "Goals prevented, Claims and Saves stand in for them. Claims, Sweeper actions and Saves "
+          "are volume measures: for them 100 = most, not best.",
+    "FB": "Crosses are not counted in the dataset; Passes into box stands in for them.",
+}  # fmt: skip

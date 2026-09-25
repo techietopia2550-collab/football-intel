@@ -1,4 +1,5 @@
-"""Player profile: hero, radar, strengths and weaknesses, heatmap, stats, similar players."""
+"""Player profile in three tabs. Profile: hero, quick radar, position, full radar, strengths and
+weaknesses, heatmap, similar players, transfer value. Matches: standout games. Stats: full table."""
 
 from __future__ import annotations
 
@@ -12,7 +13,7 @@ import streamlit as st
 from src.analytics import directory as analytics_dir
 from src.analytics import games as games_mod
 from src.app import data, design, player_images, shell
-from src.app.labels import metric_description, metric_label
+from src.app.labels import QUICK_RADAR, QUICK_RADAR_STAND_INS, metric_description, metric_label
 from src.models.match import GameCard, SeasonGameStats
 
 SIMILAR_N = 10
@@ -171,6 +172,7 @@ def _games_section(row: pd.Series) -> None:
     pid, group = row["player_id"], row["position_group_fine"]
     pg = data.player_games(pid, group)
     if pg.best is None:
+        design.render(design.empty_state("No standout games", "Needs a match of 45+ minutes."))
         return
     design.render(
         design.section_header(
@@ -188,6 +190,59 @@ def _games_section(row: pd.Series) -> None:
         "Rating is a simple count for his position, comparing his own matches with each other "
         "(see Methodology). The worst game must have 45+ minutes."
     )
+
+
+# ---- A2. quick radar and position ------------------------------------------------------------
+
+
+def _quick_radar(row: pd.Series) -> None:
+    group, pid = row["position_group_fine"], row["player_id"]
+    by_metric = data.percentiles(pid).set_index("metric")["percentile"]
+    items = []
+    for metric, label in QUICK_RADAR[group]:
+        pct = by_metric.get(metric)
+        pct = None if pct is None or pd.isna(pct) else float(pct)
+        score = analytics_dir.score_of(metric, pct)
+        # a descriptive (volume) metric has no good end: plot its plain percentile
+        items.append({"label": label, "percentile": pct, "score": pct if score is None else score})
+    design.render(design.section_header("At a glance", f"Six key metrics for a {group}"))
+    st.plotly_chart(
+        design.quick_profile_radar(items, group), use_container_width=True,
+        config={"displayModeBar": False}, key=f"quick_radar_{pid}",
+    )  # fmt: skip
+    caption = "Percentile vs position group (pooled 4 leagues). 100 = best."
+    if group in QUICK_RADAR_STAND_INS:
+        caption += " " + QUICK_RADAR_STAND_INS[group]
+    st.caption(caption)
+
+
+SIDE_SHARE = 0.55  # share of a wide player's events on one half of the pitch to call it his side
+
+
+def _preferred_side(pid: str) -> str | None:
+    """'left' or 'right' from where his all-actions heatmap events fall (grid rows run from the left
+    touchline to the right), or None with no heatmap or a near-even split. A display reading of the
+    stored grid, like the heatmap's text alternative."""
+    hm = data.heatmap(pid, "all_actions")
+    if hm is None or hm[1] == 0:
+        return None
+    grid = hm[0]
+    half = grid.shape[0] // 2
+    left = grid[:half].sum() / grid.sum()
+    return "left" if left >= SIDE_SHARE else "right" if left <= 1 - SIDE_SHARE else None
+
+
+def _position_section(row: pd.Series) -> None:
+    group, pid = row["position_group_fine"], row["player_id"]
+    wide = isinstance(design.POSITION_SPOTS[group][1], tuple)
+    side = _preferred_side(pid) if wide else None
+    notes = []
+    if wide and side is None:
+        notes.append("No clear side: both flanks shown.")
+    share = row["position_group_fine_share"]
+    if share < 0.9:
+        notes.append(f"Primary position only: {share:.0%} of his minutes were as a {group}.")
+    design.position_card(group, side, " ".join(notes), key=pid)
 
 
 # ---- B. radar --------------------------------------------------------------------------------
@@ -455,6 +510,21 @@ def _career_placeholder() -> None:
         st.button("Learn more", disabled=True, key="career_more")
 
 
+def _transfer_value_placeholder() -> None:
+    with st.container(key="ficard_transfer_value"):
+        design.render(
+            '<div class="fi-card-title">Transfer value</div>'
+            '<div class="fi-muted">Market value data is not yet ingested. See roadmap.</div>'
+        )
+        with st.expander("Why?"):
+            st.write(
+                "No free source we are allowed to use gives 2015/16 market values for these "
+                "players yet. Transfermarkt publishes market values (transfer-fee estimates, not "
+                "wages), but its terms forbid scraping, so no value is shown and none is "
+                "estimated. The source audit and the plan are in BLOCKERS.md section 20."
+            )
+
+
 def _quality_notes(row: pd.Series) -> None:
     notes: list[str] = []
     if row["n_teams"] > 1:
@@ -503,13 +573,20 @@ except Exception:  # noqa: BLE001 - a clear message, not a traceback
     shell.fail(f"Could not load the stats for {row['player_name']}.")
     st.stop()
 
-_hero(row, table)
-_radar_section(row, table)
-_games_section(row)
-_strengths_weaknesses(row)
-_heatmap_section(row)
-_stats_table(row, table)
-_similar_section(row)
-_career_placeholder()
-_quality_notes(row)
+profile_tab, matches_tab, stats_tab = st.tabs(["Profile", "Matches", "Stats"])
+with profile_tab:
+    _hero(row, table)
+    _quick_radar(row)
+    _position_section(row)
+    _radar_section(row, table)
+    _strengths_weaknesses(row)
+    _heatmap_section(row)
+    _similar_section(row)
+    _career_placeholder()
+    _quality_notes(row)
+    _transfer_value_placeholder()
+with matches_tab:
+    _games_section(row)
+with stats_tab:
+    _stats_table(row, table)
 shell.refresh_when_photos_ready()
