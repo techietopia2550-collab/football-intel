@@ -151,12 +151,27 @@ def _matrix(directory: pd.DataFrame, ids: list[str]) -> None:
             except ValueError as exc:
                 st.write(str(exc))
                 continue
-            shown = mat.map(lambda v: design.fmt_match_pct(v))
+            # tiers were measured on archetype-weighted scores only; the diagonal is self vs self
+            shown = pd.DataFrame(
+                [
+                    [
+                        design.fmt_match(v) if arch and i != j else design.fmt_match_pct(v)
+                        for j, v in enumerate(row)
+                    ]
+                    for i, row in enumerate(mat.to_numpy())
+                ],
+                index=mat.index, columns=mat.columns,
+            )
             st.dataframe(shown, use_container_width=True)
             st.caption(
                 "A dash means the two are not in the same "
                 + ("archetype" if arch else "position group")
                 + ": similarity is only defined inside one pool."
+                + (
+                    f" {design.MATCH_TIER_NOTE}"
+                    if arch
+                    else " No tier word here: tiers were measured on archetype-weighted scores."
+                )
             )
 
 

@@ -399,7 +399,8 @@ def _similar_section(row: pd.Series) -> None:
                 f'<span class="fi-muted">{design.position_badge(s.position_group_fine)} '
                 f"{design.esc(s.team)} · {design.esc(league)}</span></div>"
                 f'<div class="fi-stat" style="min-width:64px"><div class="fi-num" style="font-size:{design.SIZE_H3}px">'
-                f'{design.fmt_match_pct(s.similarity)}</div><div class="fi-stat-label">match</div></div></div>'
+                f'{design.fmt_match_pct(s.similarity)}</div><div class="fi-stat-label">match</div>'
+                f"{design.match_tier_badge(s.similarity)}</div></div>"
             )
             if st.button("Open profile", key=f"sim_open_{pid}_{s.player_id}", help=why):
                 shell.open_player(s.player_id)
@@ -417,13 +418,15 @@ def _similar_section(row: pd.Series) -> None:
         with c_txt:
             design.render(
                 f'<div class="fi-name">Closest profile match: {design.esc(top.player_name)} '
-                f"({design.esc(top.team)}) &mdash; {design.fmt_match_pct(top.similarity)} match</div>"
+                f"({design.esc(top.team)}) &mdash; {design.fmt_match_pct(top.similarity)} match "
+                f"{design.match_tier_badge(top.similarity)}</div>"
             )
         if c_btn.button("View profile", key=f"closest_open_{pid}_{top.player_id}"):
             shell.open_player(top.player_id)
     st.caption(
         f"Pool: {res.group_size} players in the '{res.archetype_label}' archetype, "
-        f"{res.candidates_considered} after filters. Match % shows how close the playing profile is: 100% would be an identical profile."
+        f"{res.candidates_considered} after filters. Match % shows how close the playing profile is: 100% would be an identical profile. "
+        f"{design.MATCH_TIER_NOTE}"
     )
 
 

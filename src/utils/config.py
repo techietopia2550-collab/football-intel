@@ -33,6 +33,9 @@ class Settings(BaseSettings):
     team_logos_dir: Path = Field(
         default=PROJECT_ROOT / "data" / "team_logos", alias="TEAM_LOGOS_DIR"
     )
+    # Hand-made inputs (e.g. the labelled similarity test set); kept in git, never regenerated.
+    manual_dir: Path = Field(default=PROJECT_ROOT / "data" / "manual", alias="MANUAL_DIR")
+    docs_dir: Path = Field(default=PROJECT_ROOT / "docs", alias="DOCS_DIR")
     # StatsBomb minutes are event-clock (about 97 for a full match). When True they are scaled so
     # a full match is 90.0; the factor is stored per match in matches.minutes_scale_factor.
     minutes_normalize: bool = Field(default=True, alias="MINUTES_NORMALIZE")

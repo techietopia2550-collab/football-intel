@@ -1,0 +1,101 @@
+pair_id,player_a,player_b,archetype_a,archetype_b,cosine_score,label,position_a,position_b,team_a,team_b,league_a,league_b,minutes_a,minutes_b,player_a_id,player_b_id,score_band,season,source
+1,Isma López,Víctor Álvarez,Defensive full-back,Defensive full-back,0.7629,similar,FB,W,Sporting Gijón,Espanyol,ESP-La Liga,ESP-La Liga,2498,1939,statsbomb:24263,statsbomb:27241,0.75-0.80,2015,statsbomb
+2,Charly Musonda,Florian Thauvin,Dribbling winger,Dribbling winger,0.7893,similar,CM,W,Real Betis,Marseille,ESP-La Liga,FRA-Ligue 1,1224,1384,statsbomb:3601,statsbomb:3254,0.75-0.80,2015,statsbomb
+3,José Giménez,Raúl Albentosa,Stopper centre-back,Stopper centre-back,0.5731,similar,CB,CB,Atlético Madrid,Málaga,ESP-La Liga,ESP-La Liga,2423,2375,statsbomb:5259,statsbomb:6727,0.55-0.60,2015,statsbomb
+4,Mikel Oyarzabal,Son Heung-Min,Pressing wide midfielder,Pressing wide midfielder,0.704,similar,W,W,Real Sociedad,Tottenham Hotspur,ESP-La Liga,ENG-Premier League,1497,1116,statsbomb:6685,statsbomb:3083,0.70-0.75,2015,statsbomb
+5,Filip Đorđević,Benik Afobe,Poacher,Poacher,0.7296,similar,ST,ST,Lazio,Bournemouth,ITA-Serie A,ENG-Premier League,1299,918,statsbomb:11427,statsbomb:3278,0.70-0.75,2015,statsbomb
+6,Óscar Trejo,Philippe Coutinho,Chance creator,Chance creator,0.6488,similar,AM,W,Toulouse,Liverpool,FRA-Ligue 1,ENG-Premier League,2156,1966,statsbomb:11540,statsbomb:3501,0.60-0.65,2015,statsbomb
+7,Ramiro Funes Mori,Dušan Veškovac,Ball-playing centre-back,Ball-playing centre-back,0.7909,not similar,CB,CB,Everton,Troyes,ENG-Premier League,FRA-Ligue 1,2202,1059,statsbomb:4629,statsbomb:42422,0.75-0.80,2015,statsbomb
+8,Paco Alcácer,Sergio Pellissier,Poacher,Poacher,0.6283,similar,ST,ST,Valencia,Chievo,ESP-La Liga,ITA-Serie A,2333,961,statsbomb:6402,statsbomb:8644,0.60-0.65,2015,statsbomb
+9,Billy Ketkeophomphone,Mohamed Yattara,Pressing wide midfielder,Pressing wide midfielder,0.691,not similar,ST,ST,Angers,Angers,FRA-Ligue 1,FRA-Ligue 1,2669,940,statsbomb:4441,statsbomb:7337,0.65-0.70,2015,statsbomb
+10,Diego Perotti,Dries Mertens,Chance creator,Chance creator,0.7352,similar,ST,W,AS Roma,Napoli,ITA-Serie A,ITA-Serie A,2269,1145,statsbomb:7456,statsbomb:5630,0.70-0.75,2015,statsbomb
+11,Iago Falqué,Morgan Amalfitano,Pressing wide midfielder,Pressing wide midfielder,0.6496,similar,W,W,AS Roma,Lille,ITA-Serie A,FRA-Ligue 1,1078,959,statsbomb:7468,statsbomb:3425,0.60-0.65,2015,statsbomb
+12,Marek Hamšík,Walid Mesloub,Chance creator,Chance creator,0.5634,not similar,CM,DM,Napoli,Lorient,ITA-Serie A,FRA-Ligue 1,3193,2115,statsbomb:7025,statsbomb:7766,0.55-0.60,2015,statsbomb
+13,Youssef El-Arabi,Nolan Roux,Poacher,Poacher,0.8761,similar,ST,ST,Granada,Saint-Étienne,ESP-La Liga,FRA-Ligue 1,2419,1952,statsbomb:27109,statsbomb:3179,0.85-0.90,2015,statsbomb
+14,Zargo Touré,Sergi Gómez,Ball-playing centre-back,Ball-playing centre-back,0.6337,not similar,CB,CB,Lorient,Celta Vigo,FRA-Ligue 1,ESP-La Liga,2554,2533,statsbomb:7211,statsbomb:6804,0.60-0.65,2015,statsbomb
+15,Wes Morgan,Ryan Bennett,Stopper centre-back,Stopper centre-back,0.8378,similar,CB,CB,Leicester City,Norwich City,ENG-Premier League,ENG-Premier League,3420,1838,statsbomb:3813,statsbomb:9930,0.80-0.85,2015,statsbomb
+16,Ignacio Camacho,Henri Saivet,Destroyer,Destroyer,-0.0464,not similar,DM,DM,Málaga,Bordeaux,ESP-La Liga,FRA-Ligue 1,1824,1607,statsbomb:8234,statsbomb:5110,<0.45,2015,statsbomb
+17,Vincent Manceau,Maxime Poundjé,Defensive full-back,Defensive full-back,0.5758,similar,FB,FB,Angers,Bordeaux,FRA-Ligue 1,FRA-Ligue 1,2383,1170,statsbomb:3431,statsbomb:4442,0.55-0.60,2015,statsbomb
+18,Eros Pisano,Coke,Defensive full-back,Defensive full-back,0.6588,similar,FB,FB,Hellas Verona,Sevilla,ITA-Serie A,ESP-La Liga,2900,1734,statsbomb:11342,statsbomb:6672,0.65-0.70,2015,statsbomb
+19,Raúl Baena,Zdravko Kuzmanović,Destroyer,Destroyer,0.6174,not similar,DM,DM,Rayo Vallecano,Udinese,ESP-La Liga,ITA-Serie A,1748,1126,statsbomb:26607,statsbomb:6577,0.60-0.65,2015,statsbomb
+20,Damien Delaney,Iván Ramis,Stopper centre-back,Stopper centre-back,0.898,similar,CB,CB,Crystal Palace,Eibar,ENG-Premier League,ESP-La Liga,2880,1795,statsbomb:3693,statsbomb:6778,0.85-0.90,2015,statsbomb
+21,Piotr Zieliński,Verza,Deep playmaker,Deep playmaker,0.6399,not similar,CM,DM,Empoli,Levante,ITA-Serie A,ESP-La Liga,2996,2057,statsbomb:5660,statsbomb:24149,0.60-0.65,2015,statsbomb
+22,Dieumerci Mbokani Bezua,Leonardo Ulloa,Target man,Target man,0.5764,similar,ST,ST,Norwich City,Leicester City,ENG-Premier League,ENG-Premier League,1613,1018,statsbomb:23663,statsbomb:3671,0.55-0.60,2015,statsbomb
+23,Sébastien Bassong,Edoardo Goldaniga,Stopper centre-back,Stopper centre-back,0.6172,similar,CB,CB,Norwich City,Palermo,ENG-Premier League,ITA-Serie A,2788,1220,statsbomb:31296,statsbomb:8102,0.60-0.65,2015,statsbomb
+24,Iago Aspas,Zlatan Ibrahimović,Poacher,Poacher,0.5391,not similar,ST,ST,Celta Vigo,Paris Saint-Germain,ESP-La Liga,FRA-Ligue 1,2628,2449,statsbomb:5217,statsbomb:3672,0.45-0.55,2015,statsbomb
+25,Roque Mesa,Seko Fofana,Deep playmaker,Deep playmaker,0.7001,not similar,DM,DM,Las Palmas,Bastia,ESP-La Liga,FRA-Ligue 1,2797,2227,statsbomb:3610,statsbomb:7791,0.70-0.75,2015,statsbomb
+26,Dani Parejo,Jordan Henderson,Deep playmaker,Deep playmaker,0.8742,not similar,CM,CM,Valencia,Liverpool,ESP-La Liga,ENG-Premier League,2642,1281,statsbomb:6595,statsbomb:3532,0.85-0.90,2015,statsbomb
+27,Scott Dann,Gary Cahill,Stopper centre-back,Stopper centre-back,0.7913,similar,CB,CB,Crystal Palace,Chelsea,ENG-Premier League,ENG-Premier League,3150,1958,statsbomb:3407,statsbomb:3645,0.75-0.80,2015,statsbomb
+28,Chory Castro,Nicolas Benezet,Chance creator,Chance creator,0.9379,not similar,CM,CM,Málaga,Guingamp,ESP-La Liga,FRA-Ligue 1,1262,1224,statsbomb:6740,statsbomb:3301,>=0.90,2015,statsbomb
+29,Danilo Soddimo,Joshua King,Dribbling winger,Dribbling winger,0.579,not similar,CM,ST,Frosinone,Bournemouth,ITA-Serie A,ENG-Premier League,1777,1887,statsbomb:11608,statsbomb:3346,0.55-0.60,2015,statsbomb
+30,Marouane Fellaini,Yassine Benzia,Poacher,Poacher,0.7663,not similar,CM,ST,Manchester United,Lille,ENG-Premier League,FRA-Ligue 1,1062,1309,statsbomb:3296,statsbomb:3673,0.75-0.80,2015,statsbomb
+31,Rudy Gestede,Éder,Target man,Target man,-0.0994,similar,ST,ST,Aston Villa,Lille,ENG-Premier League,FRA-Ligue 1,1704,1371,statsbomb:19362,statsbomb:15996,<0.45,2015,statsbomb
+32,Marco Asensio Willemsen,Maxwel Cornet,Dribbling winger,Dribbling winger,0.2968,similar,W,W,Espanyol,Lyon,ESP-La Liga,FRA-Ligue 1,2808,1510,statsbomb:5719,statsbomb:3162,<0.45,2015,statsbomb
+33,Alessandro Diamanti,Kevin De Bruyne,Chance creator,Chance creator,-0.4736,similar,AM,W,Atalanta,Manchester City,ITA-Serie A,ENG-Premier League,933,2001,statsbomb:19847,statsbomb:3089,<0.45,2015,statsbomb
+34,Daniel Ciofani,Cameron Jerome,Target man,Target man,0.8908,not similar,ST,ST,Frosinone,Norwich City,ITA-Serie A,ENG-Premier League,2899,1778,statsbomb:13613,statsbomb:4807,0.85-0.90,2015,statsbomb
+35,Juraj Kucka,Robert Brady,Pressing wide midfielder,Pressing wide midfielder,0.5083,not similar,CM,FB,AC Milan,Norwich City,ITA-Serie A,ENG-Premier League,2165,2969,statsbomb:10919,statsbomb:10967,0.45-0.55,2015,statsbomb
+36,Marc Muniesa,Laure,Defensive full-back,Defensive full-back,0.8226,not similar,CB,FB,Stoke City,Deportivo La Coruña,ENG-Premier League,ESP-La Liga,1118,1554,statsbomb:6560,statsbomb:23800,0.80-0.85,2015,statsbomb
+37,Jan Vertonghen,John Terry,Ball-playing centre-back,Ball-playing centre-back,0.8593,similar,CB,CB,Tottenham Hotspur,Chelsea,ENG-Premier League,ENG-Premier League,2591,1982,statsbomb:3077,statsbomb:20287,0.85-0.90,2015,statsbomb
+38,Alfred Duncan,Markel Susaeta,Pressing wide midfielder,Pressing wide midfielder,0.7505,not similar,CM,W,Sassuolo,Athletic Club,ITA-Serie A,ESP-La Liga,2484,1807,statsbomb:7698,statsbomb:6390,0.75-0.80,2015,statsbomb
+39,Aleksandar Mitrović,Germán Denis,Target man,Target man,0.6241,similar,ST,ST,Newcastle United,Atalanta,ENG-Premier League,ITA-Serie A,2113,971,statsbomb:4269,statsbomb:49439,0.60-0.65,2015,statsbomb
+40,Cédric Bakambu,Imanol Agirretxe,Poacher,Poacher,0.6798,similar,ST,ST,Villarreal,Real Sociedad,ESP-La Liga,ESP-La Liga,1853,1161,statsbomb:6862,statsbomb:6677,0.65-0.70,2015,statsbomb
+41,Cédric Yambéré,Marios Ikonomou,Stopper centre-back,Stopper centre-back,0.5025,similar,CB,CB,Bordeaux,Bologna,FRA-Ligue 1,ITA-Serie A,2161,1622,statsbomb:3779,statsbomb:8873,0.45-0.55,2015,statsbomb
+42,Evaeverson Lemos da Silva Brandão,Guido Carrillo,Target man,Target man,0.5361,similar,ST,ST,Bastia,Monaco,FRA-Ligue 1,FRA-Ligue 1,1739,1612,statsbomb:401541,statsbomb:3246,0.45-0.55,2015,statsbomb
+43,Steven Davis,Ashley Westwood,Deep playmaker,Deep playmaker,0.5908,not similar,AM,CM,Southampton,Aston Villa,ENG-Premier League,ENG-Premier League,2580,2714,statsbomb:3828,statsbomb:3583,0.55-0.60,2015,statsbomb
+44,Benjamin Nivet,Ivan Rakitić,Deep playmaker,Deep playmaker,0.515,not similar,AM,CM,Troyes,Barcelona,FRA-Ligue 1,ESP-La Liga,2337,2563,statsbomb:3002,statsbomb:5470,0.45-0.55,2015,statsbomb
+45,Marcel Tisserand,Matt Targett,Stopper centre-back,Stopper centre-back,0.6735,not similar,CB,FB,Toulouse,Southampton,FRA-Ligue 1,ENG-Premier League,2834,1057,statsbomb:8677,statsbomb:3651,0.65-0.70,2015,statsbomb
+46,Moustapha Bayal Sall,Martin Škrtel,Ball-playing centre-back,Ball-playing centre-back,0.7181,similar,CB,CB,Saint-Étienne,Liverpool,FRA-Ligue 1,ENG-Premier League,2259,1884,statsbomb:401468,statsbomb:18872,0.70-0.75,2015,statsbomb
+47,Samuel Umtiti,Thiago Silva,Ball-playing centre-back,Ball-playing centre-back,0.8149,similar,CB,CB,Lyon,Paris Saint-Germain,FRA-Ligue 1,FRA-Ligue 1,2651,2619,statsbomb:5492,statsbomb:3295,0.80-0.85,2015,statsbomb
+48,James Milner,Davide Santon,Deep playmaker,Deep playmaker,-0.5322,not similar,CM,FB,Liverpool,Inter Milan,ENG-Premier League,ITA-Serie A,2388,968,statsbomb:3473,statsbomb:6999,<0.45,2015,statsbomb
+49,Rio Mavuba,Gary Medel,Destroyer,Destroyer,0.8761,similar,DM,DM,Lille,Inter Milan,FRA-Ligue 1,ITA-Serie A,2804,2398,statsbomb:40522,statsbomb:16453,0.85-0.90,2015,statsbomb
+50,Hilton,Russell Martin,Stopper centre-back,Stopper centre-back,0.7142,not similar,CB,CB,Montpellier,Norwich City,FRA-Ligue 1,ENG-Premier League,3171,2691,statsbomb:3674,statsbomb:21212,0.70-0.75,2015,statsbomb
+51,Alexis Sánchez,Sofiane Boufal,Chance creator,Chance creator,0.5422,similar,W,W,Arsenal,Lille,ENG-Premier League,FRA-Ligue 1,2414,2287,statsbomb:3385,statsbomb:3625,0.45-0.55,2015,statsbomb
+52,Robert Gucher,Álex Menéndez,Pressing wide midfielder,Pressing wide midfielder,0.9203,not similar,DM,W,Frosinone,Sporting Gijón,ITA-Serie A,ESP-La Liga,1358,1052,statsbomb:30911,statsbomb:23994,>=0.90,2015,statsbomb
+53,Heiko Westermann,Mustapha Diallo,Stopper centre-back,Stopper centre-back,-0.6865,not similar,CB,DM,Real Betis,Guingamp,ESP-La Liga,FRA-Ligue 1,1455,1908,statsbomb:27349,statsbomb:3121,<0.45,2015,statsbomb
+54,Facundo Roncaglia,Carlos Sánchez,Destroyer,Destroyer,0.6929,not similar,CB,DM,Fiorentina,Aston Villa,ITA-Serie A,ENG-Premier League,2434,1357,statsbomb:6830,statsbomb:5685,0.65-0.70,2015,statsbomb
+55,Mattia De Sciglio,Davide Brivio,Defensive full-back,Defensive full-back,0.8938,similar,FB,FB,AC Milan,Atalanta,ITA-Serie A,ITA-Serie A,1827,1021,statsbomb:6944,statsbomb:31231,0.85-0.90,2015,statsbomb
+56,Moi Gómez,José Callejón,Pressing wide midfielder,Pressing wide midfielder,0.4163,not similar,CM,W,Getafe,Napoli,ESP-La Liga,ITA-Serie A,914,2790,statsbomb:11675,statsbomb:7029,<0.45,2015,statsbomb
+57,Zé Castro,Àngel Rangel,Ball-playing centre-back,Ball-playing centre-back,0.5115,not similar,CB,FB,Rayo Vallecano,Swansea City,ESP-La Liga,ENG-Premier League,1613,1818,statsbomb:26222,statsbomb:3973,0.45-0.55,2015,statsbomb
+58,Mehdi Lacen,Lass Diarra,Destroyer,Destroyer,0.7076,similar,DM,DM,Getafe,Marseille,ESP-La Liga,FRA-Ligue 1,2512,2073,statsbomb:6745,statsbomb:3181,0.70-0.75,2015,statsbomb
+59,Simon Francis,Nikola Maksimović,Defensive full-back,Defensive full-back,0.6184,not similar,CB,CB,Bournemouth,Torino,ENG-Premier League,ITA-Serie A,3384,1439,statsbomb:3608,statsbomb:16202,0.60-0.65,2015,statsbomb
+60,Marcus Coco,Carlos Carmona,Pressing wide midfielder,Pressing wide midfielder,0.5516,not similar,CM,W,Guingamp,Sporting Gijón,FRA-Ligue 1,ESP-La Liga,1711,1198,statsbomb:3363,statsbomb:23848,0.55-0.60,2015,statsbomb
+61,Matthieu Saunier,Nacho,Ball-playing centre-back,Ball-playing centre-back,-0.0951,not similar,CB,CB,Troyes,Real Madrid,FRA-Ligue 1,ESP-La Liga,2315,1164,statsbomb:13730,statsbomb:5202,<0.45,2015,statsbomb
+62,Lee Cattermole,Vicente Gómez,Destroyer,Destroyer,0.5223,similar,CM,DM,Sunderland,Las Palmas,ENG-Premier League,ESP-La Liga,2196,1464,statsbomb:10783,statsbomb:6929,0.45-0.55,2015,statsbomb
+63,Olivier Giroud,Álvaro Negredo,Target man,Target man,0.7619,similar,ST,ST,Arsenal,Valencia,ENG-Premier League,ESP-La Liga,2435,1168,statsbomb:3604,statsbomb:20542,0.75-0.80,2015,statsbomb
+64,Andy King,Michail Antonio,Pressing wide midfielder,Pressing wide midfielder,0.8125,not similar,DM,FB,Leicester City,West Ham United,ENG-Premier League,ENG-Premier League,1104,2037,statsbomb:3665,statsbomb:3349,0.80-0.85,2015,statsbomb
+65,Gonzalo Higuaín,Cristiano Ronaldo,Poacher,Poacher,0.9019,not similar,ST,W,Napoli,Real Madrid,ITA-Serie A,ESP-La Liga,2929,3175,statsbomb:5497,statsbomb:5207,>=0.90,2015,statsbomb
+66,M'Baye Niang,Romain Alessandrini,Dribbling winger,Dribbling winger,0.707,not similar,ST,W,AC Milan,Marseille,ITA-Serie A,FRA-Ligue 1,1115,1225,statsbomb:5661,statsbomb:15296,0.70-0.75,2015,statsbomb
+67,Vincent Koziello,Jean-Daniel Akpa Akpro,Destroyer,Destroyer,0.5936,not similar,CM,CM,Nice,Toulouse,FRA-Ligue 1,FRA-Ligue 1,2665,2554,statsbomb:4264,statsbomb:31174,0.55-0.60,2015,statsbomb
+68,Sadio Mané,Bruma,Dribbling winger,Dribbling winger,0.6981,similar,W,W,Southampton,Real Sociedad,ENG-Premier League,ESP-La Liga,2564,1475,statsbomb:3629,statsbomb:8522,0.65-0.70,2015,statsbomb
+69,Michael Carrick,Vincent Laurini,Ball-playing centre-back,Ball-playing centre-back,0.6854,not similar,DM,FB,Manchester United,Empoli,ENG-Premier League,ITA-Serie A,1970,1935,statsbomb:4751,statsbomb:7155,0.65-0.70,2015,statsbomb
+70,Yannis Salibur,François Kamano,Dribbling winger,Dribbling winger,0.9435,similar,CM,W,Guingamp,Bastia,FRA-Ligue 1,FRA-Ligue 1,2293,1389,statsbomb:3122,statsbomb:3405,>=0.90,2015,statsbomb
+71,Bruno Soriano,Brice Dja Djédjé,Ball-playing centre-back,Ball-playing centre-back,0.908,not similar,DM,FB,Villarreal,Marseille,ESP-La Liga,FRA-Ligue 1,2599,1468,statsbomb:22819,statsbomb:7857,>=0.90,2015,statsbomb
+72,Lamine Gassama,Antonio Barragán,Defensive full-back,Defensive full-back,0.9126,similar,FB,FB,Lorient,Valencia,FRA-Ligue 1,ESP-La Liga,2692,1561,statsbomb:6335,statsbomb:6663,>=0.90,2015,statsbomb
+73,Daniel Wass,Fábio Coentrão,Deep playmaker,Deep playmaker,0.9052,not similar,DM,FB,Celta Vigo,Monaco,ESP-La Liga,FRA-Ligue 1,2672,1074,statsbomb:6797,statsbomb:19047,>=0.90,2015,statsbomb
+74,Mesut Özil,Abdelaziz Barrada,Chance creator,Chance creator,0.8472,similar,AM,CM,Arsenal,Marseille,ENG-Premier League,FRA-Ligue 1,3003,1423,statsbomb:3496,statsbomb:23933,0.80-0.85,2015,statsbomb
+75,Isco,Neymar,Chance creator,Chance creator,0.866,not similar,CM,W,Real Madrid,Barcelona,ESP-La Liga,ESP-La Liga,1817,3053,statsbomb:4926,statsbomb:4320,0.85-0.90,2015,statsbomb
+76,Charles,Mario Mandžukić,Target man,Target man,0.9191,similar,ST,ST,Málaga,Juventus,ESP-La Liga,ITA-Serie A,2721,1965,statsbomb:6707,statsbomb:5472,>=0.90,2015,statsbomb
+77,Mário Rui,David Simón,Defensive full-back,Defensive full-back,0.3812,similar,FB,FB,Empoli,Las Palmas,ITA-Serie A,ESP-La Liga,3234,2264,statsbomb:7151,statsbomb:7906,<0.45,2015,statsbomb
+78,Lionel Messi,Rachid Ghezzal,Chance creator,Chance creator,0.6752,similar,W,W,Barcelona,Lyon,ESP-La Liga,FRA-Ligue 1,2728,1599,statsbomb:5503,statsbomb:3372,0.65-0.70,2015,statsbomb
+79,Floyd Ayité,Jorge Molina,Poacher,Poacher,0.565,not similar,ST,ST,Bastia,Real Betis,FRA-Ligue 1,ESP-La Liga,2527,930,statsbomb:15689,statsbomb:6630,0.55-0.60,2015,statsbomb
+80,Joselu,Luciano Vietto,Poacher,Poacher,0.8209,not similar,ST,ST,Stoke City,Atlético Madrid,ENG-Premier League,ESP-La Liga,1111,953,statsbomb:3265,statsbomb:6744,0.80-0.85,2015,statsbomb
+81,Miguel Torres,Florian Marange,Defensive full-back,Defensive full-back,0.7438,similar,FB,FB,Málaga,Bastia,ESP-La Liga,FRA-Ligue 1,1776,1600,statsbomb:6878,statsbomb:40528,0.70-0.75,2015,statsbomb
+82,Valon Behrami,Sergio Álvarez,Destroyer,Destroyer,0.8418,similar,CM,DM,Watford,Sporting Gijón,ENG-Premier League,ESP-La Liga,1276,2173,statsbomb:5540,statsbomb:13107,0.80-0.85,2015,statsbomb
+83,Nicolas de Préville,Romain Hamouma,Dribbling winger,Dribbling winger,0.4698,similar,W,W,Reims,Saint-Étienne,FRA-Ligue 1,FRA-Ligue 1,2881,1588,statsbomb:4383,statsbomb:4260,0.45-0.55,2015,statsbomb
+84,Luca Cigarini,Francesco Lodi,Deep playmaker,Deep playmaker,0.7527,not similar,CM,DM,Atalanta,Udinese,ITA-Serie A,ITA-Serie A,1809,1864,statsbomb:8420,statsbomb:40367,0.75-0.80,2015,statsbomb
+85,Joe Ledley,Ibrahim Amadou,Destroyer,Destroyer,0.9454,not similar,CM,DM,Crystal Palace,Lille,ENG-Premier League,FRA-Ligue 1,980,1675,statsbomb:4817,statsbomb:11332,>=0.90,2015,statsbomb
+86,Andy Delort,Edin Džeko,Target man,Target man,0.7205,similar,ST,ST,Caen,AS Roma,FRA-Ligue 1,ITA-Serie A,3039,1882,statsbomb:3038,statsbomb:6973,0.70-0.75,2015,statsbomb
+87,Rodrigo Palacio,Wayne Routledge,Pressing wide midfielder,Pressing wide midfielder,0.8618,not similar,ST,W,Inter Milan,Swansea City,ITA-Serie A,ENG-Premier League,1411,1652,statsbomb:7165,statsbomb:3449,0.85-0.90,2015,statsbomb
+88,Íñigo Martínez,Daniele Bonera,Ball-playing centre-back,Ball-playing centre-back,0.5744,not similar,CB,CB,Real Sociedad,Villarreal,ESP-La Liga,ESP-La Liga,2700,949,statsbomb:6665,statsbomb:6827,0.55-0.60,2015,statsbomb
+89,Pedro León,Sofiane Feghouli,Dribbling winger,Dribbling winger,0.8766,not similar,W,W,Getafe,Valencia,ESP-La Liga,ESP-La Liga,1770,1204,statsbomb:6907,statsbomb:18724,0.85-0.90,2015,statsbomb
+90,Andrea Belotti,Karim Benzema,Poacher,Poacher,-0.1513,not similar,ST,ST,Torino,Real Madrid,ITA-Serie A,ESP-La Liga,2574,1962,statsbomb:7471,statsbomb:19677,<0.45,2015,statsbomb
+91,Romain Philippoteaux,Théo Bongonda Mbul'Ofeko Batombo,Dribbling winger,Dribbling winger,0.8096,not similar,CM,W,Lorient,Celta Vigo,FRA-Ligue 1,ESP-La Liga,1427,1102,statsbomb:7338,statsbomb:23785,0.80-0.85,2015,statsbomb
+92,Lucas Castro,Saúl Ñíguez,Destroyer,Destroyer,0.7647,similar,CM,CM,Chievo,Atlético Madrid,ITA-Serie A,ESP-La Liga,2778,2332,statsbomb:7049,statsbomb:6381,0.75-0.80,2015,statsbomb
+93,François Moubandje,Roberto Lago,Defensive full-back,Defensive full-back,0.5472,similar,FB,FB,Toulouse,Getafe,FRA-Ligue 1,ESP-La Liga,1877,1268,statsbomb:3024,statsbomb:27054,0.45-0.55,2015,statsbomb
+94,José Jurado,Bernardo Silva,Dribbling winger,Dribbling winger,0.6381,not similar,CM,W,Watford,Monaco,ENG-Premier League,FRA-Ligue 1,1966,2243,statsbomb:6870,statsbomb:3193,0.60-0.65,2015,statsbomb
+95,Ciaran Clark,Lindsay Rose,Stopper centre-back,Stopper centre-back,0.9521,similar,CB,CB,Aston Villa,Lorient,ENG-Premier League,FRA-Ligue 1,1447,990,statsbomb:3041,statsbomb:7346,>=0.90,2015,statsbomb
+96,Ross Barkley,Maxime Barthelmé,Chance creator,Chance creator,0.7981,similar,AM,CM,Everton,Lorient,ENG-Premier League,FRA-Ligue 1,3037,1252,statsbomb:4275,statsbomb:7567,0.75-0.80,2015,statsbomb
+97,Cheick Diabaté,Sloan Privat,Target man,Target man,0.8286,not similar,ST,ST,Bordeaux,Guingamp,FRA-Ligue 1,FRA-Ligue 1,1279,1267,statsbomb:7130,statsbomb:4799,0.80-0.85,2015,statsbomb
+98,Andy Carroll,Manucho Gonçalves,Target man,Target man,0.6504,similar,ST,ST,West Ham United,Rayo Vallecano,ENG-Premier League,ESP-La Liga,1457,972,statsbomb:4271,statsbomb:26690,0.65-0.70,2015,statsbomb
+99,Nampalys Mendy,Mario Lemina,Deep playmaker,Deep playmaker,0.8219,not similar,DM,DM,Nice,Juventus,FRA-Ligue 1,ITA-Serie A,3389,1062,statsbomb:4506,statsbomb:3951,0.80-0.85,2015,statsbomb
+100,Tana,Sergi Darder,Deep playmaker,Deep playmaker,0.6885,not similar,AM,CM,Las Palmas,Lyon,ESP-La Liga,FRA-Ligue 1,2086,1542,statsbomb:6928,statsbomb:3236,0.65-0.70,2015,statsbomb

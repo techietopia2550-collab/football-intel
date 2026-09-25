@@ -216,6 +216,40 @@ def fmt_match_pct(similarity: float | None) -> str:
     return f"{min(max(similarity, 0.0), 1.0) * 100:.0f}%"
 
 
+# Match-% tiers, measured on the labelled test set (docs/similarity_thresholds.md,
+# ANALYTICS_DECISIONS.md section 23): (word, lowest cosine, tone), highest first. Strong (90%
+# precision) and Good (75%) are absent because no threshold reached them; the old judgement cuts
+# were 85 / 70 / 55. Everything under the last cut is MATCH_TIER_BELOW.
+MATCH_TIERS: tuple[tuple[str, float, str], ...] = (("Fair", 0.60, "neutral"),)
+MATCH_TIER_BELOW: tuple[str, str] = ("Weak", "negative")
+MATCH_TIER_NOTE = (
+    "Measured tier: at 60%+ about half of labelled test pairs shared a role and style; "
+    "below 60%, fewer than half. No higher score band proved more reliable than that."
+)
+
+
+def match_tier(similarity: float | None) -> tuple[str, str] | None:
+    """(tier word, tone) for a cosine similarity, from the measured MATCH_TIERS; None if missing."""
+    if similarity is None or np.isnan(similarity):
+        return None
+    for word, cut, tone in MATCH_TIERS:
+        if similarity >= cut - 1e-12:
+            return word, tone
+    return MATCH_TIER_BELOW
+
+
+def match_tier_badge(similarity: float | None) -> str:
+    """The tier word as a pill (empty string when there is no score)."""
+    tier = match_tier(similarity)
+    return badge(tier[0], tier[1], MATCH_TIER_NOTE) if tier else ""
+
+
+def fmt_match(similarity: float | None) -> str:
+    """Match % with its tier word, e.g. '72% · Fair', for plain-text cells."""
+    tier = match_tier(similarity)
+    return f"{fmt_match_pct(similarity)} · {tier[0]}" if tier else fmt_match_pct(similarity)
+
+
 def fmt_value(value: float | None, unit: str = "") -> str:
     if value is None or (isinstance(value, float) and np.isnan(value)):
         return "–"
