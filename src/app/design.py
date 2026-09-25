@@ -22,6 +22,8 @@ import numpy as np
 import plotly.graph_objects as go
 import streamlit as st
 
+from src.models.finance import TeamWageContext
+
 # ---- typography ------------------------------------------------------------------------------
 FONT_FAMILY = "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
 FONT_URL = "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
@@ -256,6 +258,27 @@ def cross_position_note(group: str | None, source_group: str | None) -> str:
     if not group or not source_group or group == source_group:
         return ""
     return f"cross-position ({group} vs {source_group})"
+
+
+WAGE_TIP = "The club's total annual wage bill: team context, not any individual player's wage."
+
+
+def wage_text(ctx: TeamWageContext, label: str = "Wage bill") -> str:
+    """'Wage bill: £187m/year · Deloitte, aggregated (rank 3 of 12 with data, 80 clubs)' as HTML.
+    The source and confidence always travel with the figure, so an estimate is never shown bare.
+    No figure -> 'Wage bill: not available' (never £0, never blank). Pure."""
+    if ctx.wage_bill_annual_gbp is None:
+        body = f'{esc(label)}: <span class="fi-muted">not available</span>'
+    else:
+        of = f"{ctx.teams_ranked}" + (
+            f" with data, {ctx.teams_in_season} clubs" if ctx.teams_ranked < ctx.teams_in_season else ""
+        )
+        body = (
+            f"{esc(label)}: £{ctx.wage_bill_annual_gbp / 1e6:,.0f}m/year · "
+            f"{esc(ctx.source or 'unknown source')}, {esc(ctx.confidence or 'unknown')} "
+            f'<span class="fi-muted">(rank {ctx.rank} of {of})</span>'
+        )
+    return f'<span title="{esc(WAGE_TIP)}">{body}</span> ' + badge("team context", "neutral", WAGE_TIP)
 
 
 def fmt_eur(value: float | None) -> str:

@@ -39,7 +39,14 @@ def _valuations() -> pd.DataFrame:
     return pd.DataFrame(
         {
             "player_id": [1, 1, 1, 1, 2, 3],
-            "date": ["2015-07-01", "2015-10-14", "2016-02-09", "2016-06-01", "2015-09-30", "2016-03-01"],
+            "date": [
+                "2015-07-01",
+                "2015-10-14",
+                "2016-02-09",
+                "2016-06-01",
+                "2015-09-30",
+                "2016-03-01",
+            ],
             "market_value_in_eur": [45e6, 60e6, 65e6, 70e6, 1e6, 2e6],
             "current_club_name": ["Wolfsburg", "Man City", "Man City", "Man City", "X", "Y"],
         }
@@ -61,33 +68,58 @@ def test_snapshot_window_is_inclusive_and_excludes_outside() -> None:
 def _candidates() -> pd.DataFrame:
     return pd.DataFrame(
         [
-            {"tm_id": 10, "team": "Atlético Madrid", "league": "ESP-La Liga",
-             "names": ("José María Giménez",)},
+            {
+                "tm_id": 10,
+                "team": "Atlético Madrid",
+                "league": "ESP-La Liga",
+                "names": ("José María Giménez",),
+            },
             {"tm_id": 11, "team": "Atlético Madrid", "league": "ESP-La Liga", "names": ("Koke",)},
             {"tm_id": 12, "team": "Real Madrid", "league": "ESP-La Liga", "names": ("Pepe",)},
             {"tm_id": 13, "team": "Napoli", "league": "ITA-Serie A", "names": ("Pepe Reina",)},
             {"tm_id": 14, "team": "Celta Vigo", "league": "ESP-La Liga", "names": ("Jonny Otto",)},
-            {"tm_id": 20, "team": "Swansea City", "league": "ENG-Premier League",
-             "names": ("Sung-yueng Ki",)},
+            {
+                "tm_id": 20,
+                "team": "Swansea City",
+                "league": "ENG-Premier League",
+                "names": ("Sung-yueng Ki",),
+            },
             {"tm_id": 30, "team": "Chelsea", "league": "ENG-Premier League", "names": ("Oscar",)},
-            {"tm_id": 31, "team": "Chelsea", "league": "ENG-Premier League",
-             "names": ("Oscar Emboaba",)},
+            {
+                "tm_id": 31,
+                "team": "Chelsea",
+                "league": "ENG-Premier League",
+                "names": ("Oscar Emboaba",),
+            },
             {"tm_id": 40, "team": "Getafe", "league": "ESP-La Liga", "names": ("Juanfran Torres",)},
             {"tm_id": 41, "team": "Getafe", "league": "ESP-La Liga", "names": ("Juanfran Moreno",)},
         ]
-    )  # fmt: skip
+    )
 
 
 def _ours(rows: list[tuple[str, str, str]]) -> pd.DataFrame:
     return pd.DataFrame(
-        [{"player_id": pid, "player_name": n, "team": t, "team_split": f"{t} 2000",
-          "league": "ESP-La Liga"} for pid, n, t in rows]
-    )  # fmt: skip
+        [
+            {
+                "player_id": pid,
+                "player_name": n,
+                "team": t,
+                "team_split": f"{t} 2000",
+                "league": "ESP-La Liga",
+            }
+            for pid, n, t in rows
+        ]
+    )
 
 
 def test_match_stages() -> None:
-    ours = _ours([("a", "José Giménez", "Atlético Madrid"), ("b", "Koke", "Atlético Madrid"),
-                  ("c", "Ki Sung-Yeung", "Swansea City")])  # fmt: skip
+    ours = _ours(
+        [
+            ("a", "José Giménez", "Atlético Madrid"),
+            ("b", "Koke", "Atlético Madrid"),
+            ("c", "Ki Sung-Yeung", "Swansea City"),
+        ]
+    )
     res = mv.match_players(ours, _candidates()).set_index("player_id")
     assert res.loc["b", "match_method"] == "exact" and res.loc["b", "transfermarkt_id"] == 11
     assert res.loc["a", "match_method"] == "fuzzy" and res.loc["a", "transfermarkt_id"] == 10
@@ -129,11 +161,22 @@ def test_one_transfermarkt_player_backs_only_one_profile() -> None:
 
 
 def test_build_records_unmatched_and_unvalued_stay_null() -> None:
-    ours = _ours([("a", "José Giménez", "Atlético Madrid"), ("b", "Koke", "Atlético Madrid"),
-                  ("j", "Jonny Castro", "Celta Vigo")])  # fmt: skip
+    ours = _ours(
+        [
+            ("a", "José Giménez", "Atlético Madrid"),
+            ("b", "Koke", "Atlético Madrid"),
+            ("j", "Jonny Castro", "Celta Vigo"),
+        ]
+    )
     matches = mv.match_players(ours, _candidates())
-    snapshot = pd.DataFrame({"player_id": [10], "date": [pd.Timestamp("2016-01-04")],
-                             "market_value_in_eur": [12e6], "current_club_name": ["Atlético"]})  # fmt: skip
+    snapshot = pd.DataFrame(
+        {
+            "player_id": [10],
+            "date": [pd.Timestamp("2016-01-04")],
+            "market_value_in_eur": [12e6],
+            "current_club_name": ["Atlético"],
+        }
+    )
     names = pd.Series({10: "José María Giménez", 11: "Koke"})
     recs = {r.player_id: r for r in mv.build_records(ours, matches, snapshot, names)}
     assert recs["a"].market_value_eur == 12e6 and recs["a"].market_value_gbp == 9e6
@@ -147,9 +190,17 @@ def test_build_records_unmatched_and_unvalued_stay_null() -> None:
 def test_upsert_is_idempotent(tmp_path) -> None:  # type: ignore[no-untyped-def]
     engine = init_db(create_engine(f"sqlite:///{tmp_path / 't.db'}"))
     ours = _ours([("a", "José Giménez", "Atlético Madrid")])
-    snapshot = pd.DataFrame({"player_id": [10], "date": [pd.Timestamp("2016-01-04")],
-                             "market_value_in_eur": [12e6], "current_club_name": ["Atlético"]})  # fmt: skip
-    recs = mv.build_records(ours, mv.match_players(ours, _candidates()), snapshot, pd.Series(dtype=str))
+    snapshot = pd.DataFrame(
+        {
+            "player_id": [10],
+            "date": [pd.Timestamp("2016-01-04")],
+            "market_value_in_eur": [12e6],
+            "current_club_name": ["Atlético"],
+        }
+    )
+    recs = mv.build_records(
+        ours, mv.match_players(ours, _candidates()), snapshot, pd.Series(dtype=str)
+    )
     mv.upsert_records(engine, recs)
     mv.upsert_records(engine, recs)
     values = mv_read.load_market_values("2015", engine)

@@ -120,7 +120,7 @@ def _hero(row: pd.Series, table: pd.DataFrame) -> None:
                 f"{design.esc(shell.LEAGUE_SHORT[row['league']])} · {data.SEASON_LABEL}</div>"
                 + (f'<div class="fi-body" style="margin-top:{design.SP_XS}px">{bio}</div>' if bio else "")
                 + f'<div class="fi-body" style="margin-top:{design.SP_XS}px">'
-                f"{shell.wage_line(row['team'], row['league'])}</div>"
+                f"{shell.wage_line(row['team'], row['league'], 'Team wage bill')}</div>"
                 + f'<div class="fi-body" style="margin-top:{design.SP_XS}px">'
                 f"{shell.market_value_line(pid)}</div>"
             )

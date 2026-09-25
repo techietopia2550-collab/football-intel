@@ -796,3 +796,59 @@ Code: `src/transform/market_values.py` (snapshot, matching, table), `src/analyti
   for 69 players: 37 are spellings only ("Bologna FC 1909", "Carpi FC 1909"), the rest moved in January, so
   the value was set at the new club (e.g. Khazri at Sunderland). The value is kept: it is still that
   player's 2015/16 valuation.
+
+## 26. Team wage bills: the manual CSV contract and sourcing policy (2026-09-26)
+
+**Supersedes the CSV and UI parts of section 24** (the table, the currency rule and the ranking stand).
+
+- **Why the table exists.** Budget fit for the future Tactical Composer needs to know what a club could
+  spend. Only club-level annual wage bills are held: there are no player wages in the project and none
+  are to be derived. No automated source is reachable (FBref and Capology are behind Cloudflare,
+  BLOCKERS.md sections 19 and 22), so figures come only from a hand-filled, cited CSV.
+- **The CSV contract** (`data/manual/team_finance.csv`; `src/ingest/finance.py`, `CSV_COLUMNS`). Column
+  names follow the table's columns; the names used in the 2026-09-26 brief are accepted as header
+  aliases (in brackets).
+
+  | Column | Required | Rule |
+  |---|---|---|
+  | `team_name` (`club_name`) | yes | Resolves through the `team_identity` alias table to one of the 80 clubs of 2015/16 (EPL, La Liga, Serie A, Ligue 1). A name outside the alias table, or a known club outside the pool (Bayern, 2024/25-only clubs), is rejected. |
+  | `season` | yes | "2015/16" (also 2015-2016, 2015-16, 2015). Only 2015/16 has a club pool and a rate. |
+  | `league` | no | Derived from the club when blank; if given, must be the club's league. |
+  | `wage_bill_original_amount` (`wage_bill_native`) | yes | The figure as the source publishes it, in its own currency. Non-negative. `£ € $` and thousands separators are tolerated. |
+  | `wage_bill_currency_original` (`native_currency`) | yes | GBP or EUR. USD is part of the contract but has **no rate yet**: a USD row is rejected until a cited 2015/16 USD rate is added. |
+  | `wage_bill_annual_gbp` (`wage_bill_gbp`) | no | Leave blank: it is computed. If filled, it must equal native x rate within 1%, else the row is rejected (a typo or another rate). |
+  | `confidence` | yes | `official`, `aggregated`, `estimate` or `unknown`. A blank is rejected (it no longer defaults to `unknown`). |
+  | `source` | yes | Human-readable name of the document or publisher. |
+  | `source_url` | if official/aggregated | Link or citation. Optional for `estimate` and `unknown`. |
+  | `notes` | no | Anything ambiguous: financial year vs season, partial season, pre- or post-tax, players only or all staff. Stored in the new `team_finance.notes` column. |
+
+- **Currency rule.** GBP is always `native x EXCHANGE_RATES_TO_GBP[season][currency]`: a fixed constant
+  in `src/ingest/finance.py` (code, not an environment setting), `{"2015": {"GBP": 1.0, "EUR": 0.75}}`.
+  0.75 is a round season average (EUR/GBP ran about 0.70-0.80 over July 2015 to June 2016), so a
+  Continental bill can be a few percent off against an English one. The native figure, its currency and
+  the rate used are all stored. A source's own GBP conversion is not kept in place of ours: if a source
+  publishes in GBP, enter it as GBP.
+- **Confidence describes the source, not our certainty.**
+  - `official`: the club's own audited accounts or a regulator filing (annual report, Companies House,
+    Registro Mercantil). Needs a `source_url`.
+  - `aggregated`: a body compiling official figures across clubs (Deloitte Football Money League or
+    Annual Review, UEFA Club Licensing Benchmarking Report). Needs a `source_url`.
+  - `estimate`: a payroll tracker or press compilation that estimates salaries (Capology, Spotrac,
+    newspaper wage tables).
+  - `unknown`: a figure whose provenance cannot be classed as the above. It still needs a `source`.
+- **Sourcing policy: no source, no row.** A row missing `team_name`, `season`, the native amount, the
+  currency, `confidence` or `source` is rejected. So is official/aggregated without a URL, a duplicate
+  club-season row, and any row whose `notes` start with `EXAMPLE`. A club with no citable figure gets **no
+  row**; a missing row is a valid state and shows "not available". (Section 19's blank "placeholder" rows
+  with `confidence = unknown` are no longer accepted.)
+- **Rejects are reported, never dropped.** Valid rows are imported; every rejected row goes to
+  `data/processed/team_finance_rejects.csv` (`line, team_name, reason`, rewritten on each import, header
+  only when clean) and to the log, and the CLI exits with code 1. A missing required column, or pointing
+  the importer at `team_finance.template.csv`, stops the import (exit code 2).
+- **Template.** `data/manual/team_finance.template.csv` carries the header and two rows marked `EXAMPLE ROW -
+  NOT REAL DATA` in `notes`, with made-up figures. The importer refuses the file by name, and its rows
+  are rejected even if copied elsewhere.
+- **UI.** "Wage bill: £187m/year · Deloitte, aggregated (rank 3 of 12 with data, 80 clubs)" on the Team
+  Fingerprint hero, "Team wage bill: ..." on the player hero. The source and confidence are always in the
+  same line as the figure, so an estimate never appears as a bare headline. No row -> "Wage bill: not
+  available" (never £0, never blank). Figures are never summed or averaged into a league figure.

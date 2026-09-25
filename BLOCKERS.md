@@ -598,3 +598,28 @@ code repo instead (`transfermarkt-datasets-master/`: no data, only DVC pointers)
 - **Not done:** `players.transfermarkt_id` is still empty (the id lives in `player_market_values` only).
   `rapidfuzz` is declared in `pyproject.toml` but not installed in `.venv`; stdlib `difflib` is used, so no
   dependency was added or installed.
+
+## 22. Team wage bills: pipeline ready, table empty (2026-09-26)
+
+**Status: working but empty, by design.** The importer, the CSV contract (ANALYTICS_DECISIONS.md section
+26), the reject report and the UI states are built and tested. `data/manual/team_finance.csv` is
+header-only, so `team_finance` has **0 of 80** clubs and every page shows "Wage bill: not available".
+The figures are to be filled in by hand from citable documents; none will be generated or estimated in
+code.
+
+- **Coverage so far:** none. No row has been imported.
+- **Blocked (automated):** FBref wages pages and Capology, both behind a Cloudflare challenge (sections 1
+  and 19). Not worked around. `fetch_capology` stays a scaffold that stops on the challenge.
+- **Viable (manual, cited):**
+  - Club annual reports and regulator filings (`official`). EPL clubs file accounts at Companies House;
+    wages are a line of the accounts. Spanish clubs publish annual reports (LaLiga also publishes squad
+    cost limits, which are a different measure). Italian and French clubs' accounts are less uniformly
+    public. Accounts cover the club's financial year, which is not always July-June, and usually include
+    all staff.
+  - Deloitte Annual Review of Football Finance / Football Money League and the UEFA Club Licensing
+    Benchmarking Report (`aggregated`): wage totals for the biggest clubs, often not all 80.
+  - Press payroll compilations (`estimate`), with the article cited.
+  - Wayback Machine snapshots of payroll trackers, read and cited by hand (not scraped), as `estimate`.
+- **Still missing:** every figure; a cited 2015/16 USD rate (USD rows are rejected until one is added);
+  a decision on mixing accounts (all staff, financial year) with payroll estimates (players only) in one
+  ranking. The ranking currently mixes whatever is imported, with each row's confidence shown beside it.

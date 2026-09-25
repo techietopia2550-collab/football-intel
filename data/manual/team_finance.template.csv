@@ -1,0 +1,3 @@
+team_name,season,league,wage_bill_original_amount,wage_bill_currency_original,wage_bill_annual_gbp,confidence,source,source_url,notes
+Arsenal,2015/16,EPL,123000000,GBP,,official,EXAMPLE Club annual report 2015/16,https://example.org/annual-report-2016.pdf,"EXAMPLE ROW - NOT REAL DATA - never imported. Official accounts: financial year to 31 May 2016, all staff not only players, pre-tax."
+Real Madrid,2015/16,La Liga,200000000,EUR,,estimate,EXAMPLE Press payroll compilation,,"EXAMPLE ROW - NOT REAL DATA - never imported. Estimate: players only, gross; wage_bill_annual_gbp left blank so it is computed at 0.75."

@@ -29,6 +29,7 @@ class TeamFinanceRecord(BaseModel):
     source: str
     source_url: str | None = None
     confidence: Confidence = "unknown"
+    notes: str | None = None  # partial season, pre/post tax, includes non-playing staff, ...
 
 
 class TeamWageContext(BaseModel):
