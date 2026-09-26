@@ -178,7 +178,7 @@ def _squad_view(sq: Squad, tab: str) -> None:
         st.caption(
             "Style fit compares where each player sits against his own position group (above or "
             "below the median) with where the target sits against the 80 teams. Quality is his "
-            "market value on a log scale (1.0 = the most valuable player in the pool): a stand-in "
+            "market value on a sqrt scale (1.0 = the most valuable player in the pool): a stand-in "
             "for quality, not a measure of it. See Methodology."
         )
 
