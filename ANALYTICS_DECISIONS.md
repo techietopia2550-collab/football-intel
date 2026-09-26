@@ -971,12 +971,17 @@ tactics and predicts nothing.
 - **Objective (revised 2026-09-26: style fit + quality).** The first version ranked on fit alone (plus a
   0.05 value-rank bonus) and produced cheap, unknown XIs (sanity check below). Now:
   `score = (1 - w) x style_fit + w x quality`, with
-  `quality = log(1 + market_value_eur) / log(1 + the largest value in the eligible pool)`, 0-1.
+  `quality = sqrt(market_value_eur) / sqrt(the largest value in the eligible pool)`, 0-1.
   - *Quality* is market value standing in for quality: the only quality-like signal with a price in
-    the data, and a crowd estimate, not a measure. Log-scaled because values run from €0.1m to €120m;
-    the log compresses hard: €0.5m -> 0.70, €1m -> 0.74, €2m -> 0.78, €5m -> 0.83, €10m -> 0.87,
-    €25m -> 0.92, €60m -> 0.96, €120m -> 1.0 (with a €120m top value). So quality moves a score by
-    a few hundredths between a €1m and a €10m player, while fit spans 0-1.
+    the data, and a crowd estimate, not a measure.
+  - *Scaling: square root (changed from log, 2026-09-26).* The first quality-weighted version used
+    `log(1 + v) / log(1 + max)`, which compressed hard: €0.5m -> 0.70, €1m -> 0.74, €2m -> 0.78,
+    €10m -> 0.87, €25m -> 0.92, €120m -> 1.0, so €1m and €10m players differed by 0.13 while fit spans
+    0-1. Square root (with a €120m top value): €1m -> 0.09, €2m -> 0.13, €5m -> 0.20, €10m -> 0.29,
+    €25m -> 0.46, €60m -> 0.71, €120m -> 1.0. It spreads the range without linear's extreme (linear
+    would make €100m worth 50 x €2m; sqrt makes it 7 x). A side effect: most players now have low
+    quality (median value ~€4m -> 0.18), so at the same `w` the quality term separates cheap players
+    far more and the €60m+ stars jump ahead.
   - *Weight semantics.* `w` is the quality weight (alpha = 1 - w is the style weight), set by the
     page's "Style priority / Quality priority" slider, 0.0-1.0, default 0.5 (not tuned). 0.0 = pure style
     fit, 1.0 = pure market value. The brief wrote `alpha x fit + (1 - alpha) x quality` but captioned
@@ -1032,4 +1037,27 @@ tactics and predicts nothing.
     StatsBomb positions put him in the CM group, and slots are strict.
   - Verdict: no longer nonsense (the budget is used, the players are established top-flight regulars),
     but still not a scout's XI: log-scaled value barely separates a €2m player from a €20m one, so fit
-    still decides most picks. Documented, not tuned.
+    still decides most picks. Documented, not tuned. (This run used log quality; superseded below.)
+- **Sanity checks with sqrt quality (w = 0.5, not tuned), 4-3-3, €150m.**
+  - *Low-block counter, Best fit* (0.4 fit / 0.6 quality): €147.5m (98%), average fit 82%, 10 clubs:
+    Oblak (Atlético, €25m), Trémoulinas (Sevilla, €7m), Alderweireld (Tottenham, €22m), Laporte (Athletic,
+    €25m), Hutton (Aston Villa, €2m), Charlie Adam (Stoke, €4.5m), Castillejo (Villarreal, €5m), Acquah
+    (Torino, €3m), Thauvin (Marseille, €12m), Bolasie (Crystal Palace, €12m), Kane (Tottenham, €30m).
+    *Budget lean* €89.0m (59%), *Most balanced* identical to Best fit (the two-per-club cap never binds).
+  - *High-press direct, Best fit*: €149.0m (99%), average fit 89%; Luis Suárez (Barcelona, €90m, fit 66%)
+    now takes the ST slot and the other ten cost €1.5-17.5m. *Budget lean* €120.5m (80%).
+  - **Kanté appears in no XI for any preset.** His fit is 0.40-0.47 on all four presets (rank 65-94 of
+    178 CMs by score). **Vardy is not in the Low-block XI**: fit 0.63, rank 27-30 of 171 STs; Kane
+    (fit 0.68, €30m) takes the slot. On High-press direct Vardy ranks 11-16th.
+  - **The deeper finding: the mapping inverts for ball-winners in low blocks.** Against Leicester's own
+    2015/16 team vector as the target (possession 6, pressing 20, direct 95, transition 92), Kanté's fit
+    is **0.21, 151st of 178 CMs**, and Drinkwater's 0.13 (170th). Mahrez (0.98, 1st) and Vardy (0.88, 6th
+    of 171) fit; Leicester's players average 0.59 against their own style vs 0.50 for everyone. The
+    cause is in section 28's mapping, not the weights: a team that sits deep and lets the opponent pass
+    has a *high* PPDA (little pressing high up), but its midfielders make *more* pressures and tackles per
+    90 because they defend more; Kanté is at the 92nd percentile on that axis, the opposite of his team's
+    20. Possession likewise: Leicester had 6th-percentile possession, but Kanté and Drinkwater pass more
+    than the median CM. Player per-90 volumes on these axes describe a role's workload, which for a
+    defensive midfielder in a low block runs against the team pattern. Fixing it needs different player
+    measures (e.g. where the pressures happen, or pressures relative to the team's defensive volume), not
+    a re-weighting; left as is and recorded in BLOCKERS.md section 24.

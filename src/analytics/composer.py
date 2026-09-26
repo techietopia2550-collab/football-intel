@@ -21,10 +21,11 @@ Greedy build (`build_squad`):
      (a conservative bound), so the XI can always be completed within budget;
    - soft: prefer a price that also leaves the median price of every open slot's group. When no
      candidate passes the soft check, the hard one alone applies.
-4. Score = (1 - w) x fit + w x quality, highest wins. quality = log(1 + value) / log(1 + the
-   largest value in the pool), 0-1: market value stands in for quality, log-scaled because values
-   run from €0.1m to €120m. w is the quality weight (the page's "Style priority / Quality
-   priority" slider, default 0.5; alpha = 1 - w is the style weight).
+4. Score = (1 - w) x fit + w x quality, highest wins. quality = sqrt(value) / sqrt(the largest
+   value in the pool), 0-1: market value stands in for quality, square-root-scaled because values
+   run from €0.1m to €120m (log compressed the top too hard, linear stretches it too far). w is
+   the quality weight (the page's "Style priority / Quality priority" slider, default 0.5;
+   alpha = 1 - w is the style weight).
 Variants (`VARIANT_RULES`) shift w and add per-slot constraints; the greedy loop is shared:
 best_fit (w + 0.1, fit >= 60%), budget_lean (w - 0.1, fit >= 50%, every player under €20m),
 most_balanced (w + 0.1, fit >= 60%, at most two players per club). A constraint no affordable
@@ -160,10 +161,10 @@ def eligible_pool(
 
 
 def quality_scores(pool: pd.DataFrame) -> pd.Series:
-    """log(1 + value) / log(1 + the pool's largest value), 0-1; 0 for a missing value. Pure."""
+    """sqrt(value) / sqrt(the pool's largest value), 0-1; 0 for a missing value. Pure."""
     v = pool["market_value_eur"].astype(float).fillna(0.0).clip(lower=0.0)
     top = float(v.max()) if len(v) else 0.0
-    return (np.log1p(v) / np.log1p(top)) if top > 0 else v * 0.0
+    return (np.sqrt(v) / np.sqrt(top)) if top > 0 else v * 0.0
 
 
 def variant_weight(quality_weight: float, variant: Variant) -> float:

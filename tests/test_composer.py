@@ -157,11 +157,11 @@ def test_variants() -> None:
         assert sq.total_value_eur <= 80e6
 
 
-def test_quality_is_log_scaled_and_missing_is_zero() -> None:
+def test_quality_is_sqrt_scaled_and_missing_is_zero() -> None:
     pool = pd.DataFrame({"market_value_eur": [120e6, 10e6, 1e6, None]})
     q = c.quality_scores(pool)
     assert q[0] == pytest.approx(1.0)
-    assert q[1] == pytest.approx(np.log1p(10e6) / np.log1p(120e6))
+    assert q[1] == pytest.approx(np.sqrt(10e6 / 120e6))
     assert q[2] < q[1] < q[0] and q[3] == 0.0
 
 

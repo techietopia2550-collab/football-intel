@@ -670,6 +670,13 @@ section 28). Nothing was re-ingested or re-parsed for this.
   under budget. Since the style + quality objective (2026-09-26) the budget is used, but log-scaled
   market value separates players only weakly, so high-volume players still win most slots (Kanté, fit
   47%, is excluded by the 50-60% fit floors). A possible league effect in pooled percentiles is unchecked.
+- **Mapping inverts for ball-winners in deep teams** (found 2026-09-26, section 29): per-90 pressing and
+  passing volume measure a player's workload, which for a defensive midfielder in a low block runs
+  opposite to the team's PPDA and possession. Kanté fits Leicester's own style vector at 0.21 (151st of
+  178 CMs). Unblock: pressing location (share of pressures in the opponent half) or volumes relative to
+  the team's totals, from the cached events. Not done; no re-parse in this session.
+- **Stale text, left on purpose:** the Composer page's "Why these players" caption still says quality is
+  "market value on a log scale"; it is now square-root scaled (the brief allowed no UI change).
 - **Stale text, left on purpose:** the Methodology page's Composer section still says suggestions "often
   come in far under budget". That was true before the revision; it was not edited because the brief
   allowed changes to the Composer page only. The three unmeasurable axes above are unchanged.

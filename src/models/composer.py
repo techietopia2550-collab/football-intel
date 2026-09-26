@@ -33,7 +33,7 @@ class SquadSlot(BaseModel):
     league: str
     market_value_eur: float = Field(ge=0)
     fit: float = Field(ge=0, le=1)  # 0-1; 0.5 = neither towards nor against the target
-    quality: float = Field(ge=0, le=1)  # log-scaled market value, 0-1
+    quality: float = Field(ge=0, le=1)  # sqrt-scaled market value, 0-1
     score: float  # (1 - w) x fit + w x quality: what the greedy build ranked on
     axis_scores: dict[str, float | None]  # the player's 0-1 score per axis
     top_axes: list[AxisContribution]  # his three strongest contributions to the fit
