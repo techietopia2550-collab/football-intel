@@ -623,3 +623,28 @@ code.
 - **Still missing:** every figure; a cited 2015/16 USD rate (USD rows are rejected until one is added);
   a decision on mixing accounts (all staff, financial year) with payroll estimates (players only) in one
   ranking. The ranking currently mixes whatever is imported, with each row's confidence shown beside it.
+
+## 23. Market values: the 11 profiled players with no value (2026-09-26)
+
+**Status: accepted, left NULL.** 1,326 of 1,337 profiled players have a 2015/16 market value; 11 do not
+(ANALYTICS_DECISIONS.md sections 25 and 27). Nothing is estimated for them; the UI says "no value
+available". Minutes are 2015/16 totals.
+
+- **Unmatched (6)**, `match_confidence` NULL, listed in `data/processed/unmatched_market_values.csv`:
+  | Player | Club | Minutes | Why |
+  |---|---|---|---|
+  | Robert Brady | Norwich City | 2,969 | Nickname: TM "Robbie Brady" (128229) |
+  | Jonny Castro | Celta Vigo | 2,932 | Nickname: TM "Jonny Otto" (175446) |
+  | Pichu | Sporting Gijón | 2,880 | No 2015/16 TM appearance; TM "Pichu Atienza" (59337) |
+  | Kolo | Sevilla | 2,329 | Nickname: TM "Timothée Kolodziejczak" (84085) |
+  | Markel Susaeta | Athletic Club | 1,807 | No 2015/16 TM appearance; exists as TM 54245 |
+  | Juan Carlos | Málaga | 1,177 | No 2015/16 TM appearance; 14 TM players share the name |
+- **Matched, no valuation between 2015-10-01 and 2016-03-01 (5):** Matthieu Saunier (Troyes, 2,315),
+  Abdoul Camara (Angers, 1,445), Milan Biševac (Lazio, 1,363), Alexis Ruano (Getafe, 1,350), Ángel Lafita
+  (Getafe, 999). Their Transfermarkt ids are stored; only the value is NULL.
+- **Unblock path:** a reviewed manual-override file (`match_confidence = manual`) could add Brady, Jonny,
+  Kolo, Pichu and Susaeta, whose Transfermarkt ids are known above. It does not exist yet and they are not
+  matched in code. The 5 unvalued players would need a valuation outside the window, which the snapshot rule
+  does not allow.
+- **Dependency:** `rapidfuzz` (declared in `pyproject.toml`) is now installed in `.venv` and used (section
+  21's "not installed" note no longer applies).

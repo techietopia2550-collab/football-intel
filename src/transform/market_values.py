@@ -12,11 +12,14 @@ Reads only the CSVs in `settings.cache_dir / "transfermarkt"`: no network, no sc
    normalized name, fuzzy (token containment or close spelling). More than one candidate at a
    stage -> unmatched ("ambiguous"), never a guess. A Transfermarkt player claimed twice keeps
    the stronger match; the other is unmatched.
+4. **Confidence** (`match_confidence`): exact_name, name_club, fuzzy_name (or manual), from the
+   method and whether the name is shared by other 2015/16 league players (section 27).
 
 Writes `player_market_values` (one row per profiled player, upsert on player_id + season) and
-`data/processed/unmatched_market_values.csv`. See ANALYTICS_DECISIONS.md section 25.
+`data/processed/unmatched_market_values.csv`. See ANALYTICS_DECISIONS.md sections 25 and 27.
 
     python -m src.transform.market_values
+    python -m src.transform.market_values --confidence-only   # fill match_confidence only
 """
 
 from __future__ import annotations
@@ -24,19 +27,19 @@ from __future__ import annotations
 from src.utils import disk_bootstrap  # isort: skip  # noqa: F401  (must be first)
 
 import argparse
-import difflib
 import re
 import unicodedata
 from datetime import UTC, datetime
 from pathlib import Path
 
 import pandas as pd
-from sqlalchemy import Engine
+from rapidfuzz import fuzz
+from sqlalchemy import Engine, text
 from sqlalchemy.dialects.sqlite import insert as sqlite_insert
 
 from src.ingest.finance import EXCHANGE_RATES_TO_GBP
 from src.ingest.team_identity import is_known_team, normalize_team_name
-from src.models.market_value import MarketValueRecord
+from src.models.market_value import MarketValueRecord, MatchConfidence
 from src.models.schema import PlayerMarketValue, get_engine, init_db
 from src.transform.normalize import DEFAULT_SEASON, season_table_name
 from src.utils.config import settings
@@ -53,7 +56,7 @@ TM_LEAGUES: dict[str, str] = {
     "GB1": "ENG-Premier League", "ES1": "ESP-La Liga", "IT1": "ITA-Serie A", "FR1": "FRA-Ligue 1",
 }  # fmt: skip
 
-FUZZY_MIN_RATIO = 0.85  # difflib ratio of normalized names needed for a fuzzy match
+FUZZY_MIN_RATIO = 0.85  # rapidfuzz ratio (0-1) of normalized names needed for a fuzzy match
 FUZZY_MIN_MARGIN = 0.10  # and the lead it needs over the next candidate
 SUFFIXES = frozenset({"jr", "sr", "ii", "iii", "iv"})
 # Letters NFKD does not decompose into a base letter plus accent.
@@ -147,9 +150,8 @@ def _stage(ours: str, theirs: str) -> tuple[str, float] | None:
             and (fa[0].startswith(fb[0]) or fb[0].startswith(fa[0]))):  # "Maxi"/"Maximiliano"
         return "fuzzy", round(min(len(fa[0]), len(fb[0])) / max(len(fa[0]), len(fb[0])), 3)
     ratio = max(  # as written, and with the words sorted ("Ki Sung-Yeung" / "Sung-yueng Ki")
-        difflib.SequenceMatcher(None, a, b).ratio(),
-        difflib.SequenceMatcher(None, " ".join(sorted(fa)), " ".join(sorted(fb))).ratio(),
-    )
+        fuzz.ratio(a, b), fuzz.token_sort_ratio(a, b, processor=None)
+    ) / 100
     return ("fuzzy", round(ratio, 3)) if ratio >= FUZZY_MIN_RATIO else None
 
 
@@ -211,9 +213,43 @@ def match_players(ours: pd.DataFrame, candidates: pd.DataFrame) -> pd.DataFrame:
     return res
 
 
+def match_confidence(
+    player_name: str, match_method: str, candidates: pd.DataFrame
+) -> MatchConfidence | None:
+    """How far a match can be trusted. Pure.
+
+    fuzzy -> "fuzzy_name". exact / normalized -> "exact_name" when no more than one Transfermarkt
+    player in the whole 2015/16 pool (`candidates`, every club) carries that normalized name, else
+    "name_club" (the club restriction decided). unmatched -> None. "manual" is set only by a
+    reviewed override, never here."""
+    if match_method == "fuzzy":
+        return "fuzzy_name"
+    if match_method not in ("exact", "normalized"):
+        return None
+    key = normalize_name(player_name)
+    sharing = {
+        c.tm_id for c in candidates.itertuples(index=False)
+        if any(normalize_name(n) == key for n in c.names)
+    }  # fmt: skip
+    return "exact_name" if len(sharing) <= 1 else "name_club"
+
+
+def confidences(
+    ours: pd.DataFrame, matches: pd.DataFrame, candidates: pd.DataFrame
+) -> dict[str, MatchConfidence | None]:
+    """player_id -> match_confidence for every profiled player. Pure."""
+    m = ours[["player_id", "player_name"]].merge(
+        matches[["player_id", "match_method"]], on="player_id"
+    )
+    return {
+        r.player_id: match_confidence(r.player_name, r.match_method, candidates)
+        for r in m.itertuples(index=False)
+    }
+
+
 def build_records(
     ours: pd.DataFrame, matches: pd.DataFrame, snapshot: pd.DataFrame, tm_names: pd.Series,
-    season: str = DEFAULT_SEASON,
+    season: str = DEFAULT_SEASON, confidence: dict[str, MatchConfidence | None] | None = None,
 ) -> list[MarketValueRecord]:
     """One record per profiled player. Unmatched, or matched with no valuation in the window ->
     every value field None. Pure."""
@@ -233,6 +269,7 @@ def build_records(
             team=r.team, transfermarkt_id=tm_id,
             transfermarkt_name=None if tm_id is None else tm_names.get(tm_id),
             match_method=r.match_method,
+            match_confidence=(confidence or {}).get(r.player_id),
             match_score=None if pd.isna(r.match_score) else float(r.match_score),
             match_note=note,
             valuation_date=None if v is None else pd.Timestamp(v["date"]).date(),
@@ -297,7 +334,8 @@ def run(engine: Engine | None = None, tm_dir: Path = TM_DIR, season: str = DEFAU
     ours = load_profiled(engine, season)
     matches = match_players(ours, candidates)
     tm_names = tm["players"].set_index("player_id")["name"]
-    records = build_records(ours, matches, snapshot, tm_names, season)
+    conf = confidences(ours, matches, candidates)
+    records = build_records(ours, matches, snapshot, tm_names, season, conf)
     n = upsert_records(engine, records)
     out = pd.DataFrame([r.model_dump() for r in records]).merge(
         ours[["player_id", "minutes_total"]], on="player_id"
@@ -314,8 +352,39 @@ def run(engine: Engine | None = None, tm_dir: Path = TM_DIR, season: str = DEFAU
     return out
 
 
+def backfill_confidence(
+    engine: Engine | None = None, tm_dir: Path = TM_DIR, season: str = DEFAULT_SEASON
+) -> pd.Series:
+    """Fill `match_confidence` on the stored rows from their stored `match_method`. Writes that one
+    column only: no snapshot, no re-match, no value changes. Returns the value counts."""
+    engine = init_db(engine or get_engine())
+    tm = read_transfermarkt(tm_dir)
+    candidates = season_candidates(tm["games"], tm["appearances"], tm["players"])
+    stored = pd.read_sql(
+        text("SELECT player_id, player_name, match_method FROM player_market_values "
+             "WHERE season = :s"), engine, params={"s": season},
+    )  # fmt: skip
+    conf = confidences(stored[["player_id", "player_name"]], stored, candidates)
+    with engine.begin() as conn:
+        conn.execute(
+            text("UPDATE player_market_values SET match_confidence = :c "
+                 "WHERE player_id = :p AND season = :s"),
+            [{"c": c, "p": p, "s": season} for p, c in conf.items()],
+        )  # fmt: skip
+    labels = pd.Series(list(conf.values()), dtype="object").fillna("NULL (unmatched)")
+    logger.info("Market values: match_confidence filled for {n} rows", n=len(conf))
+    return labels.value_counts()
+
+
 def _main() -> None:
-    argparse.ArgumentParser(description=__doc__.splitlines()[0]).parse_args()
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument(
+        "--confidence-only", action="store_true",
+        help="Fill match_confidence on stored rows; change nothing else.",
+    )  # fmt: skip
+    if parser.parse_args().confidence_only:
+        print(backfill_confidence().to_string())
+        return
     out = run()
     matched = out["match_method"] != "unmatched"
     valued = out["market_value_eur"].notna()

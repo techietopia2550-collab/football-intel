@@ -349,6 +349,8 @@ class PlayerMarketValue(Base):
     transfermarkt_name: Mapped[str | None] = mapped_column(String, nullable=True)
     # exact | normalized | fuzzy | unmatched
     match_method: Mapped[str] = mapped_column(String, nullable=False)
+    # exact_name|fuzzy_name|name_club|manual, NULL when unmatched (ANALYTICS_DECISIONS section 27)
+    match_confidence: Mapped[str | None] = mapped_column(String, nullable=True)
     match_score: Mapped[float | None] = mapped_column(Float, nullable=True)
     match_note: Mapped[str | None] = mapped_column(String, nullable=True)
     valuation_date: Mapped[date | None] = mapped_column(Date, nullable=True)
@@ -406,6 +408,7 @@ _ADDED_COLUMNS: list[tuple[str, str, str, str | None]] = [
     ("player_match_stats", "def_actions_own_box", "INTEGER NOT NULL DEFAULT 0", None),
     ("player_match_stats", "cross_clearances", "INTEGER NOT NULL DEFAULT 0", None),
     ("team_finance", "notes", "VARCHAR", None),
+    ("player_market_values", "match_confidence", "VARCHAR", None),
 ]
 
 

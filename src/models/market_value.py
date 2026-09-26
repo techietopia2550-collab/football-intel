@@ -13,6 +13,10 @@ from typing import Literal
 from pydantic import BaseModel, Field
 
 MatchMethod = Literal["exact", "normalized", "fuzzy", "unmatched"]
+# How far the match can be trusted, derived from the method (ANALYTICS_DECISIONS section 27):
+# exact_name = the name alone identifies him among the 2015/16 league players; name_club = the name
+# is shared, the club decided; fuzzy_name = a fuzzy stage; manual = a reviewed override (none yet).
+MatchConfidence = Literal["exact_name", "fuzzy_name", "name_club", "manual"]
 
 
 class MarketValueRecord(BaseModel):
@@ -26,6 +30,7 @@ class MarketValueRecord(BaseModel):
     transfermarkt_id: int | None = None
     transfermarkt_name: str | None = None
     match_method: MatchMethod = "unmatched"
+    match_confidence: MatchConfidence | None = None  # None when unmatched
     match_score: float | None = None
     match_note: str | None = None
     valuation_date: date | None = None

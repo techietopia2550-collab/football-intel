@@ -137,8 +137,10 @@ if _cov.n_profiled:
         "\n".join(["| League | Profiled | Matched | With a value |", "|---|---|---|---|", *_rows])
     )
     st.markdown(
-        "A club's *profiled players' market value* sums only its profiled players (900+ minutes, each "
-        "counted at his main club), so it is not a full squad value. See ANALYTICS_DECISIONS section 25."
+        "A club's *squad market value* sums only its profiled players (900+ minutes, each "
+        "counted at his main club) and says how many have a value (\"from N of M players\"), "
+        "so fringe players are not in it. Each match also carries a confidence (exact name, "
+        "name + club, fuzzy name, manual). See ANALYTICS_DECISIONS sections 25 and 27."
     )
 else:
     st.markdown("Market values are not loaded yet (`python -m src.transform.market_values`).")

@@ -506,8 +506,8 @@ def _transfer_value(pid: str) -> None:
     if mv is not None and mv.market_value_eur is not None and mv.valuation_date is not None:
         body = (
             f'<div class="fi-num" style="font-size:{design.SIZE_H2}px">'
-            f"{design.fmt_eur(mv.market_value_eur)}</div>"
-            f'<div class="fi-muted">Market value, {mv.valuation_date:%d %b %Y} (Transfermarkt)</div>'
+            f"Market value: {design.fmt_eur(mv.market_value_eur)} ({mv.valuation_date:%b %Y})</div>"
+            f'<div class="fi-muted">Transfermarkt, valued {mv.valuation_date:%d %b %Y}</div>'
         )
         why = (
             "Transfermarkt's community estimate of his transfer fee on that date: not a wage and "

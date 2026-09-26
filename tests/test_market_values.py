@@ -160,6 +160,24 @@ def test_one_transfermarkt_player_backs_only_one_profile() -> None:
     assert "already matched" in res.loc["y", "match_note"]
 
 
+def test_match_confidence_levels() -> None:
+    pool = pd.concat([_candidates(), pd.DataFrame([
+        {"tm_id": 50, "team": "Udinese", "league": "ITA-Serie A", "names": ("Danilo",)},
+        {"tm_id": 51, "team": "Real Madrid", "league": "ESP-La Liga", "names": ("Danilo",)},
+    ])], ignore_index=True)  # fmt: skip
+    assert mv.match_confidence("Koke", "exact", pool) == "exact_name"
+    assert mv.match_confidence("Kóke", "normalized", pool) == "exact_name"
+    assert mv.match_confidence("Danilo", "exact", pool) == "name_club"  # two Danilos: club decided
+    assert mv.match_confidence("José Giménez", "fuzzy", pool) == "fuzzy_name"
+    assert mv.match_confidence("Jonny Castro", "unmatched", pool) is None
+
+
+def test_confidences_cover_every_profiled_player() -> None:
+    ours = _ours([("b", "Koke", "Atlético Madrid"), ("j", "Jonny Castro", "Celta Vigo")])
+    conf = mv.confidences(ours, mv.match_players(ours, _candidates()), _candidates())
+    assert conf == {"b": "exact_name", "j": None}
+
+
 def test_build_records_unmatched_and_unvalued_stay_null() -> None:
     ours = _ours(
         [
@@ -178,12 +196,16 @@ def test_build_records_unmatched_and_unvalued_stay_null() -> None:
         }
     )
     names = pd.Series({10: "José María Giménez", 11: "Koke"})
-    recs = {r.player_id: r for r in mv.build_records(ours, matches, snapshot, names)}
+    conf = mv.confidences(ours, matches, _candidates())
+    recs = {
+        r.player_id: r for r in mv.build_records(ours, matches, snapshot, names, confidence=conf)
+    }
     assert recs["a"].market_value_eur == 12e6 and recs["a"].market_value_gbp == 9e6
     assert recs["a"].valuation_date == date(2016, 1, 4)
     assert recs["b"].transfermarkt_id == 11 and recs["b"].market_value_eur is None
     assert "no valuation" in (recs["b"].match_note or "")
-    assert recs["j"].match_method == "unmatched"
+    assert recs["j"].match_method == "unmatched" and recs["j"].match_confidence is None
+    assert recs["a"].match_confidence == "fuzzy_name" and recs["b"].match_confidence == "exact_name"
     assert recs["j"].market_value_eur is None and recs["j"].transfermarkt_id is None
 
 

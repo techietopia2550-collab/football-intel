@@ -140,20 +140,21 @@ def market_value_line(player_id: str) -> str:
 
 
 def squad_value_line(team_name: str, league: str) -> str:
-    """'Market value of profiled players: €XXXm (N of M valued)' as HTML, flagged when partial."""
+    """'Squad market value: €XXXm (from N of M players)' as HTML, flagged when partial. N of M
+    counts profiled players only (900+ minutes), so it is not a full-squad total."""
     sv = data.squad_market_value(team_name, league)
     tip = (
         "Sum of the Transfermarkt values of this club's profiled players (900+ minutes, counted "
-        "at their main club). Not a full squad value. See Methodology."
+        "at their main club). Players outside the profiled set are not included. See Methodology."
     )
     if sv.total_eur is None:
-        body = "Profiled players' market value: <span class=\"fi-muted\">no value available</span>"
+        body = 'Squad market value: <span class="fi-muted">no value available</span>'
     else:
         partial = " — partial, coverage is thin" if market_values_mod.coverage_is_thin(sv) else ""
         body = (
-            f"Profiled players' market value: {design.fmt_eur(sv.total_eur)} "
-            f'<span class="fi-muted">(estimated from {sv.n_valued} of {sv.n_profiled} '
-            f"profiled players{partial})</span>"
+            f"Squad market value: {design.fmt_eur(sv.total_eur)} "
+            f'<span class="fi-muted">(from {sv.n_valued} of {sv.n_profiled} players'
+            f"{partial})</span>"
         )
     return f'<span title="{design.esc(tip)}">{body}</span>'
 

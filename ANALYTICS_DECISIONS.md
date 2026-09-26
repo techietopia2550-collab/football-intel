@@ -852,3 +852,42 @@ Code: `src/transform/market_values.py` (snapshot, matching, table), `src/analyti
   Fingerprint hero, "Team wage bill: ..." on the player hero. The source and confidence are always in the
   same line as the figure, so an estimate never appears as a bare headline. No row -> "Wage bill: not
   available" (never £0, never blank). Figures are never summed or averaged into a league figure.
+
+## 27. Market values: snapshot window, match confidence, UI wording (2026-09-26)
+
+Polish on section 25. **No value changed:** nothing was re-ingested or re-matched; a checksum of every
+stored id, method, score, date and value was identical before and after.
+
+- **Snapshot window, not a fixed date.** The rule stays "latest valuation dated 2015-10-01 to 2016-03-01".
+  The alternative, "latest valuation on or before 2016-01-01", was measured and rejected:
+  - Transfermarkt revalues a league in one sweep, a few times a year. The last sweeps before 1 Jan 2016 were
+    pre-season ones for most players: EPL 270 of 324 players on 2015-07-01, La Liga 208 on 2015-07-01, Ligue
+    1 195 on 2015-06-06, Serie A 189 on 2015-07-01. A fixed-date rule would have given mostly summer-2015
+    values, set before a ball was kicked in 2015/16, for a season profile built on 2015/16 events.
+  - It would have changed 781 of 1,331 matched players' values (e.g. José Giménez EUR 25m on 2016-02-22 ->
+    EUR 18m on 2015-11-22; Atlético's sum EUR 317m -> EUR 283.5m) and labelled them with dates up to six
+    months before the "Jan 2016" a fixed rule implies.
+  - The window takes each league's first mid-season sweep (Serie A 4 Jan, Ligue 1 4 Feb, EPL 9 Feb, La Liga
+    22 Feb 2016), so every value reflects half a season of 2015/16 form. The cost is that leagues are compared
+    at dates up to seven weeks apart and after the January window opened; that trade is accepted.
+  - Because dates differ, the UI always shows each value's real month ("Market value: €25m (Feb 2016)"),
+    never a fixed label.
+- **`match_confidence`** (new column, `exact_name | name_club | fuzzy_name | manual`, NULL when unmatched),
+  derived from the stored `match_method` by `match_confidence()` in `src/transform/market_values.py`:
+  - `exact_name`: exact or accent/punctuation-normalized name, and no other Transfermarkt player in the whole
+    2015/16 four-league pool (every club) has that normalized name, so the name alone identifies him. 1,265.
+  - `name_club`: same name test passed, but the name is shared by another player in the pool, so the club
+    restriction decided. 12: two Danilos (Udinese, Real Madrid), two Éders (Lille, Sampdoria), two Rafaels
+    (Lyon, Hellas Verona), two Sergio Álvarez (Celta, Sporting Gijón), two Pablo Hernández (Celta, Rayo),
+    Fernando (Sampdoria), Carlos Carmona (Sporting Gijón). All read by eye; all at the right club.
+  - `fuzzy_name`: any fuzzy stage (section 25). 54.
+  - `manual`: reserved for a reviewed override file; none exists, so 0 rows.
+  - Unmatched: NULL. 6.
+  Filled by `python -m src.transform.market_values --confidence-only`, which writes that one column only.
+- **rapidfuzz.** The fuzzy ratio now uses `rapidfuzz` (`fuzz.ratio` and `fuzz.token_sort_ratio`, divided by
+  100) in place of stdlib `difflib`, same 0.85 threshold. Re-run read-only on the real data it gave the same
+  Transfermarkt id, method and score for all 1,337 players, so the stored matches stand as they are.
+- **UI wording.** Profile "Transfer value" card: "Market value: €XXm (Mon YYYY)" with the valuation's real
+  month. Team Fingerprint hero: "Squad market value: €XXXm (from N of M players)", N valued out of M
+  profiled (900+ minutes). The tooltip and Methodology say it covers profiled players only, so it is still
+  not a full-squad total (section 25); "partial, coverage is thin" is added below 80% valued.
