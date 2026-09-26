@@ -680,3 +680,16 @@ section 28). Nothing was re-ingested or re-parsed for this.
 - **Stale text, left on purpose:** the Methodology page's Composer section still says suggestions "often
   come in far under budget". That was true before the revision; it was not edited because the brief
   allowed changes to the Composer page only. The three unmeasurable axes above are unchanged.
+- **Update 2026-09-26: pressing now measured by location (ANALYTICS_DECISIONS.md section 30).** The
+  inversion above is fixed for Pressing: `avg_press_action_x` from a re-parse of the cached events puts
+  Kanté at 0.04 (4th percentile of CMs), not 0.92. Direct speed now has `avg_pass_dx`, so the "Partial"
+  item above is closed. **Kanté still fails the Composer test**: he is in neither the Low-block nor the
+  High-press XI (fit 0.64 vs 0.19; 25th of 178 CMs by the Low-block Best-fit score). Remaining causes,
+  none of them pressing: (1) Possession % / Build-up length are passing volume, so a deep passer still
+  reads as possession-leaning (Kanté 0.58 vs Leicester's 6); (2) the shooting axes penalise any
+  midfielder who rarely shoots (0.07 / 0.08) on presets that ask for 35-55; (3) at €10m, sqrt quality
+  (0.29) cannot close the fit gap to €4-6m CMs with fit 0.85+. Not tuned; this was the last Composer
+  iteration. Unblock ideas, not done: role-relative axes (compare a player with his own team's other
+  players), or leaving the shooting axes out of fits for DM/CM slots.
+- **Stale text, left on purpose:** the Methodology page still says the Pressing axis uses "pressures and
+  tackles per 90" (`src/app/pages/5_methodology.py`); the brief allowed no UI change.

@@ -44,11 +44,12 @@ def test_group_percentile_ranks_within_group_only() -> None:
 
 def test_axis_scores_average_mapped_percentiles_and_leave_team_axes_null() -> None:
     pct = pd.DataFrame(
-        {"pressures_p90": [80.0, np.nan], "tackles_p90": [40.0, np.nan],
-         "gk_sweeper_actions_p90": [np.nan, 90.0]}
+        {"pass_completion_pct": [80.0, np.nan], sf.PASSES_P90: [40.0, np.nan],
+         sf.PRESS_X: [30.0, np.nan], "gk_sweeper_actions_p90": [np.nan, 90.0]}
     )  # fmt: skip
     out = sf.axis_scores(pct, pd.Series([False, True]))
-    assert out.loc[0, "ppda"] == pytest.approx(0.6)
+    assert out.loc[0, "possession_pct"] == pytest.approx(0.6)
+    assert out.loc[0, "ppda"] == pytest.approx(0.3)
     assert np.isnan(out.loc[1, "ppda"])  # goalkeepers have no pressing mapping
     assert out.loc[1, "def_line_height"] == pytest.approx(0.9)
     for axis in sf.TEAM_ONLY_AXES:
@@ -73,6 +74,49 @@ def test_compute_style_fit_keeps_only_valued_players() -> None:
     out = sf.compute_style_fit(stats, pct, values)
     assert list(out["player_id"]) == ["a"]
     assert set(AXIS_COLUMNS) <= set(out.columns) and out.loc[0, "market_value_eur"] == 1e6
+
+
+def test_pressing_and_direct_speed_use_location_not_volume() -> None:
+    assert sf.OUTFIELD_MAP["ppda"] == (sf.PRESS_X,)
+    assert sf.OUTFIELD_MAP["direct_speed"] == (sf.PASS_DX,)
+    assert sf.OUTFIELD_MAP["progressive_pass_rate"] == (sf.PROG_SHARE,)
+
+
+def _stats_for_press() -> pd.DataFrame:
+    return pd.DataFrame({
+        "player_id": ["deep", "high", "tiny", "gk"], "player_name": list("DHTG"),
+        "team": ["X"] * 4, "season": ["2015"] * 4, "league": ["ESP-La Liga"] * 4,
+        "source": ["statsbomb"] * 4, "position_group_fine": ["CM", "CM", "CM", "GK"],
+        "minutes_total": [2000.0] * 4, "passes_attempted": [1000, 1000, 1000, 500],
+        "progressive_passes": [100, 50, 10, 5],
+    })  # fmt: skip
+
+
+def test_derived_metrics_apply_sample_floors_and_skip_goalkeepers() -> None:
+    press = pd.DataFrame({
+        "player_id": ["deep", "high", "tiny", "gk"], "press_actions": [900, 700, 10, 60],
+        "avg_press_action_x": [45.0, 60.0, 70.0, 20.0], "passes": [1000, 1000, 1000, 500],
+        "avg_pass_dx": [8.0, 4.0, 2.0, 30.0],
+    })  # fmt: skip
+    d = sf.derived_metrics(_stats_for_press(), press)
+    assert d.loc["deep", sf.PRESS_X] == 45.0 and np.isnan(d.loc["tiny", sf.PRESS_X])
+    assert d.loc["deep", sf.PROG_SHARE] == pytest.approx(0.1)
+    assert d.loc["gk"].isna().all()
+    assert sf.derived_metrics(_stats_for_press(), None)[sf.PRESS_X].isna().all()
+
+
+def test_deep_ball_winner_scores_low_on_pressing() -> None:
+    """The bug of section 30: a deep player with more tackles must not read as a high presser."""
+    press = pd.DataFrame({
+        "player_id": ["deep", "high"], "press_actions": [1200, 600],
+        "avg_press_action_x": [47.0, 58.0], "passes": [1000, 1000], "avg_pass_dx": [5.0, 6.0],
+    })  # fmt: skip
+    pct = pd.DataFrame({"player_id": ["deep", "high"], "metric": ["tackles_p90"] * 2,
+                        "percentile": [90.0, 30.0]})  # fmt: skip
+    values = pd.DataFrame({"player_id": ["deep", "high"], "market_value_eur": [1e7, 1e7]})
+    stats = _stats_for_press().iloc[:2]
+    out = sf.compute_style_fit(stats, pct, values, press).set_index("player_id")
+    assert out.loc["deep", "ppda"] < out.loc["high", "ppda"]
 
 
 # ---- composer ----------------------------------------------------------------------------------

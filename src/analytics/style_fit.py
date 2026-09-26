@@ -1,16 +1,21 @@
 """Player style fit: how strongly a player's own numbers lean towards each team-style axis.
 
 A heuristic, not a measurement of a player's tactical fit. For each axis a small set of player
-metrics stands in for the team pattern (e.g. PPDA -> pressures and tackles per 90); the player's
-score on the axis is the mean of his within-position percentiles on those metrics, divided by 100
-(0-1). A player is ranked against his own position group only (pooled across the four leagues),
-as in `player_percentiles`, so a centre-back is compared with centre-backs.
+metrics stands in for the team pattern (e.g. PPDA -> the mean pitch height of his pressures,
+tackles and interceptions); the player's score on the axis is the mean of his within-position
+percentiles on those metrics, divided by 100 (0-1). A player is ranked against his own position
+group only (pooled across the four leagues), as in `player_percentiles`, so a centre-back is
+compared with centre-backs.
 
 Every axis is oriented like the Team Fingerprint radar (`team_profile.axis_scores`): a high score
 means "more of the labelled thing", so PPDA is read as pressing intensity and transition seconds as
 transition speed. Three axes have no player-level counterpart in the stored data (crossing volume,
 width, set-piece reliance): their score is NULL for everyone and they never enter a fit.
-ANALYTICS_DECISIONS.md section 28; BLOCKERS.md section 24.
+ANALYTICS_DECISIONS.md sections 28 and 30; BLOCKERS.md section 24.
+
+Pressing, Direct speed and Progressive pass rate were remapped from per-90 volumes to location /
+per-pass measures (section 30): a deep ball-winner makes many tackles, but in his own half. The
+location measures come from `player_press_location` (`src.transform.press_location`, built first).
 
 Only players with a market value are stored (the Composer needs a price).
 
@@ -31,22 +36,29 @@ from src.analytics.metrics import GK
 from src.analytics.team_style import AXIS_COLUMNS
 from src.models.schema import get_engine, init_db
 from src.transform.normalize import DEFAULT_SEASON, replace_season_rows, season_table_name
+from src.transform.press_location import PRESS_LOCATION_TABLE
 from src.utils.logging import logger
 
 STYLE_FIT_TABLE = "player_style_fit"
 SOURCE = "statsbomb+transfermarkt"
 PASSES_P90 = "passes_p90"  # not in the metric registry: ranked here from passes_attempted
+# Also ranked here, not in the registry (section 30):
+PRESS_X = "avg_press_action_x"  # mean x of pressures, tackles, interceptions (press location)
+PASS_DX = "avg_pass_dx"  # mean forward x-gain per pass (player_press_location)
+PROG_SHARE = "progressive_pass_share"  # progressive_passes / passes_attempted
+MIN_PRESS_ACTIONS = 50  # below this, press height is left NULL (as avg_defensive_action_x's 50)
+MIN_PASSES = 50
 
 # axis -> player metrics whose within-position percentiles are averaged. Empty = team-level only.
 OUTFIELD_MAP: dict[str, tuple[str, ...]] = {
     "possession_pct": ("pass_completion_pct", PASSES_P90),
-    "ppda": ("pressures_p90", "tackles_p90"),
-    "direct_speed": ("progressive_carries_p90",),
+    "ppda": (PRESS_X,),
+    "direct_speed": (PASS_DX,),
     "buildup_length": (PASSES_P90, "pass_completion_pct"),
     "def_line_height": ("avg_defensive_action_x",),
     "width": (),
     "crosses_p90": (),
-    "progressive_pass_rate": ("progressive_passes_p90",),
+    "progressive_pass_rate": (PROG_SHARE,),
     "xg_per_shot": ("xg_per_shot",),
     "shots_pm": ("shots_p90",),
     "transition_secs": ("progressive_carries_p90", "shots_p90"),
@@ -98,20 +110,44 @@ def axis_scores(pct: pd.DataFrame, is_gk: pd.Series) -> pd.DataFrame:
     return out
 
 
+def derived_metrics(stats: pd.DataFrame, press: pd.DataFrame | None) -> pd.DataFrame:
+    """Raw values (indexed by player_id, outfielders only) of the metrics ranked here rather than
+    in `player_percentiles`. Press height and pass x-gain are NULL below their sample floors, and
+    for everyone when `press` is None. Pure."""
+    s = stats.set_index("player_id")
+    outfield = s["position_group_fine"] != GK
+    out = pd.DataFrame(index=s.index)
+    out[PASSES_P90] = s["passes_attempted"] / s["minutes_total"].where(s["minutes_total"] > 0) * 90
+    if "progressive_passes" in s:
+        out[PROG_SHARE] = s["progressive_passes"] / s["passes_attempted"].where(
+            s["passes_attempted"] >= MIN_PASSES
+        )
+    out[PRESS_X] = np.nan
+    out[PASS_DX] = np.nan
+    if press is not None and not press.empty:
+        p = press.set_index("player_id").reindex(s.index)
+        out[PRESS_X] = p[PRESS_X].where(p["press_actions"] >= MIN_PRESS_ACTIONS)
+        out[PASS_DX] = p[PASS_DX].where(p["passes"] >= MIN_PASSES)
+    return out.astype(float).where(outfield)
+
+
 def compute_style_fit(
-    stats: pd.DataFrame, percentiles: pd.DataFrame, values: pd.DataFrame
+    stats: pd.DataFrame,
+    percentiles: pd.DataFrame,
+    values: pd.DataFrame,
+    press: pd.DataFrame | None = None,
 ) -> pd.DataFrame:
     """One row per valued player: meta columns + the 12 axis scores. Pure.
 
     `stats`: the season table. `percentiles`: long `player_percentiles` rows (player_id, metric,
-    percentile). `values`: player_id, market_value_eur (NULL values are dropped)."""
+    percentile). `values`: player_id, market_value_eur (NULL values are dropped). `press`:
+    `player_press_location` rows (player_id, press_actions, avg_press_action_x, passes,
+    avg_pass_dx); None leaves Pressing and Direct speed NULL."""
     wide = percentiles.pivot_table(index="player_id", columns="metric", values="percentile")
     s = stats.set_index("player_id")
-    passes = (s["passes_attempted"] / s["minutes_total"].where(s["minutes_total"] > 0) * 90).where(
-        s["position_group_fine"] != GK
-    )
     wide = wide.reindex(s.index)
-    wide[PASSES_P90] = group_percentile(passes, s["position_group_fine"])
+    for col, raw in derived_metrics(stats, press).items():
+        wide[col] = group_percentile(raw, s["position_group_fine"])
     scores = axis_scores(wide, s["position_group_fine"] == GK)
     v = values.dropna(subset=["market_value_eur"]).set_index("player_id")["market_value_eur"]
     meta = s.assign(market_value_eur=v).reset_index()
@@ -133,7 +169,15 @@ def run(season: str = DEFAULT_SEASON, engine: Engine | None = None) -> pd.DataFr
         text("SELECT player_id, market_value_eur FROM player_market_values WHERE season = :s"),
         engine, params={"s": season},
     )  # fmt: skip
-    result = compute_style_fit(stats, pct, values)
+    if not inspect(engine).has_table(PRESS_LOCATION_TABLE):
+        raise RuntimeError(
+            f"{PRESS_LOCATION_TABLE} is missing: run `python -m src.transform.press_location` first"
+        )
+    press = pd.read_sql(
+        text(f"SELECT * FROM {PRESS_LOCATION_TABLE} WHERE season = :s"),
+        engine, params={"s": season},
+    )  # fmt: skip
+    result = compute_style_fit(stats, pct, values, press)
     replace_season_rows(engine, STYLE_FIT_TABLE, result, season)
     logger.info("{t}: {n} rows", t=STYLE_FIT_TABLE, n=len(result))
     return result

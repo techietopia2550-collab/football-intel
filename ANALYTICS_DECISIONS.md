@@ -894,6 +894,9 @@ stored id, method, score, date and value was identical before and after.
 
 ## 28. Player style fit: team-style axes mapped to player metrics (`player_style_fit`, 2026-09-26)
 
+> **Superseded in part by section 30:** Pressing, Direct speed and Progressive pass rate now use
+> `avg_press_action_x`, `avg_pass_dx` and `progressive_pass_share`. The table below is the original mapping.
+
 Code: `src/analytics/style_fit.py`. Build: `python -m src.analytics.style_fit --rebuild`. Feeds the
 Tactical Composer (section 29). A heuristic: it says which way a player's own event counts lean
 relative to his position group, not how he would play in another team's system.
@@ -1061,3 +1064,85 @@ tactics and predicts nothing.
     defensive midfielder in a low block runs against the team pattern. Fixing it needs different player
     measures (e.g. where the pressures happen, or pressures relative to the team's defensive volume), not
     a re-weighting; left as is and recorded in BLOCKERS.md section 24.
+
+## 30. Player style fit: Pressing measured by location, not volume (`player_press_location`, 2026-09-26)
+
+Code: `src/transform/press_location.py` (build: `python -m src.transform.press_location`, then
+`python -m src.analytics.style_fit --rebuild`). Changes three rows of section 28's mapping. The last
+Composer iteration; weights, presets, fit formula and the greedy build are unchanged.
+
+- **The bug.** The team Pressing axis is PPDA: *where* a team wins the ball back. The player axis was
+  pressures_p90 + tackles_p90: *how often*. A ball-winner in a low block makes many tackles because his
+  team defends a lot, but in his own half. Kanté was at the 92nd percentile of CMs on "pressing" while
+  Leicester sat at the 20th percentile of teams, so he fitted Leicester's own style at 0.21 (section 29).
+- **New table `player_press_location`** (one row per player-season, 2,167 rows; player_id, season, league,
+  source = statsbomb). Re-parsed offline from the cached event files of the 1,507 matches in `matches`;
+  nothing downloaded. Columns: `pressures`/`avg_pressure_x` (Pressure events), `tackles`/`avg_tackle_x`
+  (Duel type Tackle), `interceptions`/`avg_interception_x`, `press_actions`/`avg_press_action_x` (the
+  three pooled: a count-weighted mean, so pressures, the most numerous, dominate), and
+  `passes`/`avg_pass_dx` (below). x is StatsBomb's per-team frame: 0 = own goal line, 120 = opponent's.
+  Shoot-out events and events without a location are skipped. `league` is the league of most minutes.
+- **Why a new name.** The brief called the pooled mean `avg_defensive_action_x`, but that column already
+  exists in the season table with a different definition (tackles, interceptions, clearances, blocks; no
+  pressures) and drives the Defensive-line-height axis. Reusing the name would have made two axes read
+  one ambiguous column; the new one is `avg_press_action_x`.
+- **Sanity check (before any remap), reported as found.** CMs with 900+ minutes, n = 179: median 55.7,
+  range 43.9-73.4. Kanté **47.4, 4th percentile of CMs** (pressures 47.9, tackles 44.7, interceptions
+  47.9); Drinkwater 50.8 (11th). High-press references: Saúl 55.6 (49th), Koke 57.5 (65th), Pogba 56.9,
+  Matuidi 58.3; among DMs (n = 188, median 49.6) Busquets 56.7 (93rd), Gabi 50.8 (63rd). **The brief's
+  absolute expectation (Kanté ~30-40) is not met**: no CM in the data is below 43.9, and x 30-40 is
+  centre-back territory (CB median 34.1). The ordering is what the brief expected (Kanté near the
+  bottom of his group, Atlético/PSG/Juventus midfielders above him), and the axis uses only the
+  within-position rank, so the remap went ahead. Saúl is mid-table rather than high: Atlético's CMs
+  engaged in a mid-block. Team medians agree with reputations at the ends (Napoli 57.9, Man Utd 56.7,
+  Barcelona 56.7 high; Aston Villa 42.1, Chelsea 44.9 low); Leicester is mid-table (49.7).
+- **Mapping changes** (outfield; goalkeepers unchanged, still NULL on these axes):
+
+  | Team axis | Old player metric | New player metric | Why |
+  |---|---|---|---|
+  | Pressing (low PPDA) | pressures_p90, tackles_p90 | `avg_press_action_x` | the team axis is about location |
+  | Direct speed | progressive_carries_p90 | `avg_pass_dx` | the team axis is mean forward x-gain per pass (`dx_sum / passes`); this is the same definition over one player's passes |
+  | Progressive pass rate | progressive_passes_p90 | `progressive_pass_share` (progressive_passes / passes_attempted) | the team axis is a share of passes, not a count |
+
+  All three are ranked within `position_group_fine` with the `player_percentiles` rule, in
+  `style_fit.derived_metrics`. Sample floors: 50 press actions, 50 passes (like `avg_defensive_action_x`'s
+  50), else NULL. Every outfielder with a market value clears them (1,229 of 1,229).
+  `avg_pass_dx` fills section 28's "direct_pass_rate not stored" gap. Pass *length* was briefed as the
+  fallback, but forward x-gain is the team axis's own definition, and it came out of the same re-parse.
+- **Reviewed and kept, with the reason.**
+  - Possession % and Build-up length (passes_p90, pass_completion_pct): volume, but a team's possession
+    *is* its players' passing volume, and no location reading exists. Kept. It still misreads a deep
+    passer (Kanté: 58th percentile vs Leicester's 6th).
+  - Defensive line height (`avg_defensive_action_x`): already location. Kept.
+  - Shot volume (shots_p90) and Shot quality (xg_per_shot): the same kind of measure on both sides. Kept.
+  - Transition speed (progressive_carries_p90, shots_p90): volume standing in for a time. A player-level
+    counterpart (seconds from his regains to a shot) needs possession-chain work, not a location; kept and
+    stated. It no longer shares an input with Direct speed, so section 28's double weight is gone.
+  - Width, Crossing volume, Set-piece reliance: still team-level only (BLOCKERS.md section 24).
+- **Effect on Kanté** (0-1 axis scores): Pressing 0.92 -> **0.04**; Direct speed 0.50; Progressive pass rate
+  0.72; line height 0.22 (unchanged). Fit against Leicester's own 2015/16 vector 0.21 -> **0.33** (151st ->
+  138th of 178 CMs); Drinkwater 0.13 -> 0.45; Mahrez 0.90 (2nd), Vardy 0.78 (16th of 171); Leicester's
+  players average 0.69 vs 0.50 for everyone. What still holds Kanté down on his own team's style is
+  attacking, not pressing: shot quality 0.07 and shot volume 0.08 against Leicester's 96 and 78, and
+  possession 0.58 against 6.
+- **Scenario re-run, 4-3-3, €150m, all leagues, w = 0.5 (not tuned).** Best fit is 0.4 fit / 0.6 quality.
+  - *A: Low-block counter.* Best fit €149.5m, average fit 86%: Oblak, Hutton, Giménez, Mbemba, Miguel
+    Lopes, Obiang (DM), Agyemang-Badu, Albrighton (CMs), Konoplyanka, Thauvin, Kane. Budget lean €101.5m
+    (Forster, Rami, Cédric, Nzonzi, Acquah, Feghouli, Sakho come in). Most balanced = Best fit.
+    **Kanté is not picked**: fit 0.64 (was 0.40-0.47), 49th of 178 CMs on fit, 25th by the Best-fit
+    score (0.43). Vardy fit 0.54, 40th of 171 STs by score; Kane takes the slot.
+  - *B: High-press direct.* Best fit €149.8m, average fit 89%: Perin, Poko, Russell Martin, Perrin,
+    Lazaar, Rubén Pardo, José Luis Morales, Puncheon, Papu Gómez, Dembélé, Luis Suárez (€90m). Budget
+    lean €146.0m (Rojo, Van Dijk, Coentrão, Moutinho, Lens, Mertens, Berardi, Džeko). Kanté fit **0.19**,
+    161st of 178 CMs: correctly out. Vardy 0.91, 2nd of 171 on fit.
+  - *C: Possession control.* Best fit €149.0m, average fit 91%: Keylor Navas, Basta, Rugani, Roncaglia,
+    Bedimo, Thiago Motta, Zieliński, Tongo Doumbia, Moralez, Tello, Luis Suárez. Budget lean €147.5m with
+    Aurier, Škrtel, Chiellini, Schweinsteiger, Allan, Khedira, Callejón, El Shaarawy, Iago Aspas:
+    ball-playing CBs and passing midfielders, as expected. Kanté 0.33.
+  - **Verdict: the pressing axis is fixed; the brief's pass test is not met.** Kanté's fit now moves the
+    right way (0.64 low block vs 0.19 high press, where before it was 0.40-0.47 on every preset), but he
+    appears in neither XI, so "in A but not in B" is false. What keeps him out of A is not pressing: in
+    the CM slots, cheaper players with higher fit win (Agyemang-Badu 0.87, Albrighton 0.85, both in the CM
+    group by StatsBomb position), and Kanté's €10m value gives quality 0.29, too little to make up the
+    fit gap at 0.6 quality weight. Low shot volume and quality also cost him on a preset that asks for
+    55/35 on the shooting axes. Not tuned, by instruction. BLOCKERS.md section 24.
