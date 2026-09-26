@@ -10,16 +10,19 @@ import pandas as pd
 import streamlit as st
 from sqlalchemy import Engine
 
+from src.analytics import composer as composer_mod
 from src.analytics import directory as analytics_dir
 from src.analytics import finance as finance_mod
 from src.analytics import games as games_mod
 from src.analytics import heatmaps as heatmaps_mod
 from src.analytics import market_values as market_values_mod
 from src.analytics import match_report as match_report_mod
+from src.analytics import style_fit as style_fit_mod
 from src.analytics import team_profile as team_profile_mod
 from src.analytics.profile import classify
 from src.analytics.similarity import find_similar
-from src.analytics.team_similarity import find_similar_teams
+from src.analytics.team_similarity import find_similar_teams, load_team_style
+from src.models.composer import Squad
 from src.models.finance import TeamWageContext
 from src.models.market_value import MarketValueCoverage, PlayerMarketValue, SquadMarketValue
 from src.models.match import PlayerGames, SeasonGameStats
@@ -229,3 +232,28 @@ def season_game_stats(player_id: str, group: str) -> SeasonGameStats:
 @st.cache_data(show_spinner=False)
 def player_games(player_id: str, group: str) -> PlayerGames:
     return games_mod.player_games(player_matches(player_id), group)
+
+
+@st.cache_data(show_spinner=False)
+def style_fit() -> pd.DataFrame:
+    return style_fit_mod.load_style_fit(SEASON, engine())
+
+
+@st.cache_data(show_spinner=False)
+def team_style() -> pd.DataFrame:
+    return load_team_style(SEASON, engine())
+
+
+def axis_raw_at(axis: str, score: float) -> float:
+    return composer_mod.axis_raw_at(team_style(), axis, score)
+
+
+@st.cache_data(show_spinner=False)
+def composer_variants(
+    target: tuple[tuple[str, float], ...], budget_eur: float, formation: str,
+    leagues: tuple[str, ...], min_minutes: int,
+) -> list[Squad]:
+    """Best fit / Budget lean / Most balanced XIs. Raises composer.InfeasibleBudget."""
+    return composer_mod.build_squad_variants(
+        dict(target), budget_eur, formation, style_fit(), list(leagues) or None, min_minutes
+    )

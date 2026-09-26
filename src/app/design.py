@@ -707,3 +707,69 @@ def position_card(position_group: str, side: str | None, note: str = "", key: st
                 position_pitch(position_group, side), use_container_width=True,
                 config={"displayModeBar": False, "staticPlot": True}, key=f"pos_pitch_{key}",
             )  # fmt: skip
+
+
+def formation_pitch(
+    points: Sequence[dict[str, Any]], height: int = 260, names: bool = False
+) -> go.Figure:
+    """A formation drawn on a dark pitch, attacking left to right. `points`: {x, y, group, label,
+    and optionally name, hover}. With `names` the player's name is written under each dot."""
+    fig = go.Figure(
+        go.Scatter(
+            x=[p["x"] for p in points], y=[p["y"] for p in points],
+            mode="markers+text", text=[p["label"] for p in points], textposition="middle center",
+            textfont=dict(size=SIZE_SMALL - 2, color=BG_PRIMARY),
+            marker=dict(size=26 if names else 22,
+                        color=[position_color(p["group"]) for p in points],
+                        line=dict(color=BG_PRIMARY, width=1)),
+            hovertext=[p.get("hover", p["label"]) for p in points], hoverinfo="text",
+        )
+    )  # fmt: skip
+    if names:
+        fig.add_trace(go.Scatter(
+            x=[p["x"] for p in points], y=[p["y"] + 7 for p in points], mode="text",
+            text=[esc(p.get("name", "")) for p in points], hoverinfo="skip",
+            textfont=dict(size=SIZE_SMALL, color=TEXT_PRIMARY),
+        ))  # fmt: skip
+    fig.update_layout(shapes=_pitch_shapes(), showlegend=False)
+    fig.update_xaxes(range=[-2, PITCH_LENGTH + 2], visible=False, fixedrange=True)
+    fig.update_yaxes(range=[PITCH_WIDTH + 6, -4], visible=False, scaleanchor="x", fixedrange=True)
+    fig = _base_layout(fig, height)
+    fig.update_layout(margin=dict(l=SP_XS, r=SP_XS, t=SP_XS, b=SP_XS), plot_bgcolor=BG_SECONDARY)
+    return fig
+
+
+def style_target_chart(rows: Sequence[dict[str, Any]], height: int = 380) -> go.Figure:
+    """Target style per axis on the 0-100 team scale. `rows`: {label, value, preset (or None),
+    used}. A tick at 50 marks the median team; a hollow ring marks the preset's stored value; the
+    filled dot is the current target. Unused (team-level-only) axes are drawn gray."""
+    labels = [r["label"] + ("" if r["used"] else " (not used)") for r in rows]
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(
+        x=[50] * len(rows), y=labels, mode="markers", name="Median team (50)",
+        marker=dict(symbol="line-ns", size=16, line=dict(color=TEXT_TERTIARY, width=2)),
+        hoverinfo="skip",
+    ))  # fmt: skip
+    ghosts = [r for r in rows if r.get("preset") is not None]
+    if ghosts:
+        fig.add_trace(go.Scatter(
+            x=[r["preset"] for r in ghosts],
+            y=[r["label"] + ("" if r["used"] else " (not used)") for r in ghosts],
+            mode="markers", name="Preset",
+            marker=dict(size=14, color="rgba(0,0,0,0)", line=dict(color=TEXT_SECONDARY, width=2)),
+            hovertemplate="Preset %{x:.0f}<extra></extra>",
+        ))  # fmt: skip
+    fig.add_trace(go.Scatter(
+        x=[r["value"] for r in rows], y=labels, mode="markers", name="Target",
+        marker=dict(size=10, color=[HIGHLIGHT if r["used"] else TEXT_TERTIARY for r in rows]),
+        hovertemplate="Target %{x:.0f}<extra></extra>",
+    ))  # fmt: skip
+    fig.update_xaxes(range=[-3, 103], tickvals=[0, 25, 50, 75, 100], gridcolor=BORDER,
+                     zeroline=False, fixedrange=True)  # fmt: skip
+    fig.update_yaxes(autorange="reversed", fixedrange=True, gridcolor=BORDER)
+    fig = _base_layout(fig, height)
+    fig.update_layout(
+        legend=dict(orientation="h", y=-0.12, font=dict(size=SIZE_SMALL)),
+        margin=dict(l=SP_S, r=SP_M, t=SP_S, b=SP_XL),
+    )  # fmt: skip
+    return fig

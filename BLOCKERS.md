@@ -648,3 +648,23 @@ available". Minutes are 2015/16 totals.
   does not allow.
 - **Dependency:** `rapidfuzz` (declared in `pyproject.toml`) is now installed in `.venv` and used (section
   21's "not installed" note no longer applies).
+
+## 24. Tactical Composer: team-style axes with no player-level measure (2026-09-26)
+
+**Status: built without them.** Three of the 12 team-style axes cannot be mirrored by stored player
+metrics, so the Composer shows their sliders disabled and never uses them (ANALYTICS_DECISIONS.md
+section 28). Nothing was re-ingested or re-parsed for this.
+
+- **Crossing volume.** Player crosses are not extracted; `player_match_stats` has only
+  `cross_clearances` (a defensive count). Unblock: count `pass.cross` (non-corner) per player in
+  `src/ingest/statsbomb/parse.py` from the cached event files, as `team_style` already does per team.
+- **Width.** No wide-touch or mean-y measure per player. Progressive carries (the brief's stand-in) do
+  not measure width. Unblock: mean |y - 40| of a player's passes or touches from the cached events (the
+  heatmap grids in `player_heatmaps` could give a coarse version without a re-parse).
+- **Set-piece reliance.** A team's share of xG from set pieces. A player-level share of set-piece
+  involvement could be derived (set-piece shots and deliveries), but it would describe a role, not the
+  team pattern. Left team-level.
+- **Partial:** Direct speed has only progressive carries; the briefed `direct_pass_rate` (forward yards
+  per pass) is not stored. Unblock: sum pass dx per player during parsing.
+- **Known weaknesses of the result** (section 29): fit ignores quality, so suggestions come in far under
+  budget and favour high-volume players; a possible league effect in pooled percentiles is unchecked.

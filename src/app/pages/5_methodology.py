@@ -145,6 +145,30 @@ if _cov.n_profiled:
 else:
     st.markdown("Market values are not loaded yet (`python -m src.transform.market_values`).")
 
+design.render(design.section_header("Tactical Composer"))
+st.markdown(
+    """
+**What it does.** Suggests a starting XI whose players *statistically* fit a target team style,
+within a total market-value budget and a formation. It builds a squad on paper, not tactics.
+
+**What it does not do.** It predicts no results, form, chemistry, fitness or development, and knows
+nothing about age, wages, contracts or whether a player would move.
+
+- **Style fit is a heuristic, not ground truth.** Nine of the twelve team-style axes are mirrored by
+  player metrics (e.g. pressing by pressures and tackles per 90); a player's score on an axis is the
+  mean of his percentiles on those metrics within his own position group. Crossing volume, width
+  and set-piece reliance have no player-level counterpart in the stored data and are not used.
+- **Fit measures style, not quality.** A cheap player can fit a style better than a star, so the
+  suggestions often come in far under budget and lean towards players from pooled leagues whose
+  event counts run high. Read them as a shortlist to scout, not a recommendation.
+- **Market values** are Transfermarkt snapshots, each player's latest valuation between 1 Oct 2015
+  and 1 Mar 2016 (in practice January-February 2016), for players with 900+ minutes.
+- **The build is greedy:** slots are filled one at a time (strikers first), each with the best fit
+  that still leaves money for the open slots. It is not an optimiser and may miss a better XI.
+  See ANALYTICS_DECISIONS sections 28 and 29.
+"""
+)
+
 design.render(design.section_header("Similarity engine, step by step"))
 st.markdown(
     """

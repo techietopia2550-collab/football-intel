@@ -891,3 +891,102 @@ stored id, method, score, date and value was identical before and after.
   month. Team Fingerprint hero: "Squad market value: €XXXm (from N of M players)", N valued out of M
   profiled (900+ minutes). The tooltip and Methodology say it covers profiled players only, so it is still
   not a full-squad total (section 25); "partial, coverage is thin" is added below 80% valued.
+
+## 28. Player style fit: team-style axes mapped to player metrics (`player_style_fit`, 2026-09-26)
+
+Code: `src/analytics/style_fit.py`. Build: `python -m src.analytics.style_fit --rebuild`. Feeds the
+Tactical Composer (section 29). A heuristic: it says which way a player's own event counts lean
+relative to his position group, not how he would play in another team's system.
+
+- **Score.** For each of the 12 team-style axes (section 17), a player's score is the mean of his
+  within-position percentiles (`player_percentiles`: pooled across the four leagues, ranked only
+  against his `position_group_fine`) on the mapped metrics, divided by 100 (0-1). Missing metrics are
+  skipped; no mapped value -> NULL. A centre-back is compared with centre-backs, so "0.8 on pressing"
+  means "presses more than 80% of centre-backs", not more than 80% of all players.
+- **Orientation** follows the Team Fingerprint radar (`team_profile.axis_scores`): high = more of the
+  labelled thing. PPDA is read as pressing intensity (low team PPDA = high score) and transition seconds
+  as transition speed (few seconds = high score); the player metrics are chosen so that high = more.
+- **Mapping** (outfield):
+
+  | Team axis | Player metrics | Player-measurable |
+  |---|---|---|
+  | Possession % | pass_completion_pct, passes_p90 | yes |
+  | Pressing (low PPDA) | pressures_p90, tackles_p90 | yes |
+  | Direct speed | progressive_carries_p90 | yes (partial) |
+  | Build-up length | passes_p90, pass_completion_pct | yes (same inputs as Possession %) |
+  | Defensive line height | avg_defensive_action_x | yes |
+  | Width | none | **no, team-level only** |
+  | Crossing volume | none | **no, team-level only** |
+  | Progressive pass rate | progressive_passes_p90 | yes |
+  | Shot quality | xg_per_shot | yes (NULL under 15 shots: 736 of 1,326 have it) |
+  | Shot volume | shots_p90 | yes |
+  | Transition speed | progressive_carries_p90, shots_p90 | yes |
+  | Set-piece reliance | none | **no, team-level only** |
+
+  `passes_p90` is not in the metric registry: `passes_attempted / minutes * 90`, ranked here within
+  position group with the `player_percentiles` rule ((average rank - 0.5) / n * 100).
+- **Departures from the brief, and why.** `direct_pass_rate` (a player's forward yards per pass) is not
+  stored, so Direct speed uses progressive carries alone. Width was briefed as progressive carries + wide
+  touches: wide touches are not stored, and progressive carries say nothing about width, so the axis is
+  left out rather than faked. Crossing volume: player crosses are not extracted (only `cross_clearances`,
+  a defensive count). Set-piece reliance is a team share of xG with no player counterpart. Adding width
+  or crosses needs a re-parse of the cached events (BLOCKERS.md section 24); nothing was re-ingested.
+- **Overlaps.** Possession % and Build-up length use the same two percentiles, and Direct speed and
+  Transition speed share progressive carries, so those pairs weigh double in a fit. Accepted and stated,
+  not re-weighted.
+- **Goalkeepers** have no outfield metrics. Possession % and Build-up length use gk_pass_completion_pct,
+  Defensive line height uses gk_sweeper_actions_p90; the other axes are NULL. A goalkeeper's fit rests on
+  two independent inputs and is less informative than an outfielder's.
+- **Stored.** `player_style_fit`: player_id, player_name, team, season, league, source,
+  position_group_fine, minutes_total, market_value_eur, and the 12 axis columns (the three team-only
+  axes NULL). Only players with a market value: 1,326 rows. `player_style_fit(player_id)` returns the
+  12 scores.
+
+## 29. Tactical Composer: fit, greedy squad builder, variants (2026-09-26)
+
+Code: `src/analytics/composer.py`, `src/analytics/formations.py`; page `src/app/pages/8_composer.py`. It
+suggests an XI whose players fit a target style within a market-value budget. It does not build
+tactics and predicts nothing.
+
+- **Target.** 0-100 per axis on the Team Fingerprint scale (rank among the 80 teams, 50 = median). The
+  three team-only axes are shown but disabled and never used. Four hand-set presets (High-press direct,
+  Possession control, Low-block counter, Balanced); they are not fitted to any real team.
+- **Fit.** Player vector (score - 0.5) and target vector (target / 100 - 0.5) are compared with cosine
+  similarity over the axes both have; fit = (cosine + 1) / 2. Centring matters: raw 0-1 vectors are all
+  positive and every cosine would be near 1. Direction counts, not size: a player "above his group's
+  median where the style is above the median" fits. A flat target (centred norm < 0.05, e.g. every axis
+  at 50) has no direction, so fit falls back to closeness, 1 - 2 x mean absolute gap. Players need 2+
+  scored axes to be fitted. Each axis's share of the cosine is kept to explain picks ("why these
+  players": the three largest summed contributions for the XI, and per player).
+- **Formations.** 4-3-3, 4-2-3-1, 4-4-2, 3-5-2, 5-3-2 as 11 position-group slots (the brief's lists). 3-5-2
+  and 5-3-2 have identical slots: FB slots are wing-backs, filled from full-backs because the data has no
+  wing-back group; only the drawn position differs. Slot eligibility is strict: a W slot takes only W.
+- **Greedy build, and only greedy** (no ILP/LP, by instruction). Slots are filled in scarcity order ST, GK,
+  CB, W, AM, DM, CM, FB. Per slot: candidates are unpicked players of the group; a *hard* check keeps the
+  price within the budget minus the cheapest possible cost of every open slot (skipping the cheapest
+  player of the current group, as he may be the one taken now, so the bound is safe and the XI can always
+  be completed); a *soft* check prefers prices that also leave each open slot its group's median price.
+  Score = fit + 0.05 x value rank among the slot's candidates, so the cheapest is not taken by default.
+  A budget below the cheapest possible XI is refused with the minimum shown. It can miss a better XI: an
+  early pick is never revisited.
+- **Variants** (one rule changed each): *Best fit*: no value bonus, no soft check, fit alone decides.
+  *Budget lean*: the cheapest player whose fit is in the top 20% of the slot's affordable candidates.
+  *Most balanced*: the standard build with at most one player per club (relaxed for a slot, with a note,
+  only if no other affordable candidate is left).
+- **Eligibility.** Players with a market value and minutes >= the minimum (900, the profiling floor), in
+  the chosen leagues. Nobody below the minimum is ever suggested.
+- **Sanity check, reported as it came out (not tuned).** High-press direct, €150m, 4-3-3, all leagues.
+  *Best fit* €31.4m, average fit 94%, 10 clubs: Gollini (Verona), Sylla (Gazélec), De Maio (Genoa),
+  Mangane (Gazélec), Letizia (Carpi), Bodiger (Toulouse), Cabot (Lorient), Court (Troyes), Ounas
+  (Bordeaux), Boufal (Lille), Niang (Milan). Style-consistent (every outfielder's top axes are pressing,
+  direct speed, transition speed or line height; no static target man), but not what a scout expects:
+  - It spends 21% of the budget. Fit measures style, not quality, and the value bonus is small, so cheap
+    high-volume pressers win. Kanté ranks 104th of 178 CMs (fit 47%): 92% on pressing, but Leicester
+    defended deep (line height 22%) and he rarely shoots (8th percentile), both against this target.
+    Vardy is 6th of 171 strikers; Griezmann 41st; Koke 107th of 178.
+  - Ligue 1 and Serie A players fit higher on average (0.54 / 0.53 vs EPL 0.45, La Liga 0.47 for this
+    preset). Percentiles pool the four leagues, and whether event counts differ by league has not been
+    checked (Methodology), so this may be a league effect rather than a style one.
+  - Fit rewards volume: players with big per-90 counts on the mapped metrics dominate, whatever the
+    standard of the league or team.
+  These are limits of a percentile heuristic without a quality term; they are documented, not corrected.
