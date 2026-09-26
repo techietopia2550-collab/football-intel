@@ -966,16 +966,39 @@ tactics and predicts nothing.
   price within the budget minus the cheapest possible cost of every open slot (skipping the cheapest
   player of the current group, as he may be the one taken now, so the bound is safe and the XI can always
   be completed); a *soft* check prefers prices that also leave each open slot its group's median price.
-  Score = fit + 0.05 x value rank among the slot's candidates, so the cheapest is not taken by default.
-  A budget below the cheapest possible XI is refused with the minimum shown. It can miss a better XI: an
-  early pick is never revisited.
-- **Variants** (one rule changed each): *Best fit*: no value bonus, no soft check, fit alone decides.
-  *Budget lean*: the cheapest player whose fit is in the top 20% of the slot's affordable candidates.
-  *Most balanced*: the standard build with at most one player per club (relaxed for a slot, with a note,
-  only if no other affordable candidate is left).
+  The highest *score* (below) wins. A budget below the cheapest possible XI is refused with the minimum
+  shown. It can miss a better XI: an early pick is never revisited.
+- **Objective (revised 2026-09-26: style fit + quality).** The first version ranked on fit alone (plus a
+  0.05 value-rank bonus) and produced cheap, unknown XIs (sanity check below). Now:
+  `score = (1 - w) x style_fit + w x quality`, with
+  `quality = log(1 + market_value_eur) / log(1 + the largest value in the eligible pool)`, 0-1.
+  - *Quality* is market value standing in for quality: the only quality-like signal with a price in
+    the data, and a crowd estimate, not a measure. Log-scaled because values run from €0.1m to €120m;
+    the log compresses hard: €0.5m -> 0.70, €1m -> 0.74, €2m -> 0.78, €5m -> 0.83, €10m -> 0.87,
+    €25m -> 0.92, €60m -> 0.96, €120m -> 1.0 (with a €120m top value). So quality moves a score by
+    a few hundredths between a €1m and a €10m player, while fit spans 0-1.
+  - *Weight semantics.* `w` is the quality weight (alpha = 1 - w is the style weight), set by the
+    page's "Style priority / Quality priority" slider, 0.0-1.0, default 0.5 (not tuned). 0.0 = pure style
+    fit, 1.0 = pure market value. The brief wrote `alpha x fit + (1 - alpha) x quality` but captioned
+    the slider "0.0 = pure style"; the slider follows the caption.
+  - *Players with no market value* have no `player_style_fit` row (the table holds valued players only),
+    so they are never suggested; `quality_scores` gives 0.0 for a missing value if one appears.
+- **Variants** share the greedy loop and the budget checks (hard and soft, for all three: the soft
+  median-price check paces spending so an early slot cannot take most of the budget); each shifts `w`
+  and adds per-slot constraints (`VARIANT_RULES`):
+  - *Best fit*: `w + 0.1` (0.6 at the default: the brief's 0.4 fit / 0.6 quality); no player below 60% fit.
+  - *Budget lean*: `w - 0.1` (0.6 fit / 0.4 quality at the default); no player below 50% fit; every
+    player under €20m. An under-budget total is kept, not inflated.
+  - *Most balanced*: as Best fit, plus at most two players per club.
+  - The shift keeps the brief's per-variant weights at the default while letting the slider move all
+    three (fixed weights would have made the slider do nothing). Shifted weights are clipped to 0-1.
+  - A constraint that leaves no affordable candidate for a slot is relaxed for that slot only, and the
+    squad carries a note saying which. No slot is ever left empty.
+  - "Use most of the budget" (Best fit) and "70-100% of budget" (Most balanced) are aims, not
+    constraints: nothing forces spending; a quality-heavy score just tends to buy dearer players.
 - **Eligibility.** Players with a market value and minutes >= the minimum (900, the profiling floor), in
   the chosen leagues. Nobody below the minimum is ever suggested.
-- **Sanity check, reported as it came out (not tuned).** High-press direct, €150m, 4-3-3, all leagues.
+- **Sanity check, first version (fit only; superseded).** High-press direct, €150m, 4-3-3, all leagues.
   *Best fit* €31.4m, average fit 94%, 10 clubs: Gollini (Verona), Sylla (Gazélec), De Maio (Genoa),
   Mangane (Gazélec), Letizia (Carpi), Bodiger (Toulouse), Cabot (Lorient), Court (Troyes), Ounas
   (Bordeaux), Boufal (Lille), Niang (Milan). Style-consistent (every outfielder's top axes are pressing,
@@ -989,4 +1012,24 @@ tactics and predicts nothing.
     checked (Methodology), so this may be a league effect rather than a style one.
   - Fit rewards volume: players with big per-90 counts on the mapped metrics dominate, whatever the
     standard of the league or team.
-  These are limits of a percentile heuristic without a quality term; they are documented, not corrected.
+  These are limits of a percentile heuristic without a quality term; they led to the revised objective.
+- **Sanity check, revised objective, reported as it came out (w = 0.5, not tuned).** Same scenario.
+  - *Best fit* (0.4 fit / 0.6 quality): **€148.5m of €150m**, average fit 90%, average quality 0.87,
+    9 clubs, €13.5m per player: Perin (Genoa, €17.5m), Ansaldi (Genoa, €6m), Mustafi (Valencia, €24m),
+    Otamendi (Man City, €32m), Sylla (Gazélec, €2m), Illarramendi (Real Sociedad, €15m), Khazri (Bordeaux,
+    €8m), Kucka (Milan, €6m), Felipe Anderson (Lazio, €20m), Boufal (Lille, €9m), Niang (Milan, €9m).
+  - *Budget lean* (0.6 / 0.4): €91.5m, average fit 92%; Lulić, De Maio, Conte, Cabot, Nolito replace five
+    of the above.
+  - *Most balanced*: identical to Best fit. Same weights and fit floor, and no club had more than two
+    players, so the club cap never bound. Its 99% spend is inside the 70-100% aim by coincidence.
+  - Against the brief's expectations: total €100-150m, met; €8m+ per player, met; recognisable players
+    from bigger clubs (Man City, Milan, Valencia, Lazio, Real Sociedad), partly met - no Atlético, Napoli
+    or Leicester player. **Kanté is not in any XI and cannot be under these rules**: his fit is 47%, below
+    the 60% (Best fit, Most balanced) and 50% (Budget lean) floors. Without the floor he ranks 79th of 178
+    CMs at w = 0.6 (score 0.707: fit 0.47, quality 0.87) - the brief assumed a €25m value and a large
+    quality gap, but his stored value is €10m, and against Bodiger (€1.2m, quality 0.76, fit 0.95) the
+    log-scaled quality gap (0.11) is far smaller than the fit gap (0.48). He is not in a DM slot either:
+    StatsBomb positions put him in the CM group, and slots are strict.
+  - Verdict: no longer nonsense (the budget is used, the players are established top-flight regulars),
+    but still not a scout's XI: log-scaled value barely separates a €2m player from a €20m one, so fit
+    still decides most picks. Documented, not tuned.

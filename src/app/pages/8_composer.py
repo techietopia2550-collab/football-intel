@@ -8,7 +8,7 @@ from src.utils import disk_bootstrap  # isort: skip  # noqa: F401  (must be firs
 
 import streamlit as st
 
-from src.analytics.composer import PRESETS, InfeasibleBudget
+from src.analytics.composer import DEFAULT_QUALITY_WEIGHT, PRESETS, VARIANT_RULES, InfeasibleBudget
 from src.analytics.formations import FORMATIONS
 from src.analytics.style_fit import PLAYER_AXES
 from src.analytics.team_profile import RADAR_LABELS
@@ -121,6 +121,7 @@ def _squad_view(sq: Squad, tab: str) -> None:
         '<div class="fi-row">'
         + design.big_stat("Total market value", value)
         + design.big_stat("Average fit", _pct(sq.avg_fit))
+        + design.big_stat("Average quality", _pct(sq.avg_quality))
         + design.big_stat("Clubs", str(sq.distinct_clubs))
         + "</div>"
     )
@@ -161,26 +162,54 @@ def _squad_view(sq: Squad, tab: str) -> None:
             ])
         )  # fmt: skip
         st.markdown(
-            "\n".join(["| Slot | Player | Fit | Top 3 axes |", "|---|---|---|---|"] + [
-                f"| {s.slot_label} | {s.player_name} | {_pct(s.fit)} | "
+            f"**Ranking:** score = {1 - sq.quality_weight:.2f} x style fit + "
+            f"{sq.quality_weight:.2f} x quality (this variant's weights)."
+        )
+        st.markdown(
+            "\n".join([
+                "| Slot | Player | Value | Style fit | Quality | Combined | Top 3 axes |",
+                "|---|---|---|---|---|---|---|",
+            ] + [
+                f"| {s.slot_label} | {s.player_name} | {design.fmt_eur(s.market_value_eur)} | "
+                f"{_pct(s.fit)} | {_pct(s.quality)} | {s.score:.3f} | "
                 f"{', '.join(a.label for a in s.top_axes)} |" for s in sq.slots
             ])
         )  # fmt: skip
         st.caption(
-            "Fit compares where each player sits against his own position group (above or below "
-            "the median) with where the target sits against the 80 teams. It describes playing "
-            "style from event counts, not quality: a cheap player can fit a style better than a "
-            "star. See Methodology."
+            "Style fit compares where each player sits against his own position group (above or "
+            "below the median) with where the target sits against the 80 teams. Quality is his "
+            "market value on a log scale (1.0 = the most valuable player in the pool): a stand-in "
+            "for quality, not a measure of it. See Methodology."
         )
+
+
+def _priority() -> float:
+    left, _, right = st.columns([1, 4, 1], vertical_alignment="bottom")
+    left.caption("Style priority")
+    right.caption("Quality priority")
+    w = st.slider(
+        "Style priority / Quality priority", 0.0, 1.0, DEFAULT_QUALITY_WEIGHT, step=0.05,
+        key="cmp_quality_weight", label_visibility="collapsed",
+    )  # fmt: skip
+    shifts = ", ".join(
+        f"{v.replace('_', ' ')} {r.weight_shift:+.1f}"
+        for v, r in VARIANT_RULES.items() if r.weight_shift
+    )  # fmt: skip
+    st.caption(
+        "0.0 = pure style fit (may pick unknown players). 1.0 = pure quality (may ignore style). "
+        f"0.5 = balanced. Each variant shifts this weight ({shifts}), clipped to 0-1."
+    )
+    return float(w)
 
 
 def _results(target: dict[str, float], budget: float, formation: str, leagues: list[str]) -> None:
     design.render(design.section_header("3. Suggested XIs"))
+    quality_weight = _priority()
     if st.button("Build", type="primary", key="cmp_build"):
         try:
             st.session_state["cmp_result"] = data.composer_variants(
                 tuple(sorted(target.items())), budget, formation, tuple(leagues),
-                shell.MIN_MINUTES_FLOOR,
+                shell.MIN_MINUTES_FLOOR, quality_weight,
             )  # fmt: skip
             st.session_state.pop("cmp_error", None)
         except InfeasibleBudget as exc:

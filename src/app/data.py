@@ -251,9 +251,10 @@ def axis_raw_at(axis: str, score: float) -> float:
 @st.cache_data(show_spinner=False)
 def composer_variants(
     target: tuple[tuple[str, float], ...], budget_eur: float, formation: str,
-    leagues: tuple[str, ...], min_minutes: int,
+    leagues: tuple[str, ...], min_minutes: int, quality_weight: float,
 ) -> list[Squad]:
     """Best fit / Budget lean / Most balanced XIs. Raises composer.InfeasibleBudget."""
     return composer_mod.build_squad_variants(
-        dict(target), budget_eur, formation, style_fit(), list(leagues) or None, min_minutes
+        dict(target), budget_eur, formation, style_fit(), list(leagues) or None, min_minutes,
+        quality_weight,
     )

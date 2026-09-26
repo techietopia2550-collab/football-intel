@@ -152,15 +152,65 @@ def test_variants() -> None:
         "budget_lean",
         "most_balanced",
     ]
-    assert lean.total_value_eur <= best.total_value_eur
-    assert best.avg_fit >= lean.avg_fit
+    assert best.quality_weight == pytest.approx(0.6) and lean.quality_weight == pytest.approx(0.4)
     for sq in (best, lean, balanced):
         assert sq.total_value_eur <= 80e6
+
+
+def test_quality_is_log_scaled_and_missing_is_zero() -> None:
+    pool = pd.DataFrame({"market_value_eur": [120e6, 10e6, 1e6, None]})
+    q = c.quality_scores(pool)
+    assert q[0] == pytest.approx(1.0)
+    assert q[1] == pytest.approx(np.log1p(10e6) / np.log1p(120e6))
+    assert q[2] < q[1] < q[0] and q[3] == 0.0
+
+
+def test_score_combines_fit_and_quality() -> None:
+    pool = _pool()
+    for w in (0.0, 0.5, 1.0):
+        sq = c.build_squad(c.PRESETS["High-press direct"], 1e9, "4-3-3", pool, quality_weight=w)
+        for s in sq.slots:
+            assert s.score == pytest.approx((1 - w) * s.fit + w * s.quality, abs=1e-3)
+
+
+def test_quality_weight_moves_picks_towards_value() -> None:
+    pool = _pool(n_per_group=10)
+    style = c.build_squad(c.PRESETS["High-press direct"], 1e9, "4-3-3", pool, quality_weight=0.0)
+    value = c.build_squad(c.PRESETS["High-press direct"], 1e9, "4-3-3", pool, quality_weight=1.0)
+    assert value.total_value_eur >= style.total_value_eur
+    assert style.avg_fit >= value.avg_fit
+
+
+def test_variant_weight_is_shifted_and_clipped() -> None:
+    assert c.variant_weight(0.5, "best_fit") == pytest.approx(0.6)
+    assert c.variant_weight(0.5, "budget_lean") == pytest.approx(0.4)
+    assert c.variant_weight(0.95, "most_balanced") == 1.0
+    assert c.variant_weight(0.05, "budget_lean") == 0.0
+
+
+def test_budget_lean_price_cap_and_fit_floor() -> None:
+    pool = _pool(n_per_group=30)
+    pool["market_value_eur"] = pool["market_value_eur"] * 1.5  # €1.5m .. €45m
+    sq = c.build_squad(c.PRESETS["Balanced"], 1e9, "4-3-3", pool, variant="budget_lean")
+    relaxed = " ".join(sq.notes)
+    for s in sq.slots:
+        assert s.market_value_eur < 20e6 or "price cap" in relaxed
+        assert s.fit >= 0.5 or "fit floor" in relaxed
+
+
+def test_fit_floor_is_relaxed_with_a_note_when_nobody_meets_it() -> None:
+    pool = _pool()
+    for a in sf.PLAYER_AXES:
+        pool[a] = 0.1  # everyone far below the median: fit 0 against an above-median target
+    sq = c.build_squad(c.PRESETS["High-press direct"], 1e9, "4-3-3", pool, variant="best_fit")
+    assert len(sq.slots) == 11 and any("fit floor" in n for n in sq.notes)
 
 
 def test_most_balanced_limits_clubs() -> None:
     pool = _pool(n_per_group=12)
     pool["team"] = [f"Club {i}" for i in range(len(pool))]  # plenty of clubs to spread over
     pool.loc[pool.index % 2 == 0, "team"] = "Big Club"
+    pool["market_value_eur"] = np.where(pool["team"] == "Big Club", 50e6, 1e6)  # tempting
     sq = c.build_squad(c.PRESETS["Balanced"], 1e9, "4-3-3", pool, variant="most_balanced")
-    assert sum(s.team == "Big Club" for s in sq.slots) <= c.MAX_PER_CLUB_BALANCED
+    cap = c.VARIANT_RULES["most_balanced"].max_per_club
+    assert cap == 2 and sum(s.team == "Big Club" for s in sq.slots) <= cap

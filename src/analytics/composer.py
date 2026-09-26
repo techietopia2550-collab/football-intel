@@ -21,11 +21,14 @@ Greedy build (`build_squad`):
      (a conservative bound), so the XI can always be completed within budget;
    - soft: prefer a price that also leaves the median price of every open slot's group. When no
      candidate passes the soft check, the hard one alone applies.
-4. Score = fit + VALUE_BONUS x the candidate's value rank among the slot's candidates (0-1), so the
-   cheapest player is not always taken. Highest score wins.
-Variants change one rule each: best_fit (no value bonus, no soft check), budget_lean (the cheapest
-player whose fit is in the top FIT_BAND of the slot's affordable candidates), most_balanced (the
-standard build with at most one player per club).
+4. Score = (1 - w) x fit + w x quality, highest wins. quality = log(1 + value) / log(1 + the
+   largest value in the pool), 0-1: market value stands in for quality, log-scaled because values
+   run from €0.1m to €120m. w is the quality weight (the page's "Style priority / Quality
+   priority" slider, default 0.5; alpha = 1 - w is the style weight).
+Variants (`VARIANT_RULES`) shift w and add per-slot constraints; the greedy loop is shared:
+best_fit (w + 0.1, fit >= 60%), budget_lean (w - 0.1, fit >= 50%, every player under €20m),
+most_balanced (w + 0.1, fit >= 60%, at most two players per club). A constraint no affordable
+candidate meets is relaxed for that slot, with a note on the squad.
 """
 
 from __future__ import annotations
@@ -34,6 +37,7 @@ from src.utils import disk_bootstrap  # isort: skip  # noqa: F401  (must be firs
 
 import numpy as np
 import pandas as pd
+from pydantic import BaseModel
 
 from src.analytics.formations import Slot, get_formation
 from src.analytics.style_fit import PLAYER_AXES
@@ -42,12 +46,28 @@ from src.analytics.team_style import AXIS_COLUMNS
 from src.models.composer import AxisBreakdown, AxisContribution, Squad, SquadSlot, Variant
 
 SCARCITY_ORDER: tuple[str, ...] = ("ST", "GK", "CB", "W", "AM", "DM", "CM", "FB")
-VALUE_BONUS = 0.05  # weight of the value rank (0-1) added to a 0-1 fit
-FIT_BAND = 0.20  # budget_lean: "fits the style" = fit in the top 20% of the slot's candidates
+DEFAULT_QUALITY_WEIGHT = 0.5  # w: score = (1 - w) x fit + w x quality
 FLAT_TARGET = 0.05  # centred target norm below this = flat target: closeness instead of cosine
 MIN_AXES = 2  # a player needs scores on at least this many used axes to be fitted
 TOP_AXES = 3
-MAX_PER_CLUB_BALANCED = 1
+
+
+class VariantRule(BaseModel):
+    """How a variant departs from the standard build: a shift of the quality weight (clipped to
+    0-1) and per-slot constraints (None = no constraint)."""
+
+    weight_shift: float = 0.0
+    min_fit: float | None = None
+    max_price_eur: float | None = None
+    max_per_club: int | None = None
+
+
+VARIANT_RULES: dict[Variant, VariantRule] = {
+    "standard": VariantRule(),
+    "best_fit": VariantRule(weight_shift=0.1, min_fit=0.60),
+    "budget_lean": VariantRule(weight_shift=-0.1, min_fit=0.50, max_price_eur=20e6),
+    "most_balanced": VariantRule(weight_shift=0.1, min_fit=0.60, max_per_club=2),
+}
 
 # Target presets on the 0-100 Team Fingerprint scale. Hand-set, not fitted to any team; the three
 # team-level-only axes are kept at 50 (they are shown but never used). Section 29.
@@ -139,6 +159,29 @@ def eligible_pool(
     return pool.reset_index(drop=True)
 
 
+def quality_scores(pool: pd.DataFrame) -> pd.Series:
+    """log(1 + value) / log(1 + the pool's largest value), 0-1; 0 for a missing value. Pure."""
+    v = pool["market_value_eur"].astype(float).fillna(0.0).clip(lower=0.0)
+    top = float(v.max()) if len(v) else 0.0
+    return (np.log1p(v) / np.log1p(top)) if top > 0 else v * 0.0
+
+
+def variant_weight(quality_weight: float, variant: Variant) -> float:
+    """The quality weight a variant uses: the chosen weight plus its shift, clipped to 0-1."""
+    return float(np.clip(quality_weight + VARIANT_RULES[variant].weight_shift, 0.0, 1.0))
+
+
+def _constrain(
+    cands: pd.DataFrame, keep: pd.Series, hard: float, label: str, what: str, notes: list[str]
+) -> pd.DataFrame:
+    """Apply one per-slot constraint unless no affordable candidate would be left (then note it)."""
+    kept = cands.loc[keep]
+    if kept.loc[kept["market_value_eur"] <= hard].empty:
+        notes.append(f"{label}: {what} relaxed, no affordable candidate met it.")
+        return cands
+    return kept
+
+
 def _slot_order(slots: list[Slot]) -> list[int]:
     return sorted(range(len(slots)), key=lambda i: (SCARCITY_ORDER.index(slots[i].group), i))
 
@@ -173,19 +216,23 @@ def build_squad(
     league_filter: list[str] | None = None,
     min_minutes: float = 900,
     variant: Variant = "standard",
+    quality_weight: float = DEFAULT_QUALITY_WEIGHT,
 ) -> Squad:
     """Greedy XI for the target style within the budget (module docstring). Pure: `style_fit` is
     the `player_style_fit` table. Raises InfeasibleBudget when no XI fits the budget."""
     form = get_formation(formation)
+    rule = VARIANT_RULES[variant]
+    w = variant_weight(quality_weight, variant)
     pool = eligible_pool(style_fit, league_filter, min_minutes)
     scored = pool.join(fit_scores(pool, target_style)).dropna(subset=["fit"])
+    scored["quality"] = quality_scores(scored)
+    scored["score"] = (1 - w) * scored["fit"] + w * scored["quality"]
     cheapest = _reserve([s.group for s in form.slots], scored, "min")
     if cheapest > budget_eur:
         raise InfeasibleBudget(
             f"The cheapest possible {formation} XI from this pool costs about "
             f"€{cheapest / 1e6:,.1f}m, above the €{budget_eur / 1e6:,.1f}m budget."
         )
-    max_per_club = MAX_PER_CLUB_BALANCED if variant == "most_balanced" else None
     picked: dict[int, pd.Series] = {}
     spent = 0.0
     notes: list[str] = []
@@ -198,37 +245,33 @@ def build_squad(
         remaining = budget_eur - spent
         hard = remaining - _reserve(open_groups, avail, "min", exclude_cheapest_of=slot.group)
         cands = avail.loc[(avail["position_group_fine"] == slot.group)]
-        if max_per_club is not None:
+        if rule.max_per_club is not None:
             counts = pd.Series([r["team"] for r in picked.values()], dtype=object).value_counts()
-            capped = cands.loc[~cands["team"].map(counts).fillna(0).ge(max_per_club)]
-            if capped.loc[capped["market_value_eur"] <= hard].empty:
-                notes.append(f"{slot.label}: club limit relaxed, no other affordable candidate.")
-            else:
-                cands = capped
+            full = cands["team"].map(counts).fillna(0).ge(rule.max_per_club)
+            cands = _constrain(cands, ~full, hard, slot.label, "club limit", notes)
+        if rule.max_price_eur is not None:
+            cheap = cands["market_value_eur"] < rule.max_price_eur
+            cands = _constrain(cands, cheap, hard, slot.label, "price cap", notes)
+        if rule.min_fit is not None:
+            fits = cands["fit"] >= rule.min_fit
+            what = f"{rule.min_fit:.0%} fit floor"
+            cands = _constrain(cands, fits, hard, slot.label, what, notes)
         feasible = cands.loc[cands["market_value_eur"] <= hard]
         if feasible.empty:
             raise InfeasibleBudget(f"No affordable {slot.group} left for {slot.label}.")
-        if variant != "best_fit":
-            soft = remaining - _reserve(open_groups, avail, "median")
-            preferred = feasible.loc[feasible["market_value_eur"] <= soft]
-            feasible = preferred if not preferred.empty else feasible
-        if variant == "budget_lean":
-            cut = feasible["fit"].quantile(1 - FIT_BAND)
-            band = feasible.loc[feasible["fit"] >= cut]
-            choice = band.sort_values(["market_value_eur", "fit"], ascending=[True, False]).iloc[0]
-        else:
-            bonus = 0.0 if variant == "best_fit" else VALUE_BONUS
-            rank = cands["market_value_eur"].rank(pct=True).reindex(feasible.index)
-            score = feasible["fit"] + bonus * rank
-            choice = feasible.loc[score.sort_values(ascending=False, kind="stable").index[0]]
+        soft = remaining - _reserve(open_groups, avail, "median")
+        preferred = feasible.loc[feasible["market_value_eur"] <= soft]
+        feasible = preferred if not preferred.empty else feasible
+        best = feasible["score"].sort_values(ascending=False, kind="stable").index[0]
+        choice = feasible.loc[best]
         picked[i] = choice
         spent += float(choice["market_value_eur"])
-    return _assemble(form.name, form.slots, picked, target_style, budget_eur, variant, notes)
+    return _assemble(form.name, form.slots, picked, target_style, budget_eur, variant, notes, w)
 
 
 def _assemble(
     formation: str, slots: list[Slot], picked: dict[int, pd.Series], target: dict[str, float],
-    budget: float, variant: Variant, notes: list[str],
+    budget: float, variant: Variant, notes: list[str], quality_weight: float,
 ) -> Squad:  # fmt: skip
     out_slots = []
     for i, s in enumerate(slots):
@@ -237,6 +280,7 @@ def _assemble(
             slot_label=s.label, group=s.group, x=s.x, y=s.y, player_id=r["player_id"],
             player_name=r["player_name"], team=r["team"], league=r["league"],
             market_value_eur=float(r["market_value_eur"]), fit=round(float(r["fit"]), 4),
+            quality=round(float(r["quality"]), 4), score=round(float(r["score"]), 4),
             axis_scores={a: None if pd.isna(r[a]) else float(r[a]) for a in AXIS_COLUMNS},
             top_axes=_top_contributions(r),
         ))  # fmt: skip
@@ -255,6 +299,8 @@ def _assemble(
         variant=variant, title=VARIANT_TITLES[variant], formation=formation, budget_eur=budget,
         total_value_eur=float(xi["market_value_eur"].sum()),
         avg_fit=round(float(xi["fit"].mean()), 4),
+        avg_quality=round(float(xi["quality"].mean()), 4),
+        quality_weight=round(quality_weight, 3),
         slots=out_slots, breakdown=breakdown,
         top_axes=[AxisContribution(axis=a, label=RADAR_LABELS[a], contribution=round(c, 4))
                   for a, c in top],
@@ -278,9 +324,13 @@ def build_squad_variants(
     style_fit: pd.DataFrame,
     league_filter: list[str] | None = None,
     min_minutes: float = 900,
+    quality_weight: float = DEFAULT_QUALITY_WEIGHT,
 ) -> list[Squad]:
     """Best fit, Budget lean and Most balanced, in that order. Raises InfeasibleBudget."""
     return [
-        build_squad(target_style, budget_eur, formation, style_fit, league_filter, min_minutes, v)
+        build_squad(
+            target_style, budget_eur, formation, style_fit, league_filter, min_minutes, v,
+            quality_weight,
+        )
         for v in ("best_fit", "budget_lean", "most_balanced")
     ]

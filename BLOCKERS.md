@@ -666,5 +666,10 @@ section 28). Nothing was re-ingested or re-parsed for this.
   team pattern. Left team-level.
 - **Partial:** Direct speed has only progressive carries; the briefed `direct_pass_rate` (forward yards
   per pass) is not stored. Unblock: sum pass dx per player during parsing.
-- **Known weaknesses of the result** (section 29): fit ignores quality, so suggestions come in far under
-  budget and favour high-volume players; a possible league effect in pooled percentiles is unchecked.
+- **Known weaknesses of the result** (section 29): the first version ignored quality and came in far
+  under budget. Since the style + quality objective (2026-09-26) the budget is used, but log-scaled
+  market value separates players only weakly, so high-volume players still win most slots (Kanté, fit
+  47%, is excluded by the 50-60% fit floors). A possible league effect in pooled percentiles is unchecked.
+- **Stale text, left on purpose:** the Methodology page's Composer section still says suggestions "often
+  come in far under budget". That was true before the revision; it was not edited because the brief
+  allowed changes to the Composer page only. The three unmeasurable axes above are unchanged.
