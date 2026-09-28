@@ -337,6 +337,14 @@ _CLAUSE_END = re.compile(r"[;!?\n]|\.(?!\d)")
 _ZERO_WIDTH = re.compile("[​‌‍⁠﻿]")
 _SPACED_THOUSANDS = re.compile(r"(?<![\d.])\d{1,3}(?:[   ]\d{3})+(?![\d])")
 CONTEXT_WORDS = 3  # words on each side of a number that can tie it to a field
+_LABEL_TOKEN = re.compile(r"[a-z0-9_]+")
+MAX_LABEL_TOKENS = 6  # longest metric label, in words ("passes into the final third p90")
+# Words a label may carry that are not part of the metric name ("per 90 min" -> "min").
+_LABEL_FILLER = frozenset({"the", "min", "mins", "minutes"})
+_LABEL_ALIASES = {"expected_assists": "xa", "expected_goals": "xg"}
+METRIC_TOLERANCE = 0.005  # a labelled number may differ from its metric's value by 0.5%
+# Fields of a metric row that are not its value (ranks and model internals).
+_NOT_VALUE_FIELDS = ("percentile", "score", "_z", "contribution", "delta", "rank", "band")
 # A word next to a number (by prefix) -> substrings of the tool-result field paths it must come
 # from. A number near one of these words is only checked against those fields, so "31 goals"
 # cannot pass on some unrelated percentile of 31.
@@ -362,10 +370,11 @@ def normalize_answer(answer: str) -> str:
     return _SPACED_THOUSANDS.sub(lambda m: re.sub(r"[    ]", "", m.group(0)), text_)
 
 
-def _answer_numbers(answer: str) -> list[tuple[float, int, list[str]]]:
-    """(value, decimals shown, nearby words) for every number in the answer, framing removed.
-    A number's words stop at the neighbouring numbers and at clause ends, so in "key passes 4.26
-    (99th percentile)" the word "percentile" belongs to 99, not to 4.26."""
+def _answer_numbers(answer: str) -> list[tuple[float, int, list[str], list[str]]]:
+    """(value, decimals shown, nearby words, label tokens) for every number in the answer, framing
+    removed. A number's words stop at the neighbouring numbers and at clause ends, so in "key
+    passes 4.26 (99th percentile)" the word "percentile" belongs to 99, not to 4.26. The label
+    tokens are the words directly before the number ("key passes" / "key_passes_p90")."""
     text_ = _LIST_MARKER.sub(" ", _FRAMING_PATTERNS.sub(" ", normalize_answer(answer)))
     matches = list(_NUMBER.finditer(text_))
     out = []
@@ -383,7 +392,8 @@ def _answer_numbers(answer: str) -> list[tuple[float, int, list[str]]]:
         before = _WORD.findall(before_text.lower())[-CONTEXT_WORDS:]
         after = _WORD.findall(after_text.lower())[:CONTEXT_WORDS]
         words = before + after + (["million"] if suffix in ("m", "bn") else [])
-        out.append((value, decimals, words))
+        label = _LABEL_TOKEN.findall(before_text.lower())[-MAX_LABEL_TOKENS:]
+        out.append((value, decimals, words, label))
     return out
 
 
@@ -424,14 +434,73 @@ def _field_keys(words: list[str]) -> set[str]:
     return keys
 
 
+def _metric_names(obj: Any, out: set[str]) -> set[str]:
+    """Every `"metric": name` in the tool results."""
+    if isinstance(obj, dict):
+        if isinstance(obj.get("metric"), str):
+            out.add(obj["metric"].lower())
+        for v in obj.values():
+            _metric_names(v, out)
+    elif isinstance(obj, list | tuple):
+        for v in obj:
+            _metric_names(v, out)
+    return out
+
+
+def _metric_values(flat: list[tuple[str, float]], names: set[str]) -> dict[str, set[float]]:
+    """metric name -> the values stored for it (its row's value fields, or a field named after
+    it); percentiles, scores and z-scores in the row are not the metric's value."""
+    out: dict[str, set[float]] = {}
+    for path, v in flat:
+        segs = path.split(".")
+        for i, seg in enumerate(segs):
+            if seg in names:
+                field = segs[-1] if i < len(segs) - 1 else ""
+                if not any(x in field for x in _NOT_VALUE_FIELDS):
+                    out.setdefault(seg, set()).add(v)
+    return out
+
+
+def _labelled_metric(label: list[str], names: set[str]) -> list[str]:
+    """The metric(s) named by the words right before a number: the longest run of trailing words
+    that, joined with "_" (optionally + "_p90", stripped as framing, or "_pct", written "%"), is
+    a metric name in the results. "Expected assists / goals" are the xa / xg metrics."""
+    tokens = [t for t in label if t not in _LABEL_FILLER]
+    for k in range(len(tokens), 0, -1):
+        joined = "_".join(tokens[-k:])
+        for words, code in _LABEL_ALIASES.items():
+            joined = joined.replace(words, code)
+        hits = [n for n in (joined, f"{joined}_p90", f"{joined}_pct") if n in names]
+        if hits:
+            return hits
+    return []
+
+
+def _matches_metric(value: float, decimals: int, pool: Iterable[float]) -> bool:
+    for v in pool:
+        tol = max(METRIC_TOLERANCE * abs(v), 0.5 * 10**-decimals) + 1e-9
+        if any(abs(abs(c) - abs(value)) <= tol for c in (v, v * 100)):
+            return True
+    return False
+
+
 def unverified_numbers(answer_text: str, tool_results: Any) -> list[float]:
-    """The numbers in the answer that no tool result supports. A number next to a domain word
-    ("goals", "percentile", "value"...) must match a field of that kind."""
+    """The numbers in the answer that no tool result supports. A number right after a metric name
+    ("Key passes p90: 4.256") must match that metric's value within 0.5%; otherwise a number next
+    to a domain word ("goals", "percentile", "value"...) must match a field of that kind."""
     flat = _flatten(tool_results, "", [])
     everything = {v for _, v in flat}
+    names = _metric_names(tool_results, set())
+    by_metric = _metric_values(flat, names)
     missing = []
-    for value, decimals, words in _answer_numbers(answer_text):
+    for value, decimals, words, label in _answer_numbers(answer_text):
         if value in FRAMING_NUMBERS:
+            continue
+        metrics = _labelled_metric(label, names)
+        if metrics:
+            pool = set().union(*(by_metric.get(m, set()) for m in metrics))
+            if not _matches_metric(value, decimals, pool):
+                missing.append(value)
             continue
         keys = _field_keys(words)
         pool = {v for p, v in flat if any(k in p for k in keys)} if keys else everything

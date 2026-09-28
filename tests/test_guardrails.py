@@ -279,3 +279,54 @@ def test_expected_goals_and_assists_map_to_xg_xa() -> None:
     assert g.verify_citations("Expected assists: 0.41 per 90; expected goals 0.59.", results)
     # 0.59 is the xG rate: next to "assists" it must match an assist or xA field, and does not
     assert not g.verify_citations("Assists: 0.59 per 90.", results)
+
+
+# The exact answer withheld live on 2026-09-28 (second Q3 run): 4.256, 5.845, 12.409 and 6.264 were
+# flagged because in the Sources line "key_passes_p90=4.256, percentile=98.9" the word
+# "percentile" tied 4.256 to percentile fields only.
+WITHHELD_OZIL_SOURCES = (
+    "Mesut Özil’s statistical strengths in 2015/16 were his creation and passing metrics, where he "
+    "ranked at the very top of his position group.\n\n"
+    "- Assists p90: 0.569 (98.9th percentile) – CREATION  \n"
+    "- Expected assists p90 (xa p90): 0.413 (98.9th percentile) – CREATION  \n"
+    "- Key passes p90: 4.256 (98.9th percentile) – CREATION  \n"
+    "- Passes into box p90: 5.845 (98.9th percentile) – CREATION  \n"
+    "- Progressive passes p90: 12.409 (96.6th percentile) – PASSING  \n"
+    "- Passes into final third p90: 6.264 (92.0th percentile) – PASSING  \n"
+    "- xG per shot: 0.122 (83.0th percentile) – ATTACKING  \n\n"
+    "Sources:\n"
+    '- profile(player_name="Mesut Özil") → assists_p90=0.569, percentile=98.9; xa_p90=0.413, '
+    "percentile=98.9; key_passes_p90=4.256, percentile=98.9; passes_into_box_p90=5.845, "
+    "percentile=98.9; progressive_passes_p90=12.409, percentile=96.6; "
+    "passes_into_final_third_p90=6.264, percentile=92.0; xg_per_shot=0.122, percentile=83.0."
+)
+
+
+@needs_db
+def test_live_ozil_answer_with_sources_passes() -> None:
+    from src.chat.dispatch import call_tool
+
+    profile = call_tool("profile", {"player_name": "Mesut Özil"})
+    evidence = ["What are Özil's strengths?", {"player_name": "Mesut Özil"}, profile]
+    assert g.unverified_numbers(WITHHELD_OZIL_SOURCES, evidence) == []
+    # a wrong value next to its metric name is still caught, in the bullets and in the sources
+    for good, bad in (("4.256 (", "4.556 ("), ("12.409,", "12.909,")):
+        assert g.unverified_numbers(WITHHELD_OZIL_SOURCES.replace(good, bad), evidence)
+
+
+def test_metric_label_ties_number_to_that_metric() -> None:
+    results = [{"stats": [
+        {"metric": "key_passes_p90", "value": 4.256, "percentile": 98.9},
+        {"metric": "passes_into_box_p90", "value": 5.845, "percentile": 98.9},
+        {"metric": "pass_completion_pct", "value": 90.69, "percentile": 40.0},
+    ]}]  # fmt: skip
+    # label then number, as prose, as "name=value", with "per 90 min", "%" and 0.5% rounding
+    assert g.verify_citations("Key passes p90: 4.256", results)
+    assert g.verify_citations("key_passes_p90=4.256, percentile=98.9", results)
+    assert g.verify_citations("Passes into the box per 90 min: 5.85", results)
+    assert g.verify_citations("Pass completion: 90.7%", results)
+    # found but wrong: another metric's value, or the percentile, next to this metric's name
+    assert g.unverified_numbers("Key passes p90: 5.845", results) == [5.845]
+    assert g.unverified_numbers("Key passes p90: 98.9", results) == [98.9]
+    # no metric name before the number: the old rule (any field) still applies
+    assert g.verify_citations("He made 4.256 key passes per 90.", results)

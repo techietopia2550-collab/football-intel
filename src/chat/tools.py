@@ -16,8 +16,8 @@ from src.analytics.team_style import AXIS_COLUMNS
 
 LEAGUES: list[str] = ["ENG-Premier League", "ESP-La Liga", "FRA-Ligue 1", "ITA-Serie A"]
 _GROUPS = list(POSITION_GROUPS)
-_PLAYER = {"type": "string", "description": "Player name as the user wrote it (accents optional)."}
-_TEAM = {"type": "string", "description": "Team name as the user wrote it, e.g. 'Leicester'."}
+_PLAYER = {"type": "string", "description": "Player name as written."}
+_TEAM = {"type": "string", "description": "Team name as written."}
 _LEAGUE = {"type": "string", "enum": LEAGUES}
 
 
@@ -37,30 +37,28 @@ def _tool(
 TOOLS: list[dict[str, Any]] = [
     _tool(
         "resolve_player",
-        "Look up a player name in the 2015/16 data. Returns the one matching player, or an "
-        "'ambiguous' list of candidates, or 'not_found' with suggestions.",
+        "Resolve a player name: the match, an 'ambiguous' candidate list, or 'not_found'.",
         {"query": _PLAYER},
         ["query"],
     ),
     _tool(
         "player_stats",
-        "Season numbers for one player: games, goals, assists (or GK saves / clean sheets), every "
-        "relevant metric with value, per-90, within-position percentile and band, archetype, "
-        "market value, strengths and weaknesses. Use for factual questions.",
+        "A player's season counts, per-90 metrics with position-group percentiles, archetype and "
+        "market value.",
         {"player": _PLAYER},
         ["player"],
     ),
     _tool(
         "profile",
-        "A player's strengths (percentile score >= 80), weaknesses (<= 20) and neutral metrics, "
-        "judged only on metrics relevant to his position group, plus warnings.",
+        "A player's strengths (score >= 80), weaknesses (<= 20) and neutral metrics, with "
+        "warnings.",
         {"player_name": _PLAYER},
         ["player_name"],
     ),
     _tool(
         "find_similar",
-        "Players whose 2015/16 statistical profile is most similar to a player's (cosine "
-        "similarity within his archetype). Each result explains the shared and differing metrics.",
+        "Players most similar to a player (cosine within his archetype), with shared and "
+        "differing metrics.",
         {
             "player_name": _PLAYER,
             "n": {"type": "integer", "minimum": 1, "maximum": 10, "default": 5},
@@ -76,23 +74,21 @@ TOOLS: list[dict[str, Any]] = [
             "use_archetypes": {
                 "type": "boolean",
                 "default": True,
-                "description": "False = search within the position group.",
+                "description": "False: position-group pool.",
             },
         },  # fmt: skip
         ["player_name"],
     ),
     _tool(
         "compare_players",
-        "Two players side by side on the metrics both have: values, percentiles and percentile "
-        "deltas (a minus b), with a note when their position groups differ.",
+        "Two players side by side: values, percentiles and percentile deltas (a minus b).",
         {"a": _PLAYER, "b": _PLAYER},
         ["a", "b"],
     ),
     _tool(
         "find_players_by_profile",
-        "Players meeting percentile conditions, e.g. wins aerials (aerials_won_p90 >= 80) but "
-        "passes poorly (pass_completion_pct <= 20). Thresholds are 0-100 percentile scores "
-        "(already flipped where lower is better). Metric names must be exact.",
+        "Players meeting every percentile condition (exact metric names, 0-100 scores, flipped "
+        "where lower is better).",
         {
             "conditions": {
                 "type": "array",
@@ -110,7 +106,7 @@ TOOLS: list[dict[str, Any]] = [
             "position_group": {
                 "type": "string",
                 "enum": _GROUPS,
-                "description": "Omit to search every group that judges the metrics.",
+                "description": "Omit for all groups.",
             },
             "leagues": {"type": "array", "items": _LEAGUE},
             "limit": {"type": "integer", "minimum": 1, "maximum": 25, "default": 10},
@@ -119,31 +115,29 @@ TOOLS: list[dict[str, Any]] = [
     ),
     _tool(
         "explain_metric",
-        "Definition, formula, category and direction of a metric; with a player, his value, "
-        "percentile, sample size and whether the metric is judged for his position.",
+        "A metric's definition, formula and direction; with a player, his value and percentile.",
         {
-            "metric": {"type": "string", "description": "Exact metric name, e.g. pressures_p90."},
+            "metric": {"type": "string", "description": "Exact metric name."},
             "player": _PLAYER,
         },  # fmt: skip
         ["metric"],
     ),
     _tool(
         "team_fingerprint",
-        "How a team played in 2015/16: league position, points, the 12 style axes (raw value and "
-        "0-100 rank among 80 teams), headline facts, key players with archetypes, squad market "
-        "value and wage-bill context.",
+        "A team's league position, points, 12 style axes (0-100 ranks), key players, squad value "
+        "and wages.",
         {"team": _TEAM},
         ["team"],
     ),
     _tool(
         "list_teams",
-        "Every team in the data (80) with league and final position.",
+        "All 80 teams with league and final position.",
         {"league": _LEAGUE},
         [],
     ),
     _tool(
         "list_team_axis",
-        "Top or bottom teams on one style axis, e.g. most possession or hardest press.",
+        "Top or bottom teams on one style axis.",
         {
             "axis": {"type": "string", "enum": list(AXIS_COLUMNS)},
             "direction": {"type": "string", "enum": ["top", "bottom"], "default": "top"},
@@ -153,23 +147,23 @@ TOOLS: list[dict[str, Any]] = [
     ),
     _tool(
         "find_similar_teams",
-        "Teams whose style vector is closest to a team's, across the four leagues.",
+        "Teams whose style is closest to a team's.",
         {"team": _TEAM, "n": {"type": "integer", "minimum": 1, "maximum": 10, "default": 5}},
         ["team"],
     ),
     _tool(
         "build_squad",
-        "Tactical Composer: a starting XI whose players statistically fit a target style within a "
-        "market-value budget. Give exactly one of `style` (a preset) or `copy_team`.",
+        "Tactical Composer: an XI fitting a style within a budget. Give exactly one of style or "
+        "copy_team.",
         {
             "formation": {"type": "string", "enum": list(FORMATIONS)},
             "budget_eur_m": {
                 "type": "number",
                 "exclusiveMinimum": 0,
-                "description": "Total budget in millions of euros.",
+                "description": "EUR millions.",
             },
             "style": {"type": "string", "enum": list(PRESETS)},
-            "copy_team": {**_TEAM, "description": "Use this team's style as the target."},
+            "copy_team": {**_TEAM, "description": "Target this team's style."},
             "leagues": {"type": "array", "items": _LEAGUE},
             "variant": {"type": "string", "enum": list(VARIANT_RULES), "default": "standard"},
             "quality_weight": {"type": "number", "minimum": 0, "maximum": 1, "default": 0.5},
@@ -178,35 +172,32 @@ TOOLS: list[dict[str, Any]] = [
     ),
     _tool(
         "market_value",
-        "A player's Transfermarkt market value (EUR estimate, Oct 2015 - Mar 2016) and how it was "
-        "matched. Not a wage, not a fee paid.",
+        "A player's Transfermarkt market value (EUR estimate, 2015/16), not a wage or fee.",
         {"player": _PLAYER},
         ["player"],
     ),
     _tool(
         "player_style_fit",
-        "How strongly a player's own numbers lean towards each team-style axis (0-1 per axis; "
-        "null for axes with no player-level counterpart).",
+        "How strongly a player's numbers lean towards each team-style axis (0-1, null if "
+        "unmapped).",
         {"player": _PLAYER},
         ["player"],
     ),
     _tool(
         "archetypes",
-        "The playing-style archetypes (clusters) with sizes; with an archetype label, its most "
-        "typical players and defining metrics.",
-        {"archetype": {"type": "string", "description": "Archetype label, e.g. 'Destroyer'."}},
+        "Archetypes with sizes; with a label, its typical players and defining metrics.",
+        {"archetype": {"type": "string", "description": "Archetype label."}},
         [],
     ),
     _tool(
         "player_games",
-        "A player's season game counts and his longest, best and worst game (ratings compare his "
-        "own matches only).",
+        "A player's game counts and his longest, best and worst game.",
         {"player": _PLAYER},
         ["player"],
     ),
     _tool(
         "methodology",
-        "Fixed, reviewed text on how the data and metrics work and what is not measured.",
+        "Reviewed text on how the data and metrics work and what is not measured.",
         {"topic": {"type": "string", "enum": list(METHODOLOGY)}},
         [],
     ),

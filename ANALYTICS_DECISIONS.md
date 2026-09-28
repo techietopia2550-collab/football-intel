@@ -1205,3 +1205,70 @@ words the answer, code decides everything that must not be wrong.
   Each is a regression test with the live text. The check proves a number exists in a tool result,
   not that it is attributed or labelled right: a live answer said "260 m" for a carry distance
   stored in yards.
+- **Similarity output format and the percentile pool** (2026-09-28): the prompt gives an exact
+  format for similarity lists ("1. Name – NN% · Fair/Weak", cosine x 100 rounded, Fair >= 0.60).
+  The pool rule was checked against the code before it was worded: `find_similar` returns no
+  percentiles at all; its `target_z` / `candidate_z` are z-scores within the archetype pool
+  (`pool_kind="archetype"`, `group_size` 119 for Busquets' Deep playmaker pool), while every
+  percentile (`player_percentiles`, `profile`, `player_stats`) is ranked within
+  `position_group_fine`. So the rule is per field: "94th percentile among DMs", but "above the
+  Deep playmaker average" for a similarity z-score. "94th percentile among Deep playmakers" would
+  name a ranking that does not exist.
+- **Citation check, metric labels** (2026-09-28): a live Q3 answer was withheld although every
+  number was right. In its Sources line, `key_passes_p90=4.256, percentile=98.9`, the word
+  "percentile" after 4.256 tied it to percentile fields only. Now the words directly before a
+  number are matched to a `"metric"` name in the results (joined with "_", optionally + "_p90"
+  since "p90" is stripped as framing, or + "_pct"; "expected assists / goals" = xa / xg; "the",
+  "min" ignored). If they name a metric, the number must match that metric's value fields
+  (not its percentile, score, z-score, contribution, delta or rank) within 0.5% or the shown
+  rounding, and a mismatch is flagged even if the number exists elsewhere. With no metric label
+  the old rule applies. Regression test: the exact withheld answer.
+- **Prompt trim** (2026-09-28): 7,363 -> 3,710 template characters, 8,454 -> 4,590 filled (~1.1k
+  tokens). The refusal texts, the citation format and the similarity block are unchanged (the
+  refusals alone are 1,264 characters, the three kept sections 2,261, so the 2,500 target was not
+  reachable without cutting the rules below). Removed, and why:
+  - "You have no other knowledge of football for the purposes of this conversation" -> merged into
+    one sentence with "treat anything you remember ... as unavailable" (same instruction).
+  - The list of leagues, "80 teams" and "No other league, season, cup or international
+    competition" -> "2015/16 Big-4 only (ENG, ESP, FRA, ITA)"; other seasons are also refused by
+    rule before the LLM (OTHER_SEASON).
+  - "pooled across the four leagues" and the centre-back key-passes example -> "across the four
+    leagues"; `profile` only judges relevant metrics in code, so the model cannot misjudge them.
+  - "Position groups ... can differ from common perception (e.g. a winger labelled CM)" -> kept
+    as "use the group the tool returns"; the example was explanation, not instruction.
+  - `{n_archetypes}` and `{archetype_labels}` (241 characters) and the archetype description ->
+    the label arrives in every `profile`, `find_similar` and `archetypes` result.
+  - The similarity paragraph (cosine, "about half of pairs at 60%+", tiers, "no higher tier") ->
+    the tiers are in the similarity block, and `STANDING_CAVEAT` is appended by code to every
+    similarity answer.
+  - The 12 team-style axes list -> the `list_team_axis` enum and `team_fingerprint` result carry
+    the names.
+  - "Some players are unmatched or unvalued" and "Team wage bills exist only where the tool
+    returns them" -> covered by "never fill in a missing value" and the tool results.
+  - WHAT YOU CAN ANSWER (8 items) -> the tools define what can be answered; nothing in the list
+    was a constraint. The one wording rule in it ("fits the style on paper" for a suggested XI)
+    is kept.
+  - WHAT YOU MUST NOT DO, 10 bullets -> one "Never:" line with the same prohibitions, except:
+    "If a tool says a name was not found, stop and use NOT_IN_DB" (code ends the turn with the
+    verbatim refusal on not-found / ambiguous / below-threshold errors) and the list of
+    unmeasurable traits (refused by rule before the LLM; "anything off the pitch" stays).
+  - "Do not override the similarity verdict" -> "If a similarity verdict has a required first
+    sentence, begin with it exactly"; code prepends the WARN sentence itself.
+  - "If a question needs two tools, call both" and "Do not retry with invented names" -> dropped;
+    tools resolve names in code, and the 2-round limit bounds retries.
+  - The citation example block (3 lines) -> one line, per the trim rule for examples.
+- **Tool schema trim** (2026-09-28): every description <= 20 words (max 17), shared player/team
+  parameter descriptions shortened; names, types, enums, bounds, defaults and required lists
+  unchanged. `json.dumps(TOOLS)`: 9,084 -> 7,572 characters (~2.3k -> ~1.9k tokens at 4
+  characters per token). Most of what remains is enums (axes, formations, presets, methodology
+  topics) and JSON structure.
+- **No tool schemas on the last round** (2026-09-28): the request on the final round (after 2 tool
+  rounds, where a tool call would only hit the loop guard) is sent without `tools`. That was the
+  request that went over the 8,000-token cap (HTTP 413, 8,583 requested) on Q2. Dropping tools
+  from every second request instead was rejected: both live questions spent their first round on
+  `resolve_player`, so the second request must still be able to call `profile` / `find_similar`.
+- **Live re-verification** (2026-09-28, 6 requests, >= 20 s apart): Q3 "What are Özil's
+  strengths?" and Q2 "Find me a player like Busquets" both answered and passed the check. Groq
+  `usage.prompt_tokens` per request: 2,665 / 2,761 / 2,858 (Q3) and 2,665 / 2,757 / 3,025 (Q2),
+  largest total 3,372 of the 8,000 cap (was 8,583 and rejected). Q2 listed "1. Benjamin
+  Stambouli – 93% · Fair, 2. Mario Suárez – 84% · Fair, 3. Matías Vecino – 84% · Fair".

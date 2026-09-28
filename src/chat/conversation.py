@@ -201,19 +201,21 @@ def ask(
             state["llm_calls"] += 1  # a rejected request was still sent
         logger.warning("Groq pacing: {e}", e=event)
 
-    def call_llm(llm: ChatClient) -> dict[str, Any]:
+    def call_llm(llm: ChatClient, with_tools: bool) -> dict[str, Any]:
         if state["last_call"] is not None:
             gap = settings.groq_min_delay_seconds - (_clock() - state["last_call"])
             if gap > 0:
                 _sleep(gap)
+        tools = TOOLS if with_tools else None
+        choice = "auto" if with_tools else None
         try:
             with_retry = getattr(llm, "chat_with_retry", None)
             if with_retry is not None:
                 resp: dict[str, Any] = with_retry(
-                    messages, tools=TOOLS, tool_choice="auto", on_retry=on_retry
+                    messages, tools=tools, tool_choice=choice, on_retry=on_retry
                 )
             else:
-                resp = llm.chat(messages, tools=TOOLS, tool_choice="auto")
+                resp = llm.chat(messages, tools=tools, tool_choice=choice)
         finally:
             state["last_call"] = _clock()
         state["llm_calls"] += 1
@@ -240,7 +242,8 @@ def ask(
     answer = ""
     for round_no in range(MAX_TOOL_ROUNDS + 1):
         try:
-            resp = call_llm(llm)
+            # the last round may only answer, so it does not carry the ~1.9k tokens of tool schemas
+            resp = call_llm(llm, with_tools=round_no < MAX_TOOL_ROUNDS)
         except GroqRateLimitError as exc:
             logger.warning("Groq rate limit after retries: {exc}", exc=exc)
             return reply(
