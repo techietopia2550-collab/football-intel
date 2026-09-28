@@ -25,6 +25,7 @@ pages = [
     st.Page("pages/7_match.py", title="Match", icon="📋", url_path="match"),
     st.Page("pages/6_team.py", title="Team fingerprint", icon="🛡️", url_path="team"),
     st.Page("pages/8_composer.py", title="Tactical Composer", icon="🧩", url_path="composer"),
+    st.Page("pages/9_chat.py", title="Scout Chat", icon="💬", url_path="chat"),
     st.Page("pages/5_methodology.py", title="Methodology", icon="📖", url_path="methodology"),
 ]
 page = st.navigation(pages)  # registered before the sidebar so its page links resolve

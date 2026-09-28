@@ -1146,3 +1146,62 @@ Composer iteration; weights, presets, fit formula and the greedy build are uncha
     group by StatsBomb position), and Kanté's €10m value gives quality 0.29, too little to make up the
     fit gap at 0.6 quality weight. Low shot volume and quality also cost him on a preset that asks for
     55/35 on the shooting axes. Not tuned, by instruction. BLOCKERS.md section 24.
+
+## 31. Chatbot architecture: rules, tools, verified answers (`src/chat`, 2026-09-28)
+
+Design: docs/RAG_DESIGN.md. The chatbot answers from the database only; the LLM chooses tools and
+words the answer, code decides everything that must not be wrong.
+
+- **Flow** (`conversation.ask`): rule-based refusals -> name check -> LLM (Groq, `GROQ_MODEL`,
+  temperature 0) with the section-7 system prompt and the 17 tools -> `dispatch.call_tool` -> LLM
+  answer -> citation check. At most 2 tool-call rounds (3 LLM calls); a third round returns an
+  error. Every question is logged to `data/processed/chat_logs.jsonl` (gitignored).
+- **Model**: `openai/gpt-oss-120b`, the largest general-purpose model Groq listed on 2026-09-28
+  (the Llama 3.x 70B models are gone). Tool calling verified with one request: "What are the
+  strengths of Kanté?" -> `profile(player_name="N'Golo Kanté")`. The model returns a private
+  `reasoning` field; it is never sent back in the history.
+- **Rules before the LLM** (`guardrails.classify_with_rules`): PREDICTION (future tense with a
+  result verb, "next season", "predict", odds), UNMEASURABLE (leadership, mentality, character,
+  injuries, career history, age, vision), OTHER_SEASON (any year but 2015/2016, "this season",
+  "currently"), OFF_TOPIC (no football word and no name the data knows). "Who wins aerials" is
+  present tense and passes. Messi is in the data (Barcelona, 26 goals), so he is not refused.
+- **Name check** (`guardrails.check_player_names`): runs of name-like tokens (a word that occurs in
+  a player or team name, or an unknown capitalised word mid-sentence; acronyms such as PPDA are
+  skipped) resolved with `chatbot.resolve_player_name` / `resolve_team_name`. Free text is not a
+  search box: only a whole-word or full-name match counts ("France" does not find "Francesco",
+  "Erling" does not find "Sterling"). Unknown -> NOT_IN_DB, several -> AMBIGUOUS, both verbatim.
+  Known gap: a lowercase surname that is also a common English word can be missed; the LLM's tool
+  call resolves names again, so it degrades to an ordinary answer, not a wrong one.
+- **Tool errors**: not found / ambiguous / below the minutes threshold / no data / infeasible budget
+  end the turn with the verbatim refusal. Errors the model can correct or explain itself (a wrong
+  metric or axis name, bad arguments, a metric not judged for a group) go back to it as the tool
+  result, within the 2-round limit.
+- **Similarity** (`guardrails.apply_similarity_rule`, Decision 3): applied to the tool result
+  before the LLM sees it. Best >= 0.60 normal; 0.45-0.60 the exact "Weak matches only" sentence is
+  prepended; < 0.45 refused. Rows under 0.45 are dropped, the rest tagged Fair / Weak, and the
+  standing caveat is appended. Team similarity borrows the player cut (no labelled team set).
+- **Citation check** (`guardrails.verify_citations`): every number in the answer must match a
+  number in the tool results or arguments (as stored, x100 for 0-1 shares, /1e6 and /1e3 for
+  euros; rounding to the decimals shown). A number next to a domain word ("goals", "assists",
+  "percentile", "value", "xG"...) must match a field of that kind: without this, "31 goals" passed
+  on some unrelated percentile of 31, since integers 0-100 are almost always within rounding of
+  one of hundreds of percentiles. Always allowed: 2015, 2016, 90, 900, 100 and the phrases
+  "2015/16", "per 90", "top/bottom 20%", "60% Fair". A failed check withholds the answer.
+- **Rate limits**: Groq's free tier for gpt-oss-120b allows 8,000 tokens per minute
+  (`x-ratelimit-limit-tokens`), and every request carries ~3.8k tokens of system prompt and tool
+  schemas before any tool result, so about two requests fit in a minute. The first live run hit
+  HTTP 429 on the third request within two seconds. Now: `GroqClient.chat_with_retry` keeps a
+  sliding 60 s token window (`GROQ_TPM_BUDGET`, default 8,000, the measured cap) and sleeps before a
+  request would exceed it, respects Groq's remaining-tokens headers, and on a 429 waits 5 s then
+  15 s (or retry-after, if longer); the third 429 ends the turn with "Chatbot is unavailable." At
+  least `GROQ_MIN_DELAY_SECONDS` (3) pass between two calls of one turn. Waits and retries go to
+  the chat log. Paced live run (2026-09-28): 15 requests, no 429, but a tool question takes 1-2
+  minutes (two ~57 s token waits). Shrinking the per-request payload (tool schemas, prompt) is the
+  lever for latency; it was out of scope.
+- **Citation-check false positives found live**: (1) a domain word was read across into the next
+  number ("4.256 (99th percentile)" pinned 4.256 to percentile fields), so context now stops at
+  neighbouring numbers; (2) thin / no-break spaces as thousands separators ("2 455") and
+  zero-width characters are normalised; (3) "expected assists / goals" now allows xa / xg fields.
+  Each is a regression test with the live text. The check proves a number exists in a tool result,
+  not that it is attributed or labelled right: a live answer said "260 m" for a carry distance
+  stored in yards.

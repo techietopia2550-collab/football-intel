@@ -28,6 +28,11 @@ class Settings(BaseSettings):
     groq_api_key: str = Field(default="", alias="GROQ_API_KEY")
     # Groq model id; Groq retires models, so it is configuration, not code.
     groq_model: str = Field(default="openai/gpt-oss-120b", alias="GROQ_MODEL")
+    # Chatbot pacing: minimum gap between two Groq calls in one turn, and the tokens-per-minute
+    # budget the client keeps under (a sliding 60 s window) to avoid HTTP 429s.
+    groq_min_delay_seconds: float = Field(default=3.0, alias="GROQ_MIN_DELAY_SECONDS")
+    groq_tpm_budget: int = Field(default=8_000, alias="GROQ_TPM_BUDGET")  # Groq free tier cap
+    # for openai/gpt-oss-120b, from its x-ratelimit-limit-tokens header (2026-09-28)
     db_path: Path = Field(default=PROJECT_ROOT / "data" / "football.db", alias="DB_PATH")
     cache_dir: Path = Field(default=PROJECT_ROOT / "data" / "raw", alias="CACHE_DIR")
     processed_dir: Path = Field(default=PROJECT_ROOT / "data" / "processed", alias="PROCESSED_DIR")
