@@ -1292,3 +1292,39 @@ words the answer, code decides everything that must not be wrong.
   2 LLM calls. Prompt tokens per call: 2,671 then 4,134 (Q3), 2,671 then 4,305 (Q2); largest
   total 4,712 of the 8,000 cap. Wall clock 23.3 s (Q3) and 36.4 s (Q2, 14 s of it a token-window
   wait); the forced 20 s gap is most of it, Groq itself answered in 0.8-2.4 s per call.
+- **Prompt, formatting** (2026-09-28): "Write tool arguments as name=value pairs inside
+  parentheses, not as a JSON object." and "Write ordinals without a space: 98.9th, 92nd, 83rd."
+- **60-question test set** (2026-09-28): `scripts/build_chatbot_test_set.py` writes
+  `tests/fixtures/chatbot_test_set.json` from docs/RAG_DESIGN.md section 6: 50 in-scope questions
+  (factual 9, similarity 8, profile 7, team style 7, filter 7, comparison 6, explanation 6) and the
+  10-question refusal suite, with the questions as the design words them. Expected values are
+  read through the chatbot's own tools when the file is built (Vardy 24 goals, Özil 19 assists,
+  Leicester 1st on 81 points; S08's Weak-only target is found by scanning, Heurelho Gomes). The
+  design's CSV path and 3 runs per question were replaced by a JSON fixture and 1 run (the API
+  budget). `scripts/run_chatbot_test.py` asks each question through `conversation.ask`, >= 30 s
+  apart, refusals first and then round-robin over the categories so a partial run covers them
+  all, saving after every question (`--resume`, `--rescore` re-scores saved answers offline).
+  Answer checks are regexes; typographic spaces and hyphens are normalised first (a live answer
+  wrote "Idrissa Gueye"). The filter checks only test the first returned player's name.
+- **First run** (2026-09-28): stopped after 24 of 60 questions on Groq's daily cap for
+  gpt-oss-120b (200,000 tokens per day, rolling; about 100k had gone to earlier live checks the
+  same day). 28 API calls, 100,782 tokens, one 429. 13/24 correct: refusal suite 9/10, in-scope
+  4/14. Diagnosis, from replaying each answer's recorded tool calls through the citation check
+  offline (deterministic, no API calls):
+  - Citation-check false positives withheld 7 answers; 5 of them had the expected content
+    (P01, P02, W02, E01, E02), T01 and C02 also looked right on inspection. Causes: (1) the
+    metric-label rule (added the same day) reads a percentile written straight after a metric
+    name ("assists p90 – 98.9th percentile", "pass completion, 5th percentile tackle-win") as the
+    metric's value; (2) a non-breaking hyphen ("Counter‑pressures p90: 5.891") splits the label,
+    which then matches `pressures_p90`; (3) the older domain-word rule reads a word of the next
+    phrase ("... p90, yielding a 93%" -> "pressures"; "values.width=..." -> "value"). One withheld
+    answer (P02) also had a real misattribution in its Sources line (`fouls_won_p90=6.7`, which is
+    the percentile). The check needs a fix before the rest of the set is worth running.
+  - Model behaviour: S01 added `league="ESP-La Liga"` to `find_similar` unasked (a different,
+    La Liga-only list); E01 called `player_stats` instead of `explain_metric`; W01's tool call
+    failed Groq's schema validation (HTTP 400), reported as "unavailable"; T01 and E02 still
+    cited inline despite the rule; R09 (weekly wage) answered with the UNMEASURABLE text instead of
+    NO_DATA; P02 still wrote "6.7 th".
+  - Name check: C01 "Kanté vs Gueye" is refused as ambiguous (Idrissa and Babacar Gueye), as the
+    design's own C04 expects for Pogba. C03 ("Kane"), C05 ("Ronaldo") and P05 ("Gueye") will be
+    refused the same way; they were not reached.

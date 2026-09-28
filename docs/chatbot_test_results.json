@@ -1,0 +1,911 @@
+{
+  "meta": {
+    "model": "openai/gpt-oss-120b",
+    "test_set": "tests\\fixtures\\chatbot_test_set.json",
+    "questions_in_set": 60,
+    "prompt_characters": 4947,
+    "pace_seconds": 30.0,
+    "max_api_calls": 120,
+    "started": "2026-09-28T17:07:50+00:00",
+    "api_calls": 28,
+    "tokens": 100782,
+    "rate_limited_responses": 1,
+    "finished": "2026-09-28T17:29:01+00:00",
+    "stop_reason": "Groq daily limit: {\"error\":{\"message\":\"Rate limit reached for model `openai/gpt-oss-120b` in organization `org_<redacted>` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 198713, Requested 3706. Please try again in 17m25.008s. Need more tokens? Upgrade to Dev Tier today at https:/",
+    "completed": 24
+  },
+  "results": [
+    {
+      "id": 51,
+      "code": "R01",
+      "category": "refusal",
+      "question": "Who will win the Premier League next season?",
+      "answer": "I don't make predictions. I can only describe what happened in the 2015/16 season data.",
+      "withheld_answer": null,
+      "tool_calls": [],
+      "refused": true,
+      "verdict": "PREDICTION",
+      "error": null,
+      "llm_calls": 0,
+      "requests": [],
+      "seconds": 0.0,
+      "correct": true,
+      "pattern_matched": true,
+      "must_not_matched": false,
+      "tool_ok": true,
+      "reached_citation_check": false,
+      "verified": null,
+      "sources_block": null,
+      "sources_json_args": null,
+      "ordinal_space": null,
+      "withheld_would_match": null
+    },
+    {
+      "id": 52,
+      "code": "R02",
+      "category": "refusal",
+      "question": "Will Vardy score this weekend?",
+      "answer": "I don't make predictions. I can only describe what happened in the 2015/16 season data.",
+      "withheld_answer": null,
+      "tool_calls": [],
+      "refused": true,
+      "verdict": "PREDICTION",
+      "error": null,
+      "llm_calls": 0,
+      "requests": [],
+      "seconds": 0.0,
+      "correct": true,
+      "pattern_matched": true,
+      "must_not_matched": false,
+      "tool_ok": true,
+      "reached_citation_check": false,
+      "verified": null,
+      "sources_block": null,
+      "sources_json_args": null,
+      "ordinal_space": null,
+      "withheld_would_match": null
+    },
+    {
+      "id": 53,
+      "code": "R03",
+      "category": "refusal",
+      "question": "How many goals did Erling Haaland score?",
+      "answer": "I can only answer about players and teams in the 2015/16 StatsBomb data (Premier League, La Liga, Ligue 1, Serie A). I couldn't find \"Erling Haaland\" there.",
+      "withheld_answer": null,
+      "tool_calls": [],
+      "refused": true,
+      "verdict": "NOT_IN_DB",
+      "error": null,
+      "llm_calls": 0,
+      "requests": [],
+      "seconds": 0.2,
+      "correct": true,
+      "pattern_matched": true,
+      "must_not_matched": false,
+      "tool_ok": true,
+      "reached_citation_check": false,
+      "verified": null,
+      "sources_block": null,
+      "sources_json_args": null,
+      "ordinal_space": null,
+      "withheld_would_match": null
+    },
+    {
+      "id": 54,
+      "code": "R04",
+      "category": "refusal",
+      "question": "Stats for Thomas Müller?",
+      "answer": "I can only answer about players and teams in the 2015/16 StatsBomb data (Premier League, La Liga, Ligue 1, Serie A). I couldn't find \"Thomas Müller\" there.",
+      "withheld_answer": null,
+      "tool_calls": [],
+      "refused": true,
+      "verdict": "NOT_IN_DB",
+      "error": null,
+      "llm_calls": 0,
+      "requests": [],
+      "seconds": 0.2,
+      "correct": true,
+      "pattern_matched": true,
+      "must_not_matched": false,
+      "tool_ok": true,
+      "reached_citation_check": false,
+      "verified": null,
+      "sources_block": null,
+      "sources_json_args": null,
+      "ordinal_space": null,
+      "withheld_would_match": null
+    },
+    {
+      "id": 55,
+      "code": "R05",
+      "category": "refusal",
+      "question": "What's the capital of France?",
+      "answer": "I can only answer football analytics questions about the 2015/16 StatsBomb data.",
+      "withheld_answer": null,
+      "tool_calls": [],
+      "refused": true,
+      "verdict": "OFF_TOPIC",
+      "error": null,
+      "llm_calls": 0,
+      "requests": [],
+      "seconds": 0.1,
+      "correct": true,
+      "pattern_matched": true,
+      "must_not_matched": false,
+      "tool_ok": true,
+      "reached_citation_check": false,
+      "verified": null,
+      "sources_block": null,
+      "sources_json_args": null,
+      "ordinal_space": null,
+      "withheld_would_match": null
+    },
+    {
+      "id": 56,
+      "code": "R06",
+      "category": "refusal",
+      "question": "Does Kanté have a good mentality?",
+      "answer": "The data doesn't measure mentality. It contains on-pitch event data from 2015/16 only, so I can describe what a player did with the ball and without it, not mentality.",
+      "withheld_answer": null,
+      "tool_calls": [],
+      "refused": true,
+      "verdict": "UNMEASURABLE",
+      "error": null,
+      "llm_calls": 0,
+      "requests": [],
+      "seconds": 0.0,
+      "correct": true,
+      "pattern_matched": true,
+      "must_not_matched": false,
+      "tool_ok": true,
+      "reached_citation_check": false,
+      "verified": null,
+      "sources_block": null,
+      "sources_json_args": null,
+      "ordinal_space": null,
+      "withheld_would_match": null
+    },
+    {
+      "id": 57,
+      "code": "R07",
+      "category": "refusal",
+      "question": "What clubs did Ibrahimović play for before PSG?",
+      "answer": "The data doesn't measure career history. It contains on-pitch event data from 2015/16 only, so I can describe what a player did with the ball and without it, not career history.",
+      "withheld_answer": null,
+      "tool_calls": [],
+      "refused": true,
+      "verdict": "UNMEASURABLE",
+      "error": null,
+      "llm_calls": 0,
+      "requests": [],
+      "seconds": 0.0,
+      "correct": true,
+      "pattern_matched": true,
+      "must_not_matched": false,
+      "tool_ok": true,
+      "reached_citation_check": false,
+      "verified": null,
+      "sources_block": null,
+      "sources_json_args": null,
+      "ordinal_space": null,
+      "withheld_would_match": null
+    },
+    {
+      "id": 58,
+      "code": "R08",
+      "category": "refusal",
+      "question": "How many goals did Kane score in 2019/20?",
+      "answer": "The data covers the 2015/16 season only, so I can't answer about 2019.",
+      "withheld_answer": null,
+      "tool_calls": [],
+      "refused": true,
+      "verdict": "OTHER_SEASON",
+      "error": null,
+      "llm_calls": 0,
+      "requests": [],
+      "seconds": 0.0,
+      "correct": true,
+      "pattern_matched": true,
+      "must_not_matched": false,
+      "tool_ok": true,
+      "reached_citation_check": false,
+      "verified": null,
+      "sources_block": null,
+      "sources_json_args": null,
+      "ordinal_space": null,
+      "withheld_would_match": null
+    },
+    {
+      "id": 59,
+      "code": "R09",
+      "category": "refusal",
+      "question": "What's Özil's weekly wage?",
+      "answer": "The data doesn't measure weekly wage. It contains on‑pitch event data from 2015/16 only, so I can describe what a player did with the ball and without it, not weekly wage.",
+      "withheld_answer": null,
+      "tool_calls": [],
+      "refused": false,
+      "verdict": null,
+      "error": null,
+      "llm_calls": 1,
+      "requests": [
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 2709,
+          "total_tokens": 2877
+        }
+      ],
+      "seconds": 2.3,
+      "correct": false,
+      "pattern_matched": false,
+      "must_not_matched": false,
+      "tool_ok": true,
+      "reached_citation_check": false,
+      "verified": null,
+      "sources_block": null,
+      "sources_json_args": false,
+      "ordinal_space": false,
+      "withheld_would_match": null
+    },
+    {
+      "id": 60,
+      "code": "R10",
+      "category": "refusal",
+      "question": "Make up a stat for Payet's heading",
+      "answer": "I only report numbers that are in the database, so I can't make one up.",
+      "withheld_answer": null,
+      "tool_calls": [],
+      "refused": false,
+      "verdict": null,
+      "error": null,
+      "llm_calls": 1,
+      "requests": [
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 2711,
+          "total_tokens": 2778
+        }
+      ],
+      "seconds": 0.7,
+      "correct": true,
+      "pattern_matched": true,
+      "must_not_matched": false,
+      "tool_ok": true,
+      "reached_citation_check": false,
+      "verified": null,
+      "sources_block": null,
+      "sources_json_args": false,
+      "ordinal_space": false,
+      "withheld_would_match": null
+    },
+    {
+      "id": 1,
+      "code": "F01",
+      "category": "factual",
+      "question": "How many goals did Vardy score in 2015/16?",
+      "answer": "Jamie Vardy scored 24 goals in the 2015/16 season.\n\nSources:\n- player_stats(player=\"Jamie Vardy\") -> goals=24, season=\"2015\"",
+      "withheld_answer": null,
+      "tool_calls": [
+        {
+          "name": "player_stats",
+          "arguments": {
+            "player": "Jamie Vardy"
+          },
+          "ok": true
+        }
+      ],
+      "refused": false,
+      "verdict": null,
+      "error": null,
+      "llm_calls": 2,
+      "requests": [
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 2716,
+          "total_tokens": 2782
+        },
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 4845,
+          "total_tokens": 4957
+        }
+      ],
+      "seconds": 31.0,
+      "correct": true,
+      "pattern_matched": true,
+      "must_not_matched": false,
+      "tool_ok": true,
+      "reached_citation_check": true,
+      "verified": true,
+      "sources_block": true,
+      "sources_json_args": false,
+      "ordinal_space": false,
+      "withheld_would_match": null
+    },
+    {
+      "id": 10,
+      "code": "S01",
+      "category": "similarity",
+      "question": "Find me a player like Busquets",
+      "answer": "A few La Liga players most similar to Sergio Busquets in 2015/16 are:\n\n- Ivan Rakitić – 96% · Fair  \n- Daniel Wass – 57% · Weak  \n- Sergi Roberto – 57% · Weak  \n\nSources:\n- find_similar(league=\"ESP-La Liga\", n=3, player_name=\"Sergio Busquets\") -> player_name=Ivan Rakitić, similarity=0.9599; player_name=Daniel Wass, similarity=0.566; player_name=Sergi Roberto, similarity=0.5659\n\nSimilarity is a heuristic on 2015/16 event data: in testing, about half of Fair matches shared a role and style. It says nothing about ability, age, price or fit.\n\nCaveats from the engine:\n- Low archetype confidence (0.18): near the edge of 'Deep playmaker', so the pool is a soft description of him.",
+      "withheld_answer": null,
+      "tool_calls": [
+        {
+          "name": "find_similar",
+          "arguments": {
+            "league": "ESP-La Liga",
+            "n": 3,
+            "player_name": "Sergio Busquets"
+          },
+          "ok": true
+        }
+      ],
+      "refused": false,
+      "verdict": null,
+      "error": null,
+      "llm_calls": 2,
+      "requests": [
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 2709,
+          "total_tokens": 2834
+        },
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 4335,
+          "total_tokens": 4726
+        }
+      ],
+      "seconds": 37.8,
+      "correct": false,
+      "pattern_matched": false,
+      "must_not_matched": false,
+      "tool_ok": true,
+      "reached_citation_check": true,
+      "verified": true,
+      "sources_block": true,
+      "sources_json_args": false,
+      "ordinal_space": false,
+      "withheld_would_match": null
+    },
+    {
+      "id": 18,
+      "code": "P01",
+      "category": "profile",
+      "question": "What are Özil's strengths?",
+      "answer": "I couldn't verify the numbers in my answer against the database. Please rephrase the question.",
+      "withheld_answer": "Mesut Özil’s 2015/16 strengths were his elite creation and passing numbers:\n\n- assists p90 – 98.9th percentile (CREATION)  \n- xa p90 – 98.9th percentile (CREATION)  \n- key_passes p90 – 98.9th percentile (CREATION)  \n- passes_into_box p90 – 98.9th percentile (CREATION)  \n- progressive_passes p90 – 96.6th percentile (PASSING)  \n- passes_into_final_third p90 – 92.0th percentile (PASSING)  \n- xg_per_shot – 83.0th percentile (ATTACKING)  \n\nSources:\n- profile(player_name=\"Mesut Özil\") -> assists_p90=0.569, percentile=98.9; xa_p90=0.413, percentile=98.9; key_passes_p90=4.256, percentile=98.9; passes_into_box_p90=5.845, percentile=98.9; progressive_passes_p90=12.409, percentile=96.6; passes_into_final_third_p90=6.264, percentile=92.0; xg_per_shot=0.122, percentile=83.0",
+      "tool_calls": [
+        {
+          "name": "profile",
+          "arguments": {
+            "player_name": "Mesut Özil"
+          },
+          "ok": true
+        }
+      ],
+      "refused": true,
+      "verdict": "UNVERIFIED",
+      "error": null,
+      "llm_calls": 2,
+      "requests": [
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 2709,
+          "total_tokens": 2766
+        },
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 4172,
+          "total_tokens": 4654
+        }
+      ],
+      "seconds": 31.7,
+      "correct": false,
+      "pattern_matched": false,
+      "must_not_matched": false,
+      "tool_ok": true,
+      "reached_citation_check": true,
+      "verified": false,
+      "sources_block": true,
+      "sources_json_args": false,
+      "ordinal_space": false,
+      "withheld_would_match": true
+    },
+    {
+      "id": 25,
+      "code": "T01",
+      "category": "team_style",
+      "question": "How did Leicester play in 2015/16?",
+      "answer": "I couldn't verify the numbers in my answer against the database. Please rephrase the question.",
+      "withheld_answer": "Leicester City’s 2015/16 style was a low‑possession, direct‑passing approach that emphasized width, frequent crosses and high‑quality shooting with quick transitions.  \n\n- Possession 42.5 % (6th percentile) – very low 【team_fingerprint(team=\"Leicester City\") -> values.possession_pct=42.45450198306658, scores.possession_pct=6.329113924050633】  \n- Direct speed rank 94.9 % (fast‑moving play) 【team_fingerprint(team=\"Leicester City\") -> values.direct_speed=11.347578347578347, scores.direct_speed=94.9367088607595】  \n- Width rank 96.2 % (extremely wide) 【team_fingerprint(team=\"Leicester City\") -> values.width=25.134057092723435, scores.width=96.20253164556962】  \n- Crosses 13.58 p90 (73.4 % rank) – heavy use of wide balls 【team_fingerprint(team=\"Leicester City\") -> values.crosses_p90=13.578947368421053, scores.crosses_p90=73.41772151898735】  \n- Shots 13.82 p90 (78.5 % rank) with xG per shot 0.126 (96.2 % rank) – high‑quality shooting 【team_fingerprint(team=\"Leicester City\") -> values.shots_pm=13.81578947368421, scores.shots_pm=78.48101265822784, values.xg_per_shot=0.12625175425904764, scores.xg_per_shot=96.20253164556962】  \n- Transition time 17.9 s (92.4 % rank) – very quick counter‑attacks 【team_fingerprint(team=\"Leicester City\") -> values.transition_secs=17.892156862745097, scores.transition_secs=92.40506329113924】  \n- Progressive‑pass rate 0.207 (45.6 % rank) – limited forward passing 【team_fingerprint(team=\"Leicester City\") -> values.progressive_pass_rate=0.20678460213343935, scores.progressive_pass_rate=45.56962025316456】  \n\nSources:  \n- team_fingerprint(team=\"Leicester City\") -> values.possession_pct=42.45450198306658, scores.possession_pct=6.329113924050633, values.direct_speed=11.347578347578347, scores.direct_speed=94.9367088607595, values.width=25.134057092723435, scores.width=96.20253164556962, values.crosses_p90=13.578947368421053, scores.crosses_p90=73.41772151898735, values.shots_pm=13.81578947368421, scores.shots_pm=78.48101265822784, values.xg_per_shot=0.12625175425904764, scores.xg_per_shot=96.20253164556962, values.transition_secs=17.892156862745097, scores.transition_secs=92.40506329113924, values.progressive_pass_rate=0.20678460213343935, scores.progressive_pass_rate=45.56962025316456",
+      "tool_calls": [
+        {
+          "name": "team_fingerprint",
+          "arguments": {
+            "team": "Leicester City"
+          },
+          "ok": true
+        }
+      ],
+      "refused": true,
+      "verdict": "UNVERIFIED",
+      "error": null,
+      "llm_calls": 2,
+      "requests": [
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 2713,
+          "total_tokens": 2840
+        },
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 3577,
+          "total_tokens": 4522
+        }
+      ],
+      "seconds": 33.2,
+      "correct": false,
+      "pattern_matched": false,
+      "must_not_matched": false,
+      "tool_ok": true,
+      "reached_citation_check": true,
+      "verified": false,
+      "sources_block": true,
+      "sources_json_args": false,
+      "ordinal_space": false,
+      "withheld_would_match": false
+    },
+    {
+      "id": 32,
+      "code": "W01",
+      "category": "filter",
+      "question": "Who wins aerials but doesn't pass well?",
+      "answer": "Chatbot is unavailable. Try again later.",
+      "withheld_answer": null,
+      "tool_calls": [],
+      "refused": true,
+      "verdict": null,
+      "error": "llm_unavailable",
+      "llm_calls": 0,
+      "requests": [],
+      "seconds": 23.7,
+      "correct": false,
+      "pattern_matched": false,
+      "must_not_matched": false,
+      "tool_ok": false,
+      "reached_citation_check": false,
+      "verified": null,
+      "sources_block": null,
+      "sources_json_args": null,
+      "ordinal_space": null,
+      "withheld_would_match": null
+    },
+    {
+      "id": 39,
+      "code": "C01",
+      "category": "comparison",
+      "question": "Kanté vs Gueye",
+      "answer": "\"Gueye\" matches several players: Idrissa Gueye (Aston Villa), Babacar Gueye (Troyes). Which one do you mean?",
+      "withheld_answer": null,
+      "tool_calls": [],
+      "refused": true,
+      "verdict": "AMBIGUOUS",
+      "error": null,
+      "llm_calls": 0,
+      "requests": [],
+      "seconds": 0.3,
+      "correct": false,
+      "pattern_matched": false,
+      "must_not_matched": false,
+      "tool_ok": false,
+      "reached_citation_check": false,
+      "verified": null,
+      "sources_block": null,
+      "sources_json_args": null,
+      "ordinal_space": null,
+      "withheld_would_match": null
+    },
+    {
+      "id": 45,
+      "code": "E01",
+      "category": "explanation",
+      "question": "Why is Kanté ranked high on pressing?",
+      "answer": "I couldn't verify the numbers in my answer against the database. Please rephrase the question.",
+      "withheld_answer": "Kanté is ranked high on pressing because he applies far more pressure actions than almost all his peers, with pressures p90 in the 84.6th percentile and counter‑pressures p90 in the 84.1st percentile among central midfielders in 2015/16【player_stats(player=\"N'Golo Kanté\")】.  \n\n- Pressures p90: 26.954 (84.6th percentile)  \n- Counter‑pressures p90: 5.891 (84.1st percentile)  \n- Both metrics appear in his strengths list (score ≥ 80)  \n\nSources:  \n- player_stats(player=\"N'Golo Kanté\") -> pressures_p90=26.954, pressures_percentile=84.6, counterpressures_p90=5.891, counterpressures_percentile=84.1, strengths=pressures_p90, counterpressures_p90.",
+      "tool_calls": [
+        {
+          "name": "player_stats",
+          "arguments": {
+            "player": "N'Golo Kanté"
+          },
+          "ok": true
+        }
+      ],
+      "refused": true,
+      "verdict": "UNVERIFIED",
+      "error": null,
+      "llm_calls": 3,
+      "requests": [
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 2711,
+          "total_tokens": 2816
+        },
+        {
+          "status": 429,
+          "detail": "{\"error\":{\"message\":\"Rate limit reached for model `openai/gpt-oss-120b` in organization `org_<redacted>` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 2280, Requested 5860. Please try again in 1.05s. Need more tokens? Upgrade to Dev Tier today at https://conso"
+        },
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 5378,
+          "total_tokens": 5666
+        }
+      ],
+      "seconds": 11.2,
+      "correct": false,
+      "pattern_matched": false,
+      "must_not_matched": false,
+      "tool_ok": false,
+      "reached_citation_check": true,
+      "verified": false,
+      "sources_block": true,
+      "sources_json_args": false,
+      "ordinal_space": false,
+      "withheld_would_match": true
+    },
+    {
+      "id": 2,
+      "code": "F02",
+      "category": "factual",
+      "question": "How many assists did Özil get?",
+      "answer": "Mesut Özil recorded 19 assists in the 2015/16 season.  \n\nSources:\n- player_stats(player=\"Mesut Özil\") -> assists=19",
+      "withheld_answer": null,
+      "tool_calls": [
+        {
+          "name": "player_stats",
+          "arguments": {
+            "player": "Mesut Özil"
+          },
+          "ok": true
+        }
+      ],
+      "refused": false,
+      "verdict": null,
+      "error": null,
+      "llm_calls": 2,
+      "requests": [
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 2710,
+          "total_tokens": 2772
+        },
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 5260,
+          "total_tokens": 5396
+        }
+      ],
+      "seconds": 35.2,
+      "correct": true,
+      "pattern_matched": true,
+      "must_not_matched": false,
+      "tool_ok": true,
+      "reached_citation_check": true,
+      "verified": true,
+      "sources_block": true,
+      "sources_json_args": false,
+      "ordinal_space": false,
+      "withheld_would_match": null
+    },
+    {
+      "id": 11,
+      "code": "S02",
+      "category": "similarity",
+      "question": "Who plays like Kanté but not at Leicester?",
+      "answer": "Players similar to N’Golo Kanté (excluding Leicester) are:\n\n1. Idrissa Gueye – 85% · Fair  \n2. Asier Illarramendi – 77% · Fair  \n3. Jaba Kankava – 71% · Fair  \n\nSources:\n- find_similar(filters={exclude_same_team:true},n=3,player_name=\"N'Golo Kanté\") -> similarity=0.8452,0.7662,0.7101, tier=Fair for each candidate.\n\nSimilarity is a heuristic on 2015/16 event data: in testing, about half of Fair matches shared a role and style. It says nothing about ability, age, price or fit.\n\nCaveats from the engine:\n- Low archetype confidence (0.24): near the edge of 'Destroyer', so the pool is a soft description of him.",
+      "withheld_answer": null,
+      "tool_calls": [
+        {
+          "name": "find_similar",
+          "arguments": {
+            "filters": {
+              "exclude_same_team": true
+            },
+            "n": 3,
+            "player_name": "N'Golo Kanté"
+          },
+          "ok": true
+        }
+      ],
+      "refused": false,
+      "verdict": null,
+      "error": null,
+      "llm_calls": 2,
+      "requests": [
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 2712,
+          "total_tokens": 2914
+        },
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 4345,
+          "total_tokens": 4657
+        }
+      ],
+      "seconds": 35.5,
+      "correct": true,
+      "pattern_matched": true,
+      "must_not_matched": false,
+      "tool_ok": true,
+      "reached_citation_check": true,
+      "verified": true,
+      "sources_block": true,
+      "sources_json_args": false,
+      "ordinal_space": false,
+      "withheld_would_match": null
+    },
+    {
+      "id": 19,
+      "code": "P02",
+      "category": "profile",
+      "question": "What is Vardy weak at?",
+      "answer": "I couldn't verify the numbers in my answer against the database. Please rephrase the question.",
+      "withheld_answer": "Vardy’s main weaknesses in 2015/16 were winning fouls and counter‑pressures.\n\n- fouls_won_p90 – 6.7 th percentile (very low)  \n- counterpressures_p90 – 13.7 th percentile (very low)\n\nSources:\n- profile(player_name=\"Jamie Vardy\") -> fouls_won_p90=6.7, counterpressures_p90=13.7",
+      "tool_calls": [
+        {
+          "name": "profile",
+          "arguments": {
+            "player_name": "Jamie Vardy"
+          },
+          "ok": true
+        }
+      ],
+      "refused": true,
+      "verdict": "UNVERIFIED",
+      "error": null,
+      "llm_calls": 2,
+      "requests": [
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 2709,
+          "total_tokens": 2812
+        },
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 4066,
+          "total_tokens": 4422
+        }
+      ],
+      "seconds": 31.4,
+      "correct": false,
+      "pattern_matched": false,
+      "must_not_matched": false,
+      "tool_ok": true,
+      "reached_citation_check": true,
+      "verified": false,
+      "sources_block": true,
+      "sources_json_args": false,
+      "ordinal_space": true,
+      "withheld_would_match": true
+    },
+    {
+      "id": 26,
+      "code": "T02",
+      "category": "team_style",
+      "question": "Did Barcelona press high?",
+      "answer": "Barcelona defended high up the pitch, ranking in the 98.7th percentile for pressure (ppda) in 2015/16.  \n\n- ppda score: 98.734 % (very low passes allowed per defensive action)  \n- Headline fact: “Defends high up the pitch”  \n\nSources:\n- team_fingerprint(team=\"Barcelona\") -> scores.ppda=98.73417721518987, headline_facts=[\"Defends high up the pitch\"]",
+      "withheld_answer": null,
+      "tool_calls": [
+        {
+          "name": "team_fingerprint",
+          "arguments": {
+            "team": "Barcelona"
+          },
+          "ok": true
+        }
+      ],
+      "refused": false,
+      "verdict": null,
+      "error": null,
+      "llm_calls": 2,
+      "requests": [
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 2707,
+          "total_tokens": 2904
+        },
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 3551,
+          "total_tokens": 3773
+        }
+      ],
+      "seconds": 31.1,
+      "correct": true,
+      "pattern_matched": true,
+      "must_not_matched": false,
+      "tool_ok": true,
+      "reached_citation_check": true,
+      "verified": true,
+      "sources_block": true,
+      "sources_json_args": false,
+      "ordinal_space": false,
+      "withheld_would_match": null
+    },
+    {
+      "id": 33,
+      "code": "W02",
+      "category": "filter",
+      "question": "CBs who pass well but tackle poorly",
+      "answer": "I couldn't verify the numbers in my answer against the database. Please rephrase the question.",
+      "withheld_answer": "Central‑backs with high passing accuracy (≥85 % pass completion) but low tackling success (≤20 % tackle‑win percentile) in 2015/16 include:\n\n- Gerard Piqué – 99th percentile pass completion, 5th percentile tackle‑win  \n- Raúl Albiol – 94.3rd percentile pass completion, 1.1st percentile tackle‑win  \n- Milan Biševac – 91.5th percentile pass completion, 2.2nd percentile tackle‑win  \n- Raphaël Varane – 92.7th percentile pass completion, 5.8th percentile tackle‑win  \n- Martin Škrtel – 88.4th percentile pass completion, 3.8th percentile tackle‑win  \n- Mamadou Sakho – 88.8th percentile pass completion, 14.7th percentile tackle‑win  \n- Emiliano Moretti – 85.2nd percentile pass completion, 11.4th percentile tackle‑win  \n- Ricardo Carvalho – 89.6th percentile pass completion, 18.1st percentile tackle‑win  \n\nSources:\n- find_players_by_profile(conditions=pass_completion_pct>=85, tackle_win_pct<=20, position_group=CB, limit=10) -> pass_completion_pct=percentile, tackle_win_pct=percentile for each listed player",
+      "tool_calls": [
+        {
+          "name": "find_players_by_profile",
+          "arguments": {
+            "conditions": [
+              {
+                "metric": "pass_completion_pct",
+                "op": ">=",
+                "threshold": 85
+              },
+              {
+                "metric": "tackle_win_pct",
+                "op": "<=",
+                "threshold": 20
+              }
+            ],
+            "limit": 10,
+            "position_group": "CB"
+          },
+          "ok": true
+        }
+      ],
+      "refused": true,
+      "verdict": "UNVERIFIED",
+      "error": null,
+      "llm_calls": 2,
+      "requests": [
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 2710,
+          "total_tokens": 2944
+        },
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 3990,
+          "total_tokens": 4439
+        }
+      ],
+      "seconds": 31.7,
+      "correct": false,
+      "pattern_matched": false,
+      "must_not_matched": false,
+      "tool_ok": true,
+      "reached_citation_check": true,
+      "verified": false,
+      "sources_block": true,
+      "sources_json_args": false,
+      "ordinal_space": false,
+      "withheld_would_match": true
+    },
+    {
+      "id": 40,
+      "code": "C02",
+      "category": "comparison",
+      "question": "Compare Özil and Payet",
+      "answer": "I couldn't verify the numbers in my answer against the database. Please rephrase the question.",
+      "withheld_answer": "In 2015/16 Özil was a far stronger creator but a weaker shooter and defender than Payet.  \n\n- Assists p90: 0.569 (98.9th percentile) vs 0.423 (95th)  \n- Expected assists p90: 0.413 (98.9th) vs 0.383 (97th)  \n- Goals p90: 0.18 (44th) vs 0.317 (76th)  \n- Shots p90: 1.47 (12th) vs 2.43 (67th)  \n- xG per shot: 0.122 (83rd) vs 0.073 (26th)  \n- Dribble‑success %: 58.7 % (62nd) vs 68.2 % (98th)  \n- Ball‑recoveries p90: 4.38 (19th) vs 5.64 (81st)  \n- Market value: €50 m vs €18 m  \n\nSources:  \n- compare_players(a=\"Mesut Özil\",b=\"Dimitri Payet\") -> assists_p90.percentile=98.9, assists_p90.percentile=95.0, xa_p90.percentile=98.9, xa_p90.percentile=97.0, goals_p90.percentile=44.3, goals_p90.percentile=75.8, shots_p90.percentile=12.5, shots_p90.percentile=66.6, xg_per_shot.percentile=83.0, xg_per_shot.percentile=26.0, dribble_success_pct.percentile=62.2, dribble_success_pct.percentile=98.3, ball_recoveries_p90.percentile=19.3, ball_recoveries_p90.percentile=81.1, market_value.market_value_eur=50000000, market_value.market_value_eur=18000000",
+      "tool_calls": [
+        {
+          "name": "compare_players",
+          "arguments": {
+            "a": "Mesut Özil",
+            "b": "Dimitri Payet"
+          },
+          "ok": true
+        }
+      ],
+      "refused": true,
+      "verdict": "UNVERIFIED",
+      "error": null,
+      "llm_calls": 2,
+      "requests": [
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 2708,
+          "total_tokens": 2821
+        },
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 6463,
+          "total_tokens": 7551
+        }
+      ],
+      "seconds": 89.4,
+      "correct": false,
+      "pattern_matched": false,
+      "must_not_matched": false,
+      "tool_ok": true,
+      "reached_citation_check": true,
+      "verified": false,
+      "sources_block": true,
+      "sources_json_args": false,
+      "ordinal_space": false,
+      "withheld_would_match": false
+    },
+    {
+      "id": 46,
+      "code": "E02",
+      "category": "explanation",
+      "question": "Why is Benjamin Stambouli similar to Busquets?",
+      "answer": "I couldn't verify the numbers in my answer against the database. Please rephrase the question.",
+      "withheld_answer": "Benjamin Stambouli resembles Sergio Busquets because both produce very low key‑passes p90, few passes into the box p90, and high counter‑pressures p90, yielding a 93% cosine similarity (Fair tier).  \n\n- Key passes p90: 0.31 (Stambouli) vs 0.56 (Busquets) – both well below average【find_similar(player_name=\"Benjamin Stambouli\", n=5, use_archetypes=true) -> target_value=0.309, candidate_value=0.56】  \n- Passes into box p90: 0.37 vs 0.65 – similarly low【find_similar(player_name=\"Benjamin Stambouli\", n=5, use_archetypes=true) -> target_value=0.371, candidate_value=0.654】  \n- Counter‑pressures p90: 6.31 vs 5.95 – both high【find_similar(player_name=\"Benjamin Stambouli\", n=5, use_archetypes=true) -> target_value=6.308, candidate_value=5.946】  \n- Overall similarity score: 93% (Fair)【find_similar(player_name=\"Benjamin Stambouli\", n=5, use_archetypes=true) -> similarity=0.9262】  \n\nSimilarity ranking (Fair tier):  \n1. Sergio Busquets – 93% · Fair  \n2. Matías Vecino – 84% · Fair  \n3. Mario Suárez – 82% · Fair  \n\nSources:  \n- find_similar(player_name=\"Benjamin Stambouli\", n=5, use_archetypes=true) -> similarity=0.9262, target_value=0.309, candidate_value=0.56, target_value=0.371, candidate_value=0.654, target_value=6.308, candidate_value=5.946, similarity=0.8437, similarity=0.8154",
+      "tool_calls": [
+        {
+          "name": "find_similar",
+          "arguments": {
+            "n": 5,
+            "player_name": "Benjamin Stambouli",
+            "use_archetypes": true
+          },
+          "ok": true
+        }
+      ],
+      "refused": true,
+      "verdict": "UNVERIFIED",
+      "error": null,
+      "llm_calls": 2,
+      "requests": [
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 2713,
+          "total_tokens": 2982
+        },
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 5180,
+          "total_tokens": 6177
+        }
+      ],
+      "seconds": 94.3,
+      "correct": false,
+      "pattern_matched": false,
+      "must_not_matched": false,
+      "tool_ok": true,
+      "reached_citation_check": true,
+      "verified": false,
+      "sources_block": true,
+      "sources_json_args": false,
+      "ordinal_space": false,
+      "withheld_would_match": true
+    }
+  ]
+}

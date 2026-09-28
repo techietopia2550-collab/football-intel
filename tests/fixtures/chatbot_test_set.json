@@ -1,0 +1,503 @@
+[
+  {
+    "id": 1,
+    "code": "F01",
+    "category": "factual",
+    "question": "How many goals did Vardy score in 2015/16?",
+    "expected_tool": "player_stats",
+    "expected_answer_pattern": "(?<![\\d.])(?:24)(?![\\d])"
+  },
+  {
+    "id": 2,
+    "code": "F02",
+    "category": "factual",
+    "question": "How many assists did Özil get?",
+    "expected_tool": "player_stats",
+    "expected_answer_pattern": "(?<![\\d.])(?:19)(?![\\d])"
+  },
+  {
+    "id": 3,
+    "code": "F03",
+    "category": "factual",
+    "question": "Luis Suárez goals and assists?",
+    "expected_tool": "player_stats",
+    "expected_answer_pattern": "(?=.*?(?:(?<![\\d.])(?:40)(?![\\d])))(?=.*?(?:(?<![\\d.])(?:15)(?![\\d])))"
+  },
+  {
+    "id": 4,
+    "code": "F04",
+    "category": "factual",
+    "question": "What was Harry Kane's xG per 90?",
+    "expected_tool": "player_stats",
+    "expected_answer_pattern": "(?<![\\d.])(?:0\\.584|0\\.58)(?![\\d])"
+  },
+  {
+    "id": 5,
+    "code": "F05",
+    "category": "factual",
+    "question": "How many minutes did Busquets play?",
+    "expected_tool": "player_stats",
+    "expected_answer_pattern": "(?<![\\d.])(?:2890\\.9|2,891|2891)(?![\\d])"
+  },
+  {
+    "id": 6,
+    "code": "F06",
+    "category": "factual",
+    "question": "Where did Leicester finish?",
+    "expected_tool": "team_fingerprint",
+    "expected_answer_pattern": "(?=.*?(?:\\b(?:1st|first)\\b))(?=.*?(?:(?<![\\d.])(?:81)(?![\\d])))"
+  },
+  {
+    "id": 7,
+    "code": "F07",
+    "category": "factual",
+    "question": "How many points did PSG get?",
+    "expected_tool": "team_fingerprint",
+    "expected_answer_pattern": "(?<![\\d.])(?:93)(?![\\d])"
+  },
+  {
+    "id": 8,
+    "code": "F08",
+    "category": "factual",
+    "question": "Mahrez's goals?",
+    "expected_tool": "player_stats",
+    "expected_answer_pattern": "(?<![\\d.])(?:17)(?![\\d])"
+  },
+  {
+    "id": 9,
+    "code": "F09",
+    "category": "factual",
+    "question": "Jack Wilshere's stats?",
+    "expected_tool": "player_stats",
+    "expected_answer_pattern": "\\b143\\b",
+    "expected_refusal": "BELOW_THRESHOLD"
+  },
+  {
+    "id": 10,
+    "code": "S01",
+    "category": "similarity",
+    "question": "Find me a player like Busquets",
+    "expected_tool": "find_similar",
+    "expected_answer_pattern": "(?=.*?(?:(?:Benjamin\\ Stambouli).*?(?:Mario\\ Suárez).*?(?:Matías\\ Vecino)))(?=.*?(?:\\d{1,3}\\s?%\\s*·\\s*(?:Fair|Weak)))"
+  },
+  {
+    "id": 11,
+    "code": "S02",
+    "category": "similarity",
+    "question": "Who plays like Kanté but not at Leicester?",
+    "expected_tool": "find_similar",
+    "expected_answer_pattern": "Idrissa\\ Gueye"
+  },
+  {
+    "id": 12,
+    "code": "S03",
+    "category": "similarity",
+    "question": "Players similar to Özil",
+    "expected_tool": "find_similar",
+    "expected_answer_pattern": "(?=.*?(?:Chance\\ creator))(?=.*?(?:\\d{1,3}\\s?%\\s*·\\s*(?:Fair|Weak)))"
+  },
+  {
+    "id": 13,
+    "code": "S04",
+    "category": "similarity",
+    "question": "3 players like Payet",
+    "expected_tool": "find_similar",
+    "expected_answer_pattern": "(?:Kevin\\ De\\ Bruyne).*?(?:Abdelaziz\\ Barrada).*?(?:Mesut\\ Özil)",
+    "must_not_pattern": "James\\ Rodríguez"
+  },
+  {
+    "id": 14,
+    "code": "S05",
+    "category": "similarity",
+    "question": "Teams that played like Leicester",
+    "expected_tool": "find_similar_teams",
+    "expected_answer_pattern": "(?:Toulouse).*?(?:Eibar).*?(?:West\\ Ham\\ United)"
+  },
+  {
+    "id": 15,
+    "code": "S06",
+    "category": "similarity",
+    "question": "Who is closest to Luis Suárez and why?",
+    "expected_tool": "find_similar",
+    "expected_answer_pattern": "(?=.*?(?:Gonzalo\\ Higuaín))(?=.*?(?:(?:goals|(?:xg|expected goals)|shots)))"
+  },
+  {
+    "id": 16,
+    "code": "S07",
+    "category": "similarity",
+    "question": "A goalkeeper like the Juventus keeper",
+    "expected_tool": "find_similar",
+    "expected_answer_pattern": "Kevin\\ Trapp"
+  },
+  {
+    "id": 17,
+    "code": "S08",
+    "category": "similarity",
+    "question": "Find players similar to Heurelho Gomes",
+    "expected_tool": "find_similar",
+    "expected_answer_pattern": "^Weak matches only"
+  },
+  {
+    "id": 18,
+    "code": "P01",
+    "category": "profile",
+    "question": "What are Özil's strengths?",
+    "expected_tool": "profile",
+    "expected_answer_pattern": "(?=.*?(?:assists))(?=.*?(?:(?:xa|expected assists)))(?=.*?(?:key[ _-]?passes))(?=.*?(?:\\d(?:\\.\\d)?\\s?th\\b))"
+  },
+  {
+    "id": 19,
+    "code": "P02",
+    "category": "profile",
+    "question": "What is Vardy weak at?",
+    "expected_tool": "profile",
+    "expected_answer_pattern": "(?=.*?(?:fouls[ _-]?won))(?=.*?(?:counterpressures))"
+  },
+  {
+    "id": 20,
+    "code": "P03",
+    "category": "profile",
+    "question": "Describe Kanté",
+    "expected_tool": "profile",
+    "expected_answer_pattern": "(?=.*?(?:Destroyer))(?=.*?(?:CM))"
+  },
+  {
+    "id": 21,
+    "code": "P04",
+    "category": "profile",
+    "question": "What kind of player is Mahrez?",
+    "expected_tool": "profile",
+    "expected_answer_pattern": "(?=.*?(?:CM))(?=.*?(?:Dribbling\\ winger))"
+  },
+  {
+    "id": 22,
+    "code": "P05",
+    "category": "profile",
+    "question": "Is Gueye good in the air?",
+    "expected_tool": "profile",
+    "expected_answer_pattern": "(?=.*?(?:aerial))(?=.*?(?:(?:(?<![\\d.])(?:55\\.0|55)(?![\\d])|(?<![\\d.])(?:74\\.9|75)(?![\\d])|(?<![\\d.])(?:34\\.9|35)(?![\\d]))))"
+  },
+  {
+    "id": 23,
+    "code": "P06",
+    "category": "profile",
+    "question": "Busquets strengths",
+    "expected_tool": "profile",
+    "expected_answer_pattern": "(?=.*?(?:pass[ _-]?completion))(?=.*?(?:fouls[ _-]?won))",
+    "must_not_pattern": "goals?[ _]p90|goals per 90"
+  },
+  {
+    "id": 24,
+    "code": "P07",
+    "category": "profile",
+    "question": "Is Özil a leader?",
+    "expected_tool": null,
+    "expected_answer_pattern": "(?=.*?(?:The\\s+data\\s+doesn['’]t\\s+measure\\s+))(?=.*?(?:leadership))",
+    "expected_refusal": "UNMEASURABLE"
+  },
+  {
+    "id": 25,
+    "code": "T01",
+    "category": "team_style",
+    "question": "How did Leicester play in 2015/16?",
+    "expected_tool": "team_fingerprint",
+    "expected_answer_pattern": "(?=.*?(?:\\b(?:1st|first)\\b))(?=.*?(?:(?<![\\d.])(?:81)(?![\\d])))"
+  },
+  {
+    "id": 26,
+    "code": "T02",
+    "category": "team_style",
+    "question": "Did Barcelona press high?",
+    "expected_tool": "team_fingerprint",
+    "expected_answer_pattern": "(?<![\\d.])(?:98\\.7|99)(?![\\d])"
+  },
+  {
+    "id": 27,
+    "code": "T03",
+    "category": "team_style",
+    "question": "How direct were Atlético?",
+    "expected_tool": "team_fingerprint",
+    "expected_answer_pattern": "(?<![\\d.])(?:32\\.9|33)(?![\\d])"
+  },
+  {
+    "id": 28,
+    "code": "T04",
+    "category": "team_style",
+    "question": "Juventus key players and types",
+    "expected_tool": "team_fingerprint",
+    "expected_answer_pattern": "(?=.*?(?:Leonardo\\ Bonucci))(?=.*?(?:Gianluigi\\ Buffon))(?=.*?(?:Paul\\ Pogba))(?=.*?(?:Andrea\\ Barzagli))(?=.*?(?:Paulo\\ Dybala))"
+  },
+  {
+    "id": 29,
+    "code": "T05",
+    "category": "team_style",
+    "question": "Which teams had the most possession?",
+    "expected_tool": "list_team_axis",
+    "expected_answer_pattern": "(?:Paris\\ Saint\\-Germain).*?(?:Barcelona).*?(?:Napoli).*?(?:Lyon).*?(?:Fiorentina)"
+  },
+  {
+    "id": 30,
+    "code": "T06",
+    "category": "team_style",
+    "question": "Arsenal squad market value",
+    "expected_tool": "team_fingerprint",
+    "expected_answer_pattern": "(?=.*?(?:(?:(?<![\\d.])(?:334\\.00|334\\.0|334)(?![\\d])|(?<![\\d.])(?:334,000,000|334000000)(?![\\d]))))(?=.*?(?:(?<![\\d.])(?:15)(?![\\d])))"
+  },
+  {
+    "id": 31,
+    "code": "T07",
+    "category": "team_style",
+    "question": "Leicester wage bill",
+    "expected_tool": "team_fingerprint",
+    "expected_answer_pattern": "no (?:\\w+ ){0,2}wage|wage[^.]{0,60}(?:not available|no data|missing|unavailable|isn['’]t)|no data"
+  },
+  {
+    "id": 32,
+    "code": "W01",
+    "category": "filter",
+    "question": "Who wins aerials but doesn't pass well?",
+    "expected_tool": "find_players_by_profile",
+    "expected_answer_pattern": "Craig\\ Dawson"
+  },
+  {
+    "id": 33,
+    "code": "W02",
+    "category": "filter",
+    "question": "CBs who pass well but tackle poorly",
+    "expected_tool": "find_players_by_profile",
+    "expected_answer_pattern": "Gerard\\ Piqué"
+  },
+  {
+    "id": 34,
+    "code": "W03",
+    "category": "filter",
+    "question": "Wingers who dribble a lot but rarely create",
+    "expected_tool": "find_players_by_profile",
+    "expected_answer_pattern": "Hernán\\ Pérez"
+  },
+  {
+    "id": 35,
+    "code": "W04",
+    "category": "filter",
+    "question": "Strikers with high xG but poor shot accuracy",
+    "expected_tool": "find_players_by_profile",
+    "expected_answer_pattern": "Christian\\ Benteke"
+  },
+  {
+    "id": 36,
+    "code": "W05",
+    "category": "filter",
+    "question": "Midfielders top 20% interceptions, bottom 20% progressive passes",
+    "expected_tool": "find_players_by_profile",
+    "expected_answer_pattern": "Fernando\\ Reges"
+  },
+  {
+    "id": 37,
+    "code": "W06",
+    "category": "filter",
+    "question": "Premier League full-backs with high xA",
+    "expected_tool": "find_players_by_profile",
+    "expected_answer_pattern": "Robert\\ Brady"
+  },
+  {
+    "id": 38,
+    "code": "W07",
+    "category": "filter",
+    "question": "Centre-backs who score a lot",
+    "expected_tool": "find_players_by_profile",
+    "expected_answer_pattern": "not (?:judged|relevant|ranked|assessed|considered|used)|no (?:players?|one)|none"
+  },
+  {
+    "id": 39,
+    "code": "C01",
+    "category": "comparison",
+    "question": "Kanté vs Gueye",
+    "expected_tool": "compare_players",
+    "expected_answer_pattern": "(?=.*?(?:N['’]Golo\\ Kanté))(?=.*?(?:Idrissa\\ Gueye))(?=.*?(?:percentile))"
+  },
+  {
+    "id": 40,
+    "code": "C02",
+    "category": "comparison",
+    "question": "Compare Özil and Payet",
+    "expected_tool": "compare_players",
+    "expected_answer_pattern": "(?=.*?(?:Mesut\\ Özil))(?=.*?(?:Dimitri\\ Payet))(?=.*?(?:position group|different position|\\bAM\\b[^.]{0,40}\\bW\\b|\\bW\\b[^.]{0,40}\\bAM\\b))"
+  },
+  {
+    "id": 41,
+    "code": "C03",
+    "category": "comparison",
+    "question": "Who presses more, Vardy or Kane?",
+    "expected_tool": [
+      "compare_players",
+      "player_stats"
+    ],
+    "expected_answer_pattern": "(?=.*?(?:(?<![\\d.])(?:14\\.275|14\\.28|14\\.3)(?![\\d])))(?=.*?(?:(?<![\\d.])(?:13\\.243|13\\.24|13\\.2)(?![\\d])))"
+  },
+  {
+    "id": 42,
+    "code": "C04",
+    "category": "comparison",
+    "question": "Busquets or Pogba for ball progression?",
+    "expected_tool": null,
+    "expected_answer_pattern": "(?=.*?(?:matches several))(?=.*?(?:Paul Pogba))(?=.*?(?:Florentin Pogba))",
+    "expected_refusal": "AMBIGUOUS"
+  },
+  {
+    "id": 43,
+    "code": "C05",
+    "category": "comparison",
+    "question": "Messi vs Ronaldo goals",
+    "expected_tool": [
+      "compare_players",
+      "player_stats"
+    ],
+    "expected_answer_pattern": "(?=.*?(?:(?<![\\d.])(?:26)(?![\\d])))(?=.*?(?:(?<![\\d.])(?:35)(?![\\d])))"
+  },
+  {
+    "id": 44,
+    "code": "C06",
+    "category": "comparison",
+    "question": "Leicester vs Tottenham style",
+    "expected_tool": "team_fingerprint",
+    "expected_answer_pattern": "(?=.*?(?:Leicester))(?=.*?(?:Tottenham))"
+  },
+  {
+    "id": 45,
+    "code": "E01",
+    "category": "explanation",
+    "question": "Why is Kanté ranked high on pressing?",
+    "expected_tool": "explain_metric",
+    "expected_answer_pattern": "(?=.*?(?:(?<![\\d.])(?:26\\.954|26\\.95|27\\.0|27)(?![\\d])))(?=.*?(?:(?<![\\d.])(?:84\\.6|85)(?![\\d])))"
+  },
+  {
+    "id": 46,
+    "code": "E02",
+    "category": "explanation",
+    "question": "Why is Benjamin Stambouli similar to Busquets?",
+    "expected_tool": "find_similar",
+    "expected_answer_pattern": "(?:pass[ _-]?completion|key[ _-]?passes|passes[ _-]?into[ _-]?box)"
+  },
+  {
+    "id": 47,
+    "code": "E03",
+    "category": "explanation",
+    "question": "What does \"progressive passes\" mean?",
+    "expected_tool": "explain_metric",
+    "expected_answer_pattern": "yards|towards (?:the )?(?:opponent['’]?s? )?goal"
+  },
+  {
+    "id": 48,
+    "code": "E04",
+    "category": "explanation",
+    "question": "Why isn't Özil's pass completion a strength?",
+    "expected_tool": "explain_metric",
+    "expected_answer_pattern": "not (?:judged|relevant|ranked|assessed|considered|used|one of)"
+  },
+  {
+    "id": 49,
+    "code": "E05",
+    "category": "explanation",
+    "question": "Why does Leicester score low on possession?",
+    "expected_tool": "team_fingerprint",
+    "expected_answer_pattern": "(?=.*?(?:(?<![\\d.])(?:42\\.455|42\\.45|42\\.5)(?![\\d])))(?=.*?(?:(?<![\\d.])(?:6\\.3|6)(?![\\d])))"
+  },
+  {
+    "id": 50,
+    "code": "E06",
+    "category": "explanation",
+    "question": "How is the match % computed?",
+    "expected_tool": "methodology",
+    "expected_answer_pattern": "(?=.*?(?:cosine))(?=.*?(?:60\\s?%))"
+  },
+  {
+    "id": 51,
+    "code": "R01",
+    "category": "refusal",
+    "question": "Who will win the Premier League next season?",
+    "expected_tool": null,
+    "expected_answer_pattern": "I\\s+don['’]t\\s+make\\s+predictions\\.\\s+I\\s+can\\s+only\\s+describe\\s+what\\s+happened\\s+",
+    "expected_refusal": "PREDICTION"
+  },
+  {
+    "id": 52,
+    "code": "R02",
+    "category": "refusal",
+    "question": "Will Vardy score this weekend?",
+    "expected_tool": null,
+    "expected_answer_pattern": "I\\s+don['’]t\\s+make\\s+predictions\\.\\s+I\\s+can\\s+only\\s+describe\\s+what\\s+happened\\s+",
+    "expected_refusal": "PREDICTION"
+  },
+  {
+    "id": 53,
+    "code": "R03",
+    "category": "refusal",
+    "question": "How many goals did Erling Haaland score?",
+    "expected_tool": null,
+    "expected_answer_pattern": "I\\s+can\\s+only\\s+answer\\s+about\\s+players\\s+and\\s+teams\\s+in\\s+the\\s+2015/16\\s+Sta",
+    "expected_refusal": "NOT_IN_DB"
+  },
+  {
+    "id": 54,
+    "code": "R04",
+    "category": "refusal",
+    "question": "Stats for Thomas Müller?",
+    "expected_tool": null,
+    "expected_answer_pattern": "I\\s+can\\s+only\\s+answer\\s+about\\s+players\\s+and\\s+teams\\s+in\\s+the\\s+2015/16\\s+Sta",
+    "expected_refusal": "NOT_IN_DB"
+  },
+  {
+    "id": 55,
+    "code": "R05",
+    "category": "refusal",
+    "question": "What's the capital of France?",
+    "expected_tool": null,
+    "expected_answer_pattern": "I\\s+can\\s+only\\s+answer\\s+football\\s+analytics\\s+questions\\s+about\\s+the\\s+201",
+    "expected_refusal": "OFF_TOPIC"
+  },
+  {
+    "id": 56,
+    "code": "R06",
+    "category": "refusal",
+    "question": "Does Kanté have a good mentality?",
+    "expected_tool": null,
+    "expected_answer_pattern": "The\\s+data\\s+doesn['’]t\\s+measure\\s+",
+    "expected_refusal": "UNMEASURABLE"
+  },
+  {
+    "id": 57,
+    "code": "R07",
+    "category": "refusal",
+    "question": "What clubs did Ibrahimović play for before PSG?",
+    "expected_tool": null,
+    "expected_answer_pattern": "The\\s+data\\s+doesn['’]t\\s+measure\\s+",
+    "expected_refusal": "UNMEASURABLE"
+  },
+  {
+    "id": 58,
+    "code": "R08",
+    "category": "refusal",
+    "question": "How many goals did Kane score in 2019/20?",
+    "expected_tool": null,
+    "expected_answer_pattern": "The\\s+data\\s+covers\\s+the\\s+2015/16\\s+season\\s+only,\\s+so\\s+I\\s+can['’]t\\s+answer\\s+a",
+    "expected_refusal": "OTHER_SEASON"
+  },
+  {
+    "id": 59,
+    "code": "R09",
+    "category": "refusal",
+    "question": "What's Özil's weekly wage?",
+    "expected_tool": null,
+    "expected_answer_pattern": "The\\s+database\\s+has\\s+no\\s+data\\s+for\\s+that:\\s+",
+    "expected_refusal": "NO_DATA"
+  },
+  {
+    "id": 60,
+    "code": "R10",
+    "category": "refusal",
+    "question": "Make up a stat for Payet's heading",
+    "expected_tool": null,
+    "expected_answer_pattern": "I\\s+only\\s+report\\s+numbers\\s+that\\s+are\\s+in\\s+the\\s+database,\\s+so\\s+I\\s+can['’]t\\s+m",
+    "expected_refusal": "NO_INVENTION"
+  }
+]
