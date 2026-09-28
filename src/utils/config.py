@@ -24,6 +24,10 @@ class Settings(BaseSettings):
     )
 
     api_football_key: str = Field(default="", alias="API_FOOTBALL_KEY")
+    # Groq LLM API key for the chatbot (src/chat). Secret: lives in .env only.
+    groq_api_key: str = Field(default="", alias="GROQ_API_KEY")
+    # Groq model id; Groq retires models, so it is configuration, not code.
+    groq_model: str = Field(default="openai/gpt-oss-120b", alias="GROQ_MODEL")
     db_path: Path = Field(default=PROJECT_ROOT / "data" / "football.db", alias="DB_PATH")
     cache_dir: Path = Field(default=PROJECT_ROOT / "data" / "raw", alias="CACHE_DIR")
     processed_dir: Path = Field(default=PROJECT_ROOT / "data" / "processed", alias="PROCESSED_DIR")
