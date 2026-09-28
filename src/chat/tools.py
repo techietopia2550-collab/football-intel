@@ -111,7 +111,8 @@ TOOLS: list[dict[str, Any]] = [
     ),
     _tool(
         "explain_metric",
-        "A metric's definition, formula and direction; with a player, his value and percentile.",
+        "Use this when the user asks WHAT a metric means or WHY a number is high. Not for player "
+        "facts. Returns definition, formula, direction; with a player, his value and percentile.",
         {
             "metric": {"type": "string", "description": "Exact metric name."},
             "player": _PLAYER,

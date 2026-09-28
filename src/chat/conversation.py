@@ -23,7 +23,12 @@ from typing import Any, Protocol
 
 from src.chat import guardrails
 from src.chat.dispatch import call_tool
-from src.chat.llm_client import GroqError, GroqRateLimitError, client_from_settings
+from src.chat.llm_client import (
+    GroqError,
+    GroqRateLimitError,
+    GroqToolCallError,
+    client_from_settings,
+)
 from src.chat.prompt import system_prompt
 from src.chat.tools import TOOLS
 from src.utils.config import settings
@@ -36,6 +41,11 @@ VERIFY_FAILED = (
     "I couldn't verify the numbers in my answer against the database. Please rephrase the question."
 )
 LOOP_GUARD = "I needed too many lookups to answer that. Please ask a narrower question."
+# Sent to the model when Groq rejects its tool call's arguments (HTTP 400 tool_use_failed).
+TOOL_CALL_REJECTED = (
+    "Your last tool call was rejected: {reason}. Call the tool again with arguments that match "
+    "its schema. Leave out optional arguments you do not need; never send null."
+)
 SIMILARITY_TOOLS = frozenset({"find_similar", "find_similar_teams"})
 # Errors the model can fix or explain itself (a wrong metric or axis name): fed back as the tool
 # result. Every other error is a verbatim refusal straight away.
@@ -250,6 +260,20 @@ def ask(
                 question, UNAVAILABLE, refused=True, tool_calls=calls_made, sources=sources,
                 error="rate_limited",
             )  # fmt: skip
+        except GroqToolCallError as exc:
+            # Groq refused the tool call the model generated (arguments against the schema, e.g.
+            # a null for an optional string). The model is told why and retries, if a round with
+            # tools is left; otherwise the turn ends as unavailable.
+            logger.warning("Groq rejected a tool call: {d}", d=exc.detail)
+            if round_no + 1 < MAX_TOOL_ROUNDS:
+                messages.append(
+                    {"role": "user", "content": TOOL_CALL_REJECTED.format(reason=exc.detail)}
+                )
+                continue
+            return reply(
+                question, UNAVAILABLE, refused=True, tool_calls=calls_made, sources=sources,
+                error="tool_call_rejected",
+            )  # fmt: skip
         except GroqError as exc:
             logger.warning("Groq call failed: {exc}", exc=exc)
             return reply(
@@ -310,7 +334,11 @@ def ask(
     if not answer:
         return reply(question, guardrails.refusal_text("FALLBACK"), refused=True,
                       tool_calls=calls_made, sources=sources)  # fmt: skip
-    missing = guardrails.unverified_numbers(answer, evidence)
+    check = guardrails.check_citations(answer, evidence)
+    missing = check["missing"]
+    if check["percentile_mismatch"]:
+        # a percentile quoted as a metric's value ships, with the mix-up shown as a warning
+        warnings.append(guardrails.percentile_mismatch_warning(check["percentile_mismatch"]))
     if missing:
         logger.warning("unverified numbers {m} in answer to {q!r}", m=missing, q=question)
         return reply(

@@ -1328,3 +1328,37 @@ words the answer, code decides everything that must not be wrong.
   - Name check: C01 "Kanté vs Gueye" is refused as ambiguous (Idrissa and Babacar Gueye), as the
     design's own C04 expects for Pogba. C03 ("Kane"), C05 ("Ronaldo") and P05 ("Gueye") will be
     refused the same way; they were not reached.
+- **Citation check, four fixes from the 60-question run** (2026-09-28, `guardrails.check_citations`):
+  (1) a number followed by "percentile" ("98.9th percentile", "6.7 th percentile") after a metric
+  name is checked against that metric's percentile / score, not its value; (2) the check (not the
+  shown answer) reads every hyphen / dash variant (U+2010-2014) as "-" and no-break / thin spaces
+  as spaces, and a hyphenated label word may stand for "_" or nothing ("Counter‑pressures" =
+  counterpressures_p90); (3) a number's context words and its label stay in its own phrase
+  (commas, brackets and 【】 end a phrase) and the label is searched only in the last 40
+  characters, directly before the number; (4) a number right after a metric name that is that
+  metric's percentile rather than its value (`fouls_won_p90=6.7`) is a `percentile_mismatch`:
+  the answer ships with a warning (shown in the chat page's Warnings expander), where before it
+  was blocked. Any number that is neither still blocks. `unverified_numbers` / `verify_citations`
+  keep their meaning (hard failures only).
+- **Rejected tool calls** (2026-09-28): the live W01 400 was Groq refusing the tool call the model
+  generated (`position_group: null`, `tool_use_failed`), so there is nothing to validate before
+  sending. `GroqClient.chat` raises `GroqToolCallError`; `conversation.ask` sends Groq's reason
+  back to the model as a message and lets it retry if a round with tools is left, otherwise the
+  turn ends as unavailable (`error="tool_call_rejected"`).
+- **Player pay** (2026-09-28): the live R09 ("weekly wage") called no tool; the model chose the
+  UNMEASURABLE text. A pre-LLM rule now answers "wage(s) / salary / pay packet" questions (not
+  "wage bill", which goes to `team_fingerprint`) with the verbatim NO_DATA reply.
+- **Prompt / tool text** (2026-09-28): "Never add filters the user did not ask for. Only pass
+  arguments explicitly mentioned in the question or required by the tool." (live S01 added
+  `league="ESP-La Liga"`); `explain_metric`: "Use this when the user asks WHAT a metric means or WHY
+  a number is high. Not for player facts." (live E01 used `player_stats`), which takes that
+  description past the 20-word target. Neither can be verified offline.
+- **Offline replay of the first run** (2026-09-28, `run_chatbot_test.py --replay`, zero API
+  calls): the pre-LLM rules and the fixed citation check re-applied to the 24 saved answers,
+  their tool calls re-run on the local database; the live outcome is kept in `live_*`. 13/24 ->
+  19/24 (strict 18/24, P02's percentile mismatch counted wrong). Now pass: P01, P02, W02, E01,
+  E02 (citation check) and R09 (the pay rule); none got worse. All 12 answers that reached the
+  check pass it (P02 with the mismatch warning). Still failing: S01 (unasked La Liga filter), T01
+  (no league position / points), C02 (no cross-position note), W01 (the 400; needs a live run to
+  test the retry), C01 (ambiguous "Gueye", as designed). E01 passes on content but called
+  `player_stats`, not `explain_metric`.

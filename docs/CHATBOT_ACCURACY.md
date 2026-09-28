@@ -13,56 +13,65 @@ Raw answers: `docs/chatbot_test_results.json`. Failure diagnosis: ANALYTICS_DECI
 |---|---|---|---|---|
 | factual | 2/2 (100%) | 34%-100% | 2/2 (100%) | 0 |
 | similarity | 1/2 (50%) | 9%-91% | 2/2 (100%) | 0 |
-| profile | 0/2 (0%) | 0%-66% | 2/2 (100%) | 2 |
-| team_style | 1/2 (50%) | 9%-91% | 2/2 (100%) | 1 |
-| filter | 0/2 (0%) | 0%-66% | 1/2 (50%) | 2 |
-| comparison | 0/2 (0%) | 0%-66% | 1/2 (50%) | 2 |
-| explanation | 0/2 (0%) | 0%-66% | 1/2 (50%) | 2 |
-| refusal | 9/10 (90%) | 60%-98% | 10/10 (100%) | 8 |
-| **all** | **13/24 (54%)** | 35%-72% | 21/24 (88%) | 17 |
+| profile | 2/2 (100%) | 34%-100% | 2/2 (100%) | 0 |
+| team_style | 1/2 (50%) | 9%-91% | 2/2 (100%) | 0 |
+| filter | 1/2 (50%) | 9%-91% | 1/2 (50%) | 1 |
+| comparison | 0/2 (0%) | 0%-66% | 1/2 (50%) | 1 |
+| explanation | 2/2 (100%) | 34%-100% | 1/2 (50%) | 0 |
+| refusal | 10/10 (100%) | 72%-100% | 10/10 (100%) | 9 |
+| **all** | **19/24 (79%)** | 60%-91% | 21/24 (88%) | 11 |
 
 At 6-10 questions per category the Wilson intervals are wide; a category score is a signal, not a measurement.
 
 ## Headline numbers
 
-- Overall accuracy: 13/24 (54%); in-scope (the 50): 4/14 (29%)
-- Refusal accuracy (verbatim refusal given): 9/10 (90%)
-- False refusals (in-scope questions refused): 9 (P01, T01, W01, C01, E01, P02, W02, C02, E02)
-- Citation verification rate (answers that reached the number check and passed): 5/12 (42%)
-- Withheld by the citation check although the expected content was in the answer: 5 (P01, E01, P02, W02, E02)
+- Overall accuracy: 19/24 (79%); in-scope (the 50): 9/14 (64%)
+- Refusal accuracy (verbatim refusal given): 10/10 (100%)
+- False refusals (in-scope questions refused): 2 (W01, C01)
+- Citation verification rate (answers that reached the number check and passed): 12/12 (100%)
+- Withheld by the citation check although the expected content was in the answer: 0
 - Sources block present (answers written after a tool call, shown or withheld): 12/12 (100%)
-- Sources written with JSON arguments: 0 of 14 written answers; ordinal with a stray space ("98.9 th"): 1
-- Average response time: 21.7 s over all questions, 35.5 s over the 14 that called the LLM
+- Sources written with JSON arguments: 0 of 13 written answers; ordinal with a stray space ("98.9 th"): 1
+- Average response time: 21.7 s over all questions, 38.0 s over the 13 that called the LLM
 - API calls: 28 (budget 120); tokens: 100,782; HTTP 429 responses: 1
+
+## Offline replay (2026-09-28T17:52:40+00:00)
+
+The scores above are the saved live answers re-judged by the current deterministic code, with no API call: the pre-LLM rules and name check on every question, and the citation check on every answer the model wrote, against its recorded tool calls re-run on the local database. Prompt and tool-description changes made since the live run are **not** reflected: that needs a live run.
+
+- Live score: 13/24 (54%); replayed: 19/24 (79%)
+- Now pass: R09, P01, E01, P02, W02, E02; now fail: none
+- Citation check on the 12 answers that reached it: passed 11, percentile_mismatch 1 (P02), failed 0
+- Strict score (a percentile_mismatch answer counted as wrong): 18/24 (75%)
 
 ## Every question
 
-| Code | Category | Question | Result | Tools called | Calls | Seconds | Note |
-|---|---|---|---|---|---|---|---|
-| F01 | factual | How many goals did Vardy score in 2015/16? | PASS | player_stats | 2 | 31.0 |  |
-| F02 | factual | How many assists did Özil get? | PASS | player_stats | 2 | 35.2 |  |
-| S01 | similarity | Find me a player like Busquets | FAIL | find_similar | 2 | 37.8 | expected content missing |
-| S02 | similarity | Who plays like Kanté but not at Leicester? | PASS | find_similar | 2 | 35.5 |  |
-| P01 | profile | What are Özil's strengths? | FAIL | profile | 2 | 31.7 | refused (UNVERIFIED); citation check failed (withheld answer had the expected content); expected content missing |
-| P02 | profile | What is Vardy weak at? | FAIL | profile | 2 | 31.4 | refused (UNVERIFIED); citation check failed (withheld answer had the expected content); expected content missing |
-| T01 | team_style | How did Leicester play in 2015/16? | FAIL | team_fingerprint | 2 | 33.2 | refused (UNVERIFIED); citation check failed; expected content missing |
-| T02 | team_style | Did Barcelona press high? | PASS | team_fingerprint | 2 | 31.1 |  |
-| W01 | filter | Who wins aerials but doesn't pass well? | FAIL | - | 0 | 23.7 | refused (llm_unavailable); expected content missing; expected tool not called |
-| W02 | filter | CBs who pass well but tackle poorly | FAIL | find_players_by_profile | 2 | 31.7 | refused (UNVERIFIED); citation check failed (withheld answer had the expected content); expected content missing |
-| C01 | comparison | Kanté vs Gueye | FAIL | - | 0 | 0.3 | refused (AMBIGUOUS); expected content missing; expected tool not called |
-| C02 | comparison | Compare Özil and Payet | FAIL | compare_players | 2 | 89.4 | refused (UNVERIFIED); citation check failed; expected content missing |
-| E01 | explanation | Why is Kanté ranked high on pressing? | FAIL | player_stats | 3 | 11.2 | refused (UNVERIFIED); citation check failed (withheld answer had the expected content); expected content missing; expected tool not called |
-| E02 | explanation | Why is Benjamin Stambouli similar to Busquets? | FAIL | find_similar | 2 | 94.3 | refused (UNVERIFIED); citation check failed (withheld answer had the expected content); expected content missing |
-| R01 | refusal | Who will win the Premier League next season? | PASS | - | 0 | 0.0 | refused (PREDICTION) |
-| R02 | refusal | Will Vardy score this weekend? | PASS | - | 0 | 0.0 | refused (PREDICTION) |
-| R03 | refusal | How many goals did Erling Haaland score? | PASS | - | 0 | 0.2 | refused (NOT_IN_DB) |
-| R04 | refusal | Stats for Thomas Müller? | PASS | - | 0 | 0.2 | refused (NOT_IN_DB) |
-| R05 | refusal | What's the capital of France? | PASS | - | 0 | 0.1 | refused (OFF_TOPIC) |
-| R06 | refusal | Does Kanté have a good mentality? | PASS | - | 0 | 0.0 | refused (UNMEASURABLE) |
-| R07 | refusal | What clubs did Ibrahimović play for before PSG? | PASS | - | 0 | 0.0 | refused (UNMEASURABLE) |
-| R08 | refusal | How many goals did Kane score in 2019/20? | PASS | - | 0 | 0.0 | refused (OTHER_SEASON) |
-| R09 | refusal | What's Özil's weekly wage? | FAIL | - | 1 | 2.3 | expected content missing |
-| R10 | refusal | Make up a stat for Payet's heading | PASS | - | 1 | 0.7 |  |
+| Code | Category | Question | Result | Live | Citation check | Tools called | Calls | Seconds | Note |
+|---|---|---|---|---|---|---|---|---|---|
+| F01 | factual | How many goals did Vardy score in 2015/16? | PASS | PASS | passed | player_stats | 2 | 31.0 |  |
+| F02 | factual | How many assists did Özil get? | PASS | PASS | passed | player_stats | 2 | 35.2 |  |
+| S01 | similarity | Find me a player like Busquets | FAIL | FAIL | passed | find_similar | 2 | 37.8 | expected content missing |
+| S02 | similarity | Who plays like Kanté but not at Leicester? | PASS | PASS | passed | find_similar | 2 | 35.5 |  |
+| P01 | profile | What are Özil's strengths? | PASS | FAIL | passed | profile | 2 | 31.7 | citation check: UNVERIFIED -> shown |
+| P02 | profile | What is Vardy weak at? | PASS | FAIL | percentile_mismatch | profile | 2 | 31.4 | citation check: UNVERIFIED -> shown; Percentile quoted as a value: fouls_won_p90 = 6.7, counterpressures_p90 = 13.7 is the percentile in the tool result, not the metric's value. |
+| T01 | team_style | How did Leicester play in 2015/16? | FAIL | FAIL | passed | team_fingerprint | 2 | 33.2 | expected content missing; citation check: UNVERIFIED -> shown |
+| T02 | team_style | Did Barcelona press high? | PASS | PASS | passed | team_fingerprint | 2 | 31.1 |  |
+| W01 | filter | Who wins aerials but doesn't pass well? | FAIL | FAIL | - | - | 0 | 23.7 | refused (llm_unavailable); expected content missing; expected tool not called; live error (llm_unavailable): needs a live run |
+| W02 | filter | CBs who pass well but tackle poorly | PASS | FAIL | passed | find_players_by_profile | 2 | 31.7 | citation check: UNVERIFIED -> shown |
+| C01 | comparison | Kanté vs Gueye | FAIL | FAIL | - | - | 0 | 0.3 | refused (AMBIGUOUS); expected content missing; expected tool not called |
+| C02 | comparison | Compare Özil and Payet | FAIL | FAIL | passed | compare_players | 2 | 89.4 | expected content missing; citation check: UNVERIFIED -> shown |
+| E01 | explanation | Why is Kanté ranked high on pressing? | PASS | FAIL | passed | player_stats | 3 | 11.2 | expected tool not called; citation check: UNVERIFIED -> shown |
+| E02 | explanation | Why is Benjamin Stambouli similar to Busquets? | PASS | FAIL | passed | find_similar | 2 | 94.3 | citation check: UNVERIFIED -> shown |
+| R01 | refusal | Who will win the Premier League next season? | PASS | PASS | - | - | 0 | 0.0 | refused (PREDICTION) |
+| R02 | refusal | Will Vardy score this weekend? | PASS | PASS | - | - | 0 | 0.0 | refused (PREDICTION) |
+| R03 | refusal | How many goals did Erling Haaland score? | PASS | PASS | - | - | 0 | 0.2 | refused (NOT_IN_DB) |
+| R04 | refusal | Stats for Thomas Müller? | PASS | PASS | - | - | 0 | 0.2 | refused (NOT_IN_DB) |
+| R05 | refusal | What's the capital of France? | PASS | PASS | - | - | 0 | 0.1 | refused (OFF_TOPIC) |
+| R06 | refusal | Does Kanté have a good mentality? | PASS | PASS | - | - | 0 | 0.0 | refused (UNMEASURABLE) |
+| R07 | refusal | What clubs did Ibrahimović play for before PSG? | PASS | PASS | - | - | 0 | 0.0 | refused (UNMEASURABLE) |
+| R08 | refusal | How many goals did Kane score in 2019/20? | PASS | PASS | - | - | 0 | 0.0 | refused (OTHER_SEASON) |
+| R09 | refusal | What's Özil's weekly wage? | PASS | FAIL | - | - | 0 | 2.3 | refused (NO_DATA); now refused before the LLM (NO_DATA) |
+| R10 | refusal | Make up a stat for Payet's heading | PASS | PASS | - | - | 1 | 0.7 |  |
 
 ## Not run
 

@@ -12,6 +12,13 @@ so a partial run still covers every category.
     python scripts/run_chatbot_test.py              # full run (resumes nothing)
     python scripts/run_chatbot_test.py --resume     # skip questions already in the results
     python scripts/run_chatbot_test.py --summary    # rewrite CHATBOT_ACCURACY.md only
+    python scripts/run_chatbot_test.py --replay     # re-judge saved answers offline (below)
+
+`--replay` makes no API call. It re-applies the current deterministic code to the saved run:
+the pre-LLM rules and name check on each question, and the citation check on each answer the
+model wrote, against its recorded tool calls re-run on the local database. What the LLM would
+say now (prompt or tool-schema changes) cannot be replayed; those questions keep their live
+answer. The live outcome stays in the `live_*` fields.
 """
 
 from __future__ import annotations
@@ -27,7 +34,9 @@ from typing import Any
 
 from loguru import logger
 
-from src.chat.conversation import ask
+from src.chat import guardrails
+from src.chat.conversation import SIMILARITY_TOOLS, VERIFY_FAILED, ask
+from src.chat.dispatch import call_tool
 from src.chat.llm_client import GroqRateLimitError, client_from_settings
 from src.chat.prompt import system_prompt
 from src.utils.config import PROJECT_ROOT, settings
@@ -259,6 +268,97 @@ def run(resume: bool) -> None:
     write_summary(data, entries)
 
 
+# ---- offline replay -----------------------------------------------------------------------------
+
+_LIVE_FIELDS = ("answer", "withheld_answer", "refused", "verdict", "error", "tool_calls",
+                "llm_calls", "correct")  # fmt: skip
+
+
+def _model_text(record: dict[str, Any]) -> str | None:
+    """What the model wrote, before the code added the similarity caveat and engine caveats."""
+    if record["live_verdict"] == "UNVERIFIED":
+        return str(record["live_withheld_answer"])
+    if record["live_refused"] or not record["live_tool_calls"]:
+        return None
+    text_ = str(record["live_answer"])
+    for marker in (f"\n\n{guardrails.STANDING_CAVEAT}", "\n\nCaveats from the engine:"):
+        text_ = text_.split(marker)[0]
+    return text_
+
+
+def _evidence(record: dict[str, Any]) -> list[Any]:
+    """The citation check's evidence as `conversation.ask` built it: the question, then each
+    call's arguments and (similarity-rule-tagged) result, re-run on the local database."""
+    evidence: list[Any] = [record["question"]]
+    for call in record["live_tool_calls"]:
+        result = call_tool(call["name"], call["arguments"])
+        if "error" not in result and call["name"] in SIMILARITY_TOOLS:
+            rule = guardrails.apply_similarity_rule(result)
+            result = {**rule["result"], "similarity_verdict": rule["verdict"]}
+        evidence += [call["arguments"], result]
+    return evidence
+
+
+def replay_record(record: dict[str, Any]) -> dict[str, Any]:
+    """The record re-judged by the current deterministic code (see the module docstring)."""
+    if "live_answer" not in record:  # first replay: keep what happened live
+        record.update({f"live_{k}": record[k] for k in _LIVE_FIELDS})
+    base = {k: record[f"live_{k}"] for k in _LIVE_FIELDS if k != "correct"}
+    out: dict[str, Any] = {**base, "citation_status": None, "citation_warnings": [],
+                           "replay_note": None}  # fmt: skip
+    question = record["question"]
+    pre = guardrails.rule_refusal(question) or guardrails.name_refusal(
+        guardrails.check_player_names(question)
+    )
+    live_pre_llm = (
+        record["live_refused"] and record["live_llm_calls"] == 0 and record["live_error"] is None
+    )
+    if pre:
+        verdict, text_ = pre
+        if not (live_pre_llm and record["live_verdict"] == verdict):
+            out["replay_note"] = f"now refused before the LLM ({verdict})"
+        out.update(answer=text_, withheld_answer=None, refused=True, verdict=verdict, error=None,
+                   tool_calls=[], llm_calls=0)  # fmt: skip
+        return out
+    if live_pre_llm:
+        out["replay_note"] = "no longer refused before the LLM: needs a live run"
+        return out
+    written = _model_text(record)
+    if written is None:
+        if record["live_error"]:
+            out["replay_note"] = f"live error ({record['live_error']}): needs a live run"
+        return out
+    check = guardrails.check_citations(written, _evidence(record))
+    if check["missing"]:
+        out["citation_status"] = "failed"
+        out["citation_warnings"] = [f"Unverified numbers: {check['missing']}"]
+        out.update(answer=VERIFY_FAILED, withheld_answer=written, refused=True,
+                   verdict="UNVERIFIED")  # fmt: skip
+    else:
+        mismatch = check["percentile_mismatch"]
+        out["citation_status"] = "percentile_mismatch" if mismatch else "passed"
+        if mismatch:
+            out["citation_warnings"] = [guardrails.percentile_mismatch_warning(mismatch)]
+        if record["live_verdict"] == "UNVERIFIED":  # now shown: the text the model wrote
+            out.update(answer=written, withheld_answer=None, refused=False, verdict=None)
+    if out["verdict"] != record["live_verdict"]:
+        out["replay_note"] = f"citation check: {record['live_verdict'] or 'shown'} -> " + (
+            out["verdict"] or "shown"
+        )
+    return out
+
+
+def replay(entries: list[dict[str, Any]]) -> None:
+    data = load_results()
+    by_id = {e["id"]: e for e in entries}
+    for r in data["results"]:
+        r.update(replay_record(r))
+        r.update(score(by_id[r["id"]], r))
+    data["meta"]["replayed"] = datetime.now(UTC).isoformat(timespec="seconds")
+    save_results(data)
+    write_summary(data, entries)
+
+
 # ---- summary ------------------------------------------------------------------------------------
 
 
@@ -348,11 +448,43 @@ def write_summary(data: dict[str, Any], entries: list[dict[str, Any]]) -> None:
         else "- Average response time: n/a",
         f"- API calls: {meta.get('api_calls', 0)} (budget {meta.get('max_api_calls')}); tokens:"
         f" {meta.get('tokens', 0):,}; HTTP 429 responses: {meta.get('rate_limited_responses', 0)}",
+    ]
+    if meta.get("replayed"):
+        status = [r.get("citation_status") for r in res]
+        mism = [r["code"] for r in res if r.get("citation_status") == "percentile_mismatch"]
+        strict = sum(
+            r["correct"] and r.get("citation_status") != "percentile_mismatch" for r in res
+        )
+        now_pass = [r["code"] for r in res if r["correct"] and not r.get("live_correct")]
+        now_fail = [r["code"] for r in res if not r["correct"] and r.get("live_correct")]
+        lines += [
+            "",
+            f"## Offline replay ({meta['replayed']})",
+            "",
+            "The scores above are the saved live answers re-judged by the current deterministic"
+            " code, with no API call: the pre-LLM rules and name check on every question, and the"
+            " citation check on every answer the model wrote, against its recorded tool calls"
+            " re-run on the local database. Prompt and tool-description changes made since the"
+            " live run are **not** reflected: that needs a live run.",
+            "",
+            f"- Live score: {_pct(sum(bool(r.get('live_correct')) for r in res), n_all)};"
+            f" replayed: {_pct(k_all, n_all)}",
+            f"- Now pass: {', '.join(now_pass) or 'none'};"
+            f" now fail: {', '.join(now_fail) or 'none'}",
+            f"- Citation check on the {sum(s is not None for s in status)} answers that reached it:"
+            f" passed {status.count('passed')},"
+            f" percentile_mismatch {status.count('percentile_mismatch')}"
+            f" ({', '.join(mism) or 'none'}), failed {status.count('failed')}",
+            f"- Strict score (a percentile_mismatch answer counted as wrong):"
+            f" {_pct(strict, n_all)}",
+        ]
+    lines += [
         "",
         "## Every question",
         "",
-        "| Code | Category | Question | Result | Tools called | Calls | Seconds | Note |",
-        "|---|---|---|---|---|---|---|---|",
+        "| Code | Category | Question | Result | Live | Citation check | Tools called | Calls |"
+        " Seconds | Note |",
+        "|---|---|---|---|---|---|---|---|---|---|",
     ]
     for r in sorted(res, key=lambda r: r["id"]):
         note = []
@@ -373,10 +505,15 @@ def write_summary(data: dict[str, Any], entries: list[dict[str, Any]]) -> None:
             note.append("forbidden content present")
         if not r["tool_ok"]:
             note.append("expected tool not called")
+        if r.get("replay_note"):
+            note.append(r["replay_note"])
+        note += r.get("citation_warnings") or []
         tools = ", ".join(c["name"] for c in r["tool_calls"]) or "-"
+        live = r.get("live_correct", r["correct"])
         lines.append(
             f"| {r['code']} | {r['category']} | {r['question'].replace('|', '/')} | "
-            f"{'PASS' if r['correct'] else 'FAIL'} | {tools} | {r['llm_calls']} | {r['seconds']} |"
+            f"{'PASS' if r['correct'] else 'FAIL'} | {'PASS' if live else 'FAIL'} | "
+            f"{r.get('citation_status') or '-'} | {tools} | {r['llm_calls']} | {r['seconds']} |"
             f" {'; '.join(note)} |"
         )
     missing = [e for e in entries if e["id"] not in {r["id"] for r in res}]
@@ -393,9 +530,14 @@ def main() -> None:
     parser.add_argument(
         "--rescore", action="store_true", help="re-score saved answers (no API calls), then summary"
     )
+    parser.add_argument(
+        "--replay", action="store_true", help="re-judge saved answers with current code, offline"
+    )
     args = parser.parse_args()
     entries = json.loads(TEST_SET.read_text(encoding="utf-8"))
-    if args.rescore:
+    if args.replay:
+        replay(entries)
+    elif args.rescore:
         data = load_results()
         by_id = {e["id"]: e for e in entries}
         for r in data["results"]:

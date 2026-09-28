@@ -72,6 +72,11 @@ _PREDICTION = re.compile(
     r"|\b(?:would|could) (?:\w+ ){0,2}(?:succeed|cope|adapt|thrive|flop) at\b",
     re.IGNORECASE,
 )
+# Player pay is not in the data at all (a team's "wage bill" is, when filled in, and goes to the
+# tools). Answered with NO_DATA, not UNMEASURABLE: pay is a fact the database lacks, not a trait
+# event data cannot capture.
+_PLAYER_PAY = re.compile(r"\b(?:wages?|salar(?:y|ies)|pay ?packets?)\b(?!\s*bills?)", re.IGNORECASE)
+PLAYER_PAY_MISSING = "player wages or salaries (only team wage bills are in the schema)"
 _UNMEASURABLE: tuple[tuple[str, str], ...] = (
     (r"\bleader(?:ship)?\b|\bcaptain(?:cy)?\b", "leadership"),
     (r"\bmentality\b|\bmentally\b|\bmental\b|\bcomposure\b", "mentality"),
@@ -118,6 +123,8 @@ def _classify(question: str) -> tuple[str, dict[str, str]] | None:
     q = question.strip()
     if _PREDICTION.search(q):
         return "PREDICTION", {}
+    if _PLAYER_PAY.search(q):
+        return "NO_DATA", {"what_is_missing": PLAYER_PAY_MISSING}
     for pattern, trait in _UNMEASURABLE:
         if re.search(pattern, q, re.IGNORECASE):
             return "UNMEASURABLE", {"trait": trait}
@@ -334,10 +341,20 @@ _NUMBER = re.compile(
 _NUMBER_IN_TEXT = re.compile(r"-?\d+(?:\.\d+)?")
 _WORD = re.compile(r"[a-z_]+")
 _CLAUSE_END = re.compile(r"[;!?\n]|\.(?!\d)")
+# Context words and labels stay inside one phrase: a comma, a bracket or an inline citation mark
+# starts the next one ("... p90, yielding a 93%": "pressures" is not 93's word).
+_PHRASE_END = re.compile(r"[;!?\n,()\[\]【】]|\.(?!\d)")
+LABEL_WINDOW = 40  # characters before a number searched for its metric label
+# "98.9th percentile", "6.7 th percentile", "98.9 percentile": the number is a percentile.
+_PERCENTILE_AFTER = re.compile(r"\s*(?:(?:st|nd|rd|th)\b\s*)?percentile", re.IGNORECASE)
+# Separators allowed between a label and its number ("Key passes p90: 4.256", "x=1", "a - 2").
+_LABEL_SEPARATORS = " \t:=-"
+_HYPHENS = re.compile("[‐‑‒–—]")
+_ODD_SPACES = re.compile("[    ]")
 _ZERO_WIDTH = re.compile("[​‌‍⁠﻿]")
 _SPACED_THOUSANDS = re.compile(r"(?<![\d.])\d{1,3}(?:[   ]\d{3})+(?![\d])")
 CONTEXT_WORDS = 3  # words on each side of a number that can tie it to a field
-_LABEL_TOKEN = re.compile(r"[a-z0-9_]+")
+_LABEL_TOKEN = re.compile(r"[a-z0-9_]+(?:-[a-z0-9_]+)*")  # hyphenated words stay one token
 MAX_LABEL_TOKENS = 6  # longest metric label, in words ("passes into the final third p90")
 # Words a label may carry that are not part of the metric name ("per 90 min" -> "min").
 _LABEL_FILLER = frozenset({"the", "min", "mins", "minutes"})
@@ -369,15 +386,34 @@ def normalize_answer(answer: str) -> str:
     """Undo typography that splits numbers: zero-width characters, and thin / no-break spaces used
     as thousands separators ("2 455" -> "2455")."""
     text_ = _ZERO_WIDTH.sub("", answer)
-    return _SPACED_THOUSANDS.sub(lambda m: re.sub(r"[    ]", "", m.group(0)), text_)
+    text_ = _SPACED_THOUSANDS.sub(lambda m: re.sub(r"[    ]", "", m.group(0)), text_)
+    return text_
 
 
-def _answer_numbers(answer: str) -> list[tuple[float, int, list[str], list[str]]]:
-    """(value, decimals shown, nearby words, label tokens) for every number in the answer, framing
-    removed. A number's words stop at the neighbouring numbers and at clause ends, so in "key
-    passes 4.26 (99th percentile)" the word "percentile" belongs to 99, not to 4.26. The label
-    tokens are the words directly before the number ("key passes" / "key_passes_p90")."""
-    text_ = _LIST_MARKER.sub(" ", _FRAMING_PATTERNS.sub(" ", normalize_answer(answer)))
+def _check_text(answer: str) -> str:
+    """The answer as the citation check reads it (not as shown): `normalize_answer`, then every
+    hyphen / dash variant as "-" and every no-break / thin space as a space, so a label like
+    "Counter‑pressures" is one hyphenated word."""
+    return _ODD_SPACES.sub(" ", _HYPHENS.sub("-", normalize_answer(answer)))
+
+
+def _label_tokens(sentence: str) -> list[str]:
+    """The words directly before a number: within LABEL_WINDOW characters of the same phrase,
+    separated from it only by spaces, ":", "=" or "-" ("Key passes p90: " -> key, passes)."""
+    tail = sentence[-LABEL_WINDOW:].rstrip(_LABEL_SEPARATORS)
+    if not tail or tail[-1] in ",([【":
+        return []
+    tail = _PHRASE_END.split(tail.rstrip(")]】").rstrip(_LABEL_SEPARATORS))[-1]
+    return _LABEL_TOKEN.findall(tail.lower())[-MAX_LABEL_TOKENS:]
+
+
+def _answer_numbers(answer: str) -> list[tuple[float, int, list[str], list[str], bool]]:
+    """(value, decimals shown, nearby words, label tokens, is a percentile) for every number in
+    the answer, framing removed. A number's words stop at the neighbouring numbers and at phrase
+    ends (clause ends, commas, brackets), so in "key passes 4.26 (99th percentile)" the word
+    "percentile" belongs to 99, not to 4.26. The label tokens are the words directly before the
+    number ("key passes" / "key_passes_p90"); "98.9th percentile" marks a percentile."""
+    text_ = _LIST_MARKER.sub(" ", _FRAMING_PATTERNS.sub(" ", _check_text(answer)))
     matches = list(_NUMBER.finditer(text_))
     out = []
     for i, m in enumerate(matches):
@@ -389,13 +425,15 @@ def _answer_numbers(answer: str) -> list[tuple[float, int, list[str], list[str]]
             value, decimals = value * 1000, max(decimals - 3, 0)  # compared in millions
         left = matches[i - 1].end() if i else 0
         right = matches[i + 1].start() if i + 1 < len(matches) else len(text_)
-        before_text = _CLAUSE_END.split(text_[left : m.start()])[-1]
-        after_text = _CLAUSE_END.split(text_[m.end() : right])[0]
+        sentence = _CLAUSE_END.split(text_[left : m.start()])[-1]
+        before_text = _PHRASE_END.split(sentence[-LABEL_WINDOW:])[-1]
+        after_raw = text_[m.end() : right]
+        after_text = _PHRASE_END.split(after_raw)[0]
         before = _WORD.findall(before_text.lower())[-CONTEXT_WORDS:]
         after = _WORD.findall(after_text.lower())[:CONTEXT_WORDS]
         words = before + after + (["million"] if suffix in ("m", "bn") else [])
-        label = _LABEL_TOKEN.findall(before_text.lower())[-MAX_LABEL_TOKENS:]
-        out.append((value, decimals, words, label))
+        is_pct = _PERCENTILE_AFTER.match(after_raw) is not None
+        out.append((value, decimals, words, _label_tokens(sentence), is_pct))
     return out
 
 
@@ -486,9 +524,11 @@ def _labelled_metric(label: list[str], names: set[str]) -> list[str]:
         joined = "_".join(tokens[-k:])
         for words, code in _LABEL_ALIASES.items():
             joined = joined.replace(words, code)
-        hits = [n for n in (joined, f"{joined}_p90", f"{joined}_pct") if n in names]
+        # a hyphen may stand for "_" or for nothing ("counter-pressures" = counterpressures)
+        stems = dict.fromkeys((joined.replace("-", "_"), joined.replace("-", "")))
+        hits = [n for j in stems for n in (j, f"{j}_p90", f"{j}_pct") if n in names]
         if hits:
-            return hits
+            return list(dict.fromkeys(hits))
     return []
 
 
@@ -500,33 +540,63 @@ def _matches_metric(value: float, decimals: int, pool: Iterable[float]) -> bool:
     return False
 
 
-def unverified_numbers(answer_text: str, tool_results: Any) -> list[float]:
-    """The numbers in the answer that no tool result supports. A number right after a metric name
-    ("Key passes p90: 4.256") must match that metric's value within 0.5%, and after "<metric>
-    percentile" that metric's percentile; otherwise a number next to a domain word ("goals",
-    "percentile", "value"...) must match a field of that kind."""
+def check_citations(answer_text: str, tool_results: Any) -> dict[str, Any]:
+    """Every number in the answer against the tool results.
+
+    - A number followed by "percentile" ("98.9th percentile") after a metric name must match that
+      metric's percentile / score; after "<metric> percentile" / "<metric>_percentile=" likewise.
+    - A number right after a metric name ("Key passes p90: 4.256") must match that metric's value
+      within 0.5%. If it matches the metric's percentile instead (`fouls_won_p90=6.7` when 6.7 is
+      the percentile), it is a percentile mismatch: a warning, not a block.
+    - Otherwise a number next to a domain word ("goals", "percentile", "value"...) must match a
+      field of that kind, and a number with no such word any field.
+
+    Returns {"missing": [numbers no result supports], "percentile_mismatch": [(metric, number)]}.
+    """
     flat = _flatten(tool_results, "", [])
     everything = {v for _, v in flat}
     names = _metric_names(tool_results, set())
     by_metric = _metric_values(flat, names)
     by_rank = _metric_values(flat, names, ranks=True)
-    missing = []
-    for value, decimals, words, label in _answer_numbers(answer_text):
+    missing: list[float] = []
+    mismatched: list[tuple[str, float]] = []
+    for value, decimals, words, label, is_pct in _answer_numbers(answer_text):
         if value in FRAMING_NUMBERS:
             continue
-        label, is_rank = _rank_label(label)
+        label, rank_label = _rank_label(label)
         metrics = _labelled_metric(label, names)
         if metrics:
-            source = by_rank if is_rank else by_metric
-            pool = set().union(*(source.get(m, set()) for m in metrics))
-            if not _matches_metric(value, decimals, pool):
-                missing.append(value)
+            values = set().union(*(by_metric.get(m, set()) for m in metrics))
+            ranks = set().union(*(by_rank.get(m, set()) for m in metrics))
+            if is_pct or rank_label:
+                if not _matches_metric(value, decimals, ranks):
+                    missing.append(value)
+            elif not _matches_metric(value, decimals, values):
+                if _matches_metric(value, decimals, ranks):
+                    mismatched.append((metrics[0], value))
+                else:
+                    missing.append(value)
             continue
         keys = _field_keys(words)
-        pool = {v for p, v in flat if any(k in p for k in keys)} if keys else everything
-        if not _matches(value, decimals, pool):
+        field_pool = {v for p, v in flat if any(k in p for k in keys)} if keys else everything
+        if not _matches(value, decimals, field_pool):
             missing.append(value)
-    return missing
+    return {"missing": missing, "percentile_mismatch": mismatched}
+
+
+def unverified_numbers(answer_text: str, tool_results: Any) -> list[float]:
+    """The numbers in the answer that no tool result supports (`check_citations`' hard failures;
+    percentile mismatches are warnings and not listed)."""
+    return list(check_citations(answer_text, tool_results)["missing"])
+
+
+def percentile_mismatch_warning(mismatched: list[tuple[str, float]]) -> str:
+    """The warning shown with an answer that quoted a percentile as a metric's value."""
+    items = ", ".join(f"{m} = {v:g}" for m, v in mismatched)
+    return (
+        f"Percentile quoted as a value: {items} is the percentile in the tool result, not the "
+        "metric's value."
+    )
 
 
 def verify_citations(answer_text: str, tool_results: Any) -> bool:
@@ -589,6 +659,7 @@ def apply_similarity_rule(similarity_result: dict[str, Any]) -> dict[str, Any]:
 
 __all__ = [
     "REFUSALS", "STANDING_CAVEAT", "apply_similarity_rule", "check_player_names",
-    "classify_with_rules", "name_refusal", "refusal_text", "rule_refusal", "unverified_numbers",
+    "check_citations", "classify_with_rules", "name_refusal", "percentile_mismatch_warning",
+    "refusal_text", "rule_refusal", "unverified_numbers",
     "verify_citations",
 ]  # fmt: skip

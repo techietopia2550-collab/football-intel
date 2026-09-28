@@ -325,9 +325,12 @@ def test_metric_label_ties_number_to_that_metric() -> None:
     assert g.verify_citations("key_passes_p90=4.256, percentile=98.9", results)
     assert g.verify_citations("Passes into the box per 90 min: 5.85", results)
     assert g.verify_citations("Pass completion: 90.7%", results)
-    # found but wrong: another metric's value, or the percentile, next to this metric's name
+    # found but wrong: another metric's value next to this metric's name is blocked; its own
+    # percentile quoted as the value is a percentile mismatch (a warning, not a block)
     assert g.unverified_numbers("Key passes p90: 5.845", results) == [5.845]
-    assert g.unverified_numbers("Key passes p90: 98.9", results) == [98.9]
+    assert g.check_citations("Key passes p90: 98.9", results) == {
+        "missing": [], "percentile_mismatch": [("key_passes_p90", 98.9)]
+    }  # fmt: skip
     # no metric name before the number: the old rule (any field) still applies
     assert g.verify_citations("He made 4.256 key passes per 90.", results)
 
@@ -377,3 +380,102 @@ def test_metric_percentile_label_ties_number_to_that_percentile() -> None:
     # the percentile of another metric, or the value, next to this metric's percentile label
     assert g.unverified_numbers("key_passes_p90_percentile=83.0", results) == [83.0]
     assert g.unverified_numbers("key_passes_p90_percentile=4.256", results) == [4.256]
+
+
+# ---- citation check fixes from the 60-question run (2026-09-28) ---------------------------------
+
+_PROFILE_ROWS = [{"strengths": [
+    {"metric": "assists_p90", "value": 0.569, "percentile": 98.9, "score": 98.9},
+    {"metric": "xg_per_shot", "value": 0.122, "percentile": 83.0, "score": 83.0},
+], "weaknesses": [
+    {"metric": "fouls_won_p90", "value": 0.984, "percentile": 6.7, "score": 6.7},
+    {"metric": "counterpressures_p90", "value": 2.577, "percentile": 13.7, "score": 13.7},
+]}]  # fmt: skip
+
+
+def test_bug1_percentile_after_a_metric_name_is_checked_as_a_percentile() -> None:
+    """Live P01: "assists p90 – 98.9th percentile" was read as assists_p90 = 98.9."""
+    clean = {"missing": [], "percentile_mismatch": []}
+    for text_ in (
+        "- assists p90 – 98.9th percentile (CREATION)",
+        "- xg_per_shot – 83.0 th percentile",
+        "Assists p90: 98.9 percentile",
+    ):
+        assert g.check_citations(text_, _PROFILE_ROWS) == clean
+    # a wrong percentile, or another metric's percentile, is still caught
+    assert g.unverified_numbers("- assists p90 – 97.9th percentile", _PROFILE_ROWS) == [97.9]
+    assert g.unverified_numbers("- assists p90 – 83.0th percentile", _PROFILE_ROWS) == [83.0]
+
+
+def test_bug2_hyphen_and_space_variants_do_not_split_a_label() -> None:
+    """Live E01: "Counter‑pressures p90: 5.891" matched pressures_p90."""
+    results = [{"stats": [
+        {"metric": "pressures_p90", "value": 815.0, "per90": 26.954, "percentile": 84.6},
+        {"metric": "counterpressures_p90", "value": 198.0, "per90": 5.891, "percentile": 84.1},
+        {"metric": "dribble_success_pct", "value": 58.7, "percentile": 62.2},
+    ]}]  # fmt: skip
+    for dash in ("‐", "‑", "–", "—", "-"):
+        assert g.verify_citations(f"- Counter{dash}pressures p90: 5.891", results), dash
+    assert g.verify_citations("Dribble‑success %: 58.7", results)
+    assert g.verify_citations("Pressures p90: 26.954", results)
+    assert g.unverified_numbers("- Counter‑pressures p90: 26.954", results) == [26.954]
+    # the check reads hyphens as "-", but the answer shown to the user keeps its dashes
+    assert g.normalize_answer("Stambouli – 93% · Fair") == "Stambouli – 93% · Fair"
+
+
+def test_bug3_context_stays_in_its_own_phrase() -> None:
+    """Live E02 / T01 / W02: a word from the next phrase pinned a number to the wrong fields."""
+    shared = {"metric": "counterpressures_p90", "target_value": 5.946, "candidate_value": 6.308}
+    sim = [{"similar": [{"player_name": "Benjamin Stambouli", "similarity": 0.9262,
+                         "shared_metrics": [shared]}]}]  # fmt: skip
+    assert g.verify_citations(
+        "both produce high counter‑pressures p90, yielding a 93% cosine similarity", sim
+    )
+    scores = {"direct_speed": 94.9367088607595, "shots_pm": 78.481}
+    team = [{"profile": {"values": {"width": 25.134, "direct_speed": 11.35}, "scores": scores}}]
+    assert g.verify_citations(
+        'team_fingerprint(team="Leicester City") -> scores.direct_speed=94.9367088607595, '
+        "values.width=25.134",
+        team,
+    )
+    # "rank)" closes 78.5's phrase: the "xG per shot" after it is not 78.5's context
+    assert g.verify_citations("Shots per match (78.5 % rank) with xG per shot", team)
+    rows = [{"players": [{"player_name": "Gerard Piqué", "metrics": {
+        "pass_completion_pct": {"value": 91.683, "percentile": 99.0, "score": 99.0},
+        "tackle_win_pct": {"value": 45.238, "percentile": 5.1, "score": 5.1}}}]},
+        {"limit": 10}]  # fmt: skip
+    line = "- Gerard Piqué – 99th percentile pass completion, 5th percentile tackle‑win"
+    assert g.verify_citations(line, rows)
+    assert g.verify_citations("find_players_by_profile(position_group=CB, limit=10)", rows)
+    assert g.unverified_numbers(line.replace("5th", "25th"), rows) == [25.0]
+
+
+# Live P02 answer, withheld on 2026-09-28: the bullets are right; the Sources line quotes the
+# percentiles as the metrics' values (fouls_won_p90's value is 0.984, its percentile 6.7).
+WITHHELD_VARDY = (
+    "Vardy’s main weaknesses in 2015/16 were winning fouls and counter‑pressures.\n\n"
+    "- fouls_won_p90 – 6.7 th percentile (very low)  \n"
+    "- counterpressures_p90 – 13.7 th percentile (very low)\n\n"
+    "Sources:\n"
+    '- profile(player_name="Jamie Vardy") -> fouls_won_p90=6.7, counterpressures_p90=13.7'
+)
+
+
+def test_bug4_percentile_quoted_as_value_is_a_warning_not_a_block() -> None:
+    assert g.check_citations(WITHHELD_VARDY, _PROFILE_ROWS) == {
+        "missing": [],
+        "percentile_mismatch": [("fouls_won_p90", 6.7), ("counterpressures_p90", 13.7)],
+    }
+    warning = g.percentile_mismatch_warning([("fouls_won_p90", 6.7)])
+    assert "fouls_won_p90 = 6.7" in warning and "percentile" in warning
+    # a number that is neither the value nor the percentile still blocks
+    assert g.unverified_numbers(WITHHELD_VARDY.replace("=6.7", "=7.7"), _PROFILE_ROWS) == [7.7]
+
+
+def test_player_pay_questions_get_no_data_before_the_llm() -> None:
+    verdict, text_ = g.rule_refusal("What's Özil's weekly wage?") or ("", "")
+    assert verdict == "NO_DATA" and text_.startswith("The database has no data for that:")
+    assert g.rule_refusal("Kane salary")[0] == "NO_DATA"  # type: ignore[index]
+    # a team's wage bill goes to the tools (team_fingerprint returns the wage context)
+    assert g.rule_refusal("Leicester wage bill") is None
+    assert g.rule_refusal("What was Arsenal's wage bill?") is None

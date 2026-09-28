@@ -54,6 +54,15 @@ class GroqRateLimitError(GroqError):
         self.detail = detail
 
 
+class GroqToolCallError(GroqError):
+    """400 `tool_use_failed`: Groq rejected the tool call the model generated because its
+    arguments broke the tool's schema (e.g. `position_group: null`). `detail` is Groq's reason."""
+
+    def __init__(self, message: str, detail: str = "") -> None:
+        super().__init__(message)
+        self.detail = detail
+
+
 RateLimitError = GroqRateLimitError  # the name the chat layer uses
 
 
@@ -183,6 +192,12 @@ class GroqClient:
                 wait_seconds=parse_duration(headers.get("retry-after")),
                 detail=resp.text[:300],
             )
+        if resp.status_code == 400 and "tool_use_failed" in resp.text:
+            try:
+                reason = str(resp.json()["error"]["message"])
+            except (ValueError, KeyError, TypeError):
+                reason = resp.text[:300]
+            raise GroqToolCallError(f"Groq rejected the model's tool call: {reason}", reason)
         if not resp.ok:
             raise GroqError(f"Groq returned HTTP {resp.status_code}: {resp.text[:300]}")
         try:

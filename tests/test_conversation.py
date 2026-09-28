@@ -198,3 +198,42 @@ def test_history_is_passed_and_trimmed() -> None:
     sent = fake.requests[0]
     assert len(sent) == 1 + conversation.MAX_HISTORY_MESSAGES + 1
     assert sent[1]["content"] == "m10" and sent[-1]["content"] == "How did Leicester play?"
+
+
+def test_rejected_tool_call_is_sent_back_and_retried() -> None:
+    """Live W01: Groq refused `position_group: null` (HTTP 400 tool_use_failed)."""
+    from src.chat.llm_client import GroqToolCallError
+
+    reason = "parameters for tool find_players_by_profile did not match schema"
+    fake = FakeClient(
+        GroqToolCallError("rejected", reason),
+        _tool_call("methodology", {}),
+        _text("The match % is a cosine similarity."),
+    )
+    out = conversation.ask("How is the match percent computed for players?", client=fake)
+    assert not out["refused"] and out["llm_calls"] == 2
+    retry = fake.requests[1][-1]
+    assert retry["role"] == "user" and reason in retry["content"]
+    assert fake.with_tools == [True, True, False]
+
+
+def test_rejected_tool_call_without_a_round_left_is_unavailable() -> None:
+    from src.chat.llm_client import GroqToolCallError
+
+    fake = FakeClient(_tool_call("methodology", {}), GroqToolCallError("rejected", "bad arguments"))
+    out = conversation.ask("How is the match percent computed for players?", client=fake)
+    assert out["refused"] and out["error"] == "tool_call_rejected"
+    assert out["answer"] == conversation.UNAVAILABLE
+
+
+def test_percentile_quoted_as_value_ships_with_a_warning(monkeypatch: pytest.MonkeyPatch) -> None:
+    rows = {"weaknesses": [{"metric": "fouls_won_p90", "value": 0.984, "percentile": 6.7}]}
+    monkeypatch.setattr(conversation, "call_tool", lambda name, args: rows)
+    fake = FakeClient(
+        _tool_call("profile", {"player_name": "Jamie Vardy"}),
+        _text("Vardy was weak at winning fouls.\n\nSources:\n- profile(player_name=\"Jamie "
+              "Vardy\") -> fouls_won_p90=6.7"),
+    )  # fmt: skip
+    out = conversation.ask("What is Vardy weak at?", client=fake)
+    assert not out["refused"] and out["verdict"] is None
+    assert any("Percentile quoted as a value" in w for w in out["warnings"])
