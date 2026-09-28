@@ -330,3 +330,50 @@ def test_metric_label_ties_number_to_that_metric() -> None:
     assert g.unverified_numbers("Key passes p90: 98.9", results) == [98.9]
     # no metric name before the number: the old rule (any field) still applies
     assert g.verify_citations("He made 4.256 key passes per 90.", results)
+
+
+# Withheld live on 2026-09-28 (third Q3 run): the Sources line used "<metric>_percentile=" labels,
+# and 92.0 was read with the next pair's "xg_per_shot" and checked against xG fields only.
+WITHHELD_OZIL_PERCENTILE_LABELS = (
+    "Mesut Özil’s 2015/16 strengths were his elite creation and passing numbers, all ranking in "
+    "the top percentiles of his position group.\n\n"
+    "- assists p90 – 0.569 (98.9 percentile, CREATION)  \n"
+    "- expected assists p90 – 0.413 (98.9 percentile, CREATION)  \n"
+    "- key passes p90 – 4.256 (98.9 percentile, CREATION)  \n"
+    "- passes into box p90 – 5.845 (98.9 percentile, CREATION)  \n"
+    "- progressive passes p90 – 12.409 (96.6 percentile, PASSING)  \n"
+    "- passes into final third p90 – 6.264 (92.0 percentile, PASSING)  \n"
+    "- xG per shot – 0.122 (83.0 percentile, ATTACKING)  \n\n"
+    "Sources:\n"
+    '- profile(player_name="Mesut Özil") -> assists_p90=0.569, assists_p90_percentile=98.9, '
+    "xa_p90=0.413, xa_p90_percentile=98.9, key_passes_p90=4.256, key_passes_p90_percentile=98.9, "
+    "passes_into_box_p90=5.845, passes_into_box_p90_percentile=98.9, "
+    "progressive_passes_p90=12.409, progressive_passes_p90_percentile=96.6, "
+    "passes_into_final_third_p90=6.264, "
+    "passes_into_final_third_p90_percentile=92.0, xg_per_shot=0.122, xg_per_shot_percentile=83.0"
+)
+
+
+@needs_db
+def test_live_ozil_answer_with_percentile_labels_passes() -> None:
+    from src.chat.dispatch import call_tool
+
+    profile = call_tool("profile", {"player_name": "Mesut Özil"})
+    evidence = ["What are Özil's strengths?", {"player_name": "Mesut Özil"}, profile]
+    assert g.unverified_numbers(WITHHELD_OZIL_PERCENTILE_LABELS, evidence) == []
+    wrong = WITHHELD_OZIL_PERCENTILE_LABELS.replace(
+        "third_p90_percentile=92.0", "third_p90_percentile=93.0"
+    )
+    assert g.unverified_numbers(wrong, evidence) == [93.0]
+
+
+def test_metric_percentile_label_ties_number_to_that_percentile() -> None:
+    results = [{"stats": [
+        {"metric": "key_passes_p90", "value": 4.256, "percentile": 98.9},
+        {"metric": "xg_per_shot", "value": 0.122, "percentile": 83.0},
+    ]}]  # fmt: skip
+    assert g.verify_citations("key_passes_p90_percentile=98.9, xg_per_shot=0.122", results)
+    assert g.verify_citations("Key passes percentile: 98.9", results)
+    # the percentile of another metric, or the value, next to this metric's percentile label
+    assert g.unverified_numbers("key_passes_p90_percentile=83.0", results) == [83.0]
+    assert g.unverified_numbers("key_passes_p90_percentile=4.256", results) == [4.256]

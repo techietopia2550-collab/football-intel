@@ -1,7 +1,9 @@
-"""The 17 chatbot tools as OpenAI-style function schemas (docs/RAG_DESIGN.md section 9.5).
+"""The 16 chatbot tools as OpenAI-style function schemas (docs/RAG_DESIGN.md section 9.5).
 
 These are what the LLM sees. `src.chat.dispatch.call_tool` executes them. Season is fixed to
-2015/16 and never exposed; names go in, ids are resolved in code.
+2015/16 and never exposed; names go in, ids are resolved in code. There is no name-lookup tool:
+`guardrails.check_player_names` resolves names before the LLM runs, and every tool resolves its
+own name argument.
 """
 
 from __future__ import annotations
@@ -35,12 +37,6 @@ def _tool(
 
 
 TOOLS: list[dict[str, Any]] = [
-    _tool(
-        "resolve_player",
-        "Resolve a player name: the match, an 'ambiguous' candidate list, or 'not_found'.",
-        {"query": _PLAYER},
-        ["query"],
-    ),
     _tool(
         "player_stats",
         "A player's season counts, per-90 metrics with position-group percentiles, archetype and "

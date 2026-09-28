@@ -91,7 +91,8 @@ def test_list_team_axis_rejects_bad_input() -> None:
 
 
 def test_tool_schemas_match_the_registry() -> None:
-    assert len(TOOLS) == 17
+    assert len(TOOLS) == 16
+    assert "resolve_player" not in TOOL_NAMES  # names are resolved in code
     assert TOOL_NAMES == list(dispatch.REGISTRY)
     for tool in TOOLS:
         fn = tool["function"]
@@ -286,7 +287,6 @@ def test_list_team_axis_orders_by_display_score() -> None:
 
 
 _TOOL_CASES: dict[str, dict[str, Any]] = {
-    "resolve_player": {"query": "kante"},
     "player_stats": {"player": "Vardy"},
     "profile": {"player_name": "Özil"},
     "find_similar": {"player_name": "Busquets", "n": 3},

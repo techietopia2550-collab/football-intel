@@ -345,6 +345,8 @@ _LABEL_ALIASES = {"expected_assists": "xa", "expected_goals": "xg"}
 METRIC_TOLERANCE = 0.005  # a labelled number may differ from its metric's value by 0.5%
 # Fields of a metric row that are not its value (ranks and model internals).
 _NOT_VALUE_FIELDS = ("percentile", "score", "_z", "contribution", "delta", "rank", "band")
+# Fields of a metric row that hold its rank, for "<metric> percentile: 92" labels.
+_RANK_FIELDS = ("percentile", "score")
 # A word next to a number (by prefix) -> substrings of the tool-result field paths it must come
 # from. A number near one of these words is only checked against those fields, so "31 goals"
 # cannot pass on some unrelated percentile of 31.
@@ -447,18 +449,32 @@ def _metric_names(obj: Any, out: set[str]) -> set[str]:
     return out
 
 
-def _metric_values(flat: list[tuple[str, float]], names: set[str]) -> dict[str, set[float]]:
+def _metric_values(
+    flat: list[tuple[str, float]], names: set[str], ranks: bool = False
+) -> dict[str, set[float]]:
     """metric name -> the values stored for it (its row's value fields, or a field named after
-    it); percentiles, scores and z-scores in the row are not the metric's value."""
+    it); percentiles, scores and z-scores in the row are not the metric's value. With `ranks`,
+    the row's percentile and score fields instead."""
     out: dict[str, set[float]] = {}
     for path, v in flat:
         segs = path.split(".")
         for i, seg in enumerate(segs):
             if seg in names:
                 field = segs[-1] if i < len(segs) - 1 else ""
-                if not any(x in field for x in _NOT_VALUE_FIELDS):
+                is_rank = any(x in field for x in _RANK_FIELDS)
+                if is_rank if ranks else not any(x in field for x in _NOT_VALUE_FIELDS):
                     out.setdefault(seg, set()).add(v)
     return out
+
+
+def _rank_label(label: list[str]) -> tuple[list[str], bool]:
+    """Split a trailing "percentile" off a label: "key passes percentile" and
+    "key_passes_p90_percentile" name the metric's percentile, not its value."""
+    if label and label[-1] == "percentile":
+        return label[:-1], True
+    if label and label[-1].endswith("_percentile"):
+        return [*label[:-1], label[-1].removesuffix("_percentile")], True
+    return label, False
 
 
 def _labelled_metric(label: list[str], names: set[str]) -> list[str]:
@@ -486,19 +502,23 @@ def _matches_metric(value: float, decimals: int, pool: Iterable[float]) -> bool:
 
 def unverified_numbers(answer_text: str, tool_results: Any) -> list[float]:
     """The numbers in the answer that no tool result supports. A number right after a metric name
-    ("Key passes p90: 4.256") must match that metric's value within 0.5%; otherwise a number next
-    to a domain word ("goals", "percentile", "value"...) must match a field of that kind."""
+    ("Key passes p90: 4.256") must match that metric's value within 0.5%, and after "<metric>
+    percentile" that metric's percentile; otherwise a number next to a domain word ("goals",
+    "percentile", "value"...) must match a field of that kind."""
     flat = _flatten(tool_results, "", [])
     everything = {v for _, v in flat}
     names = _metric_names(tool_results, set())
     by_metric = _metric_values(flat, names)
+    by_rank = _metric_values(flat, names, ranks=True)
     missing = []
     for value, decimals, words, label in _answer_numbers(answer_text):
         if value in FRAMING_NUMBERS:
             continue
+        label, is_rank = _rank_label(label)
         metrics = _labelled_metric(label, names)
         if metrics:
-            pool = set().union(*(by_metric.get(m, set()) for m in metrics))
+            source = by_rank if is_rank else by_metric
+            pool = set().union(*(source.get(m, set()) for m in metrics))
             if not _matches_metric(value, decimals, pool):
                 missing.append(value)
             continue

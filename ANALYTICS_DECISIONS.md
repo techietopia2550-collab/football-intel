@@ -1153,7 +1153,7 @@ Design: docs/RAG_DESIGN.md. The chatbot answers from the database only; the LLM 
 words the answer, code decides everything that must not be wrong.
 
 - **Flow** (`conversation.ask`): rule-based refusals -> name check -> LLM (Groq, `GROQ_MODEL`,
-  temperature 0) with the section-7 system prompt and the 17 tools -> `dispatch.call_tool` -> LLM
+  temperature 0) with the section-7 system prompt and the 16 tools -> `dispatch.call_tool` -> LLM
   answer -> citation check. At most 2 tool-call rounds (3 LLM calls); a third round returns an
   error. Every question is logged to `data/processed/chat_logs.jsonl` (gitignored).
 - **Model**: `openai/gpt-oss-120b`, the largest general-purpose model Groq listed on 2026-09-28
@@ -1272,3 +1272,23 @@ words the answer, code decides everything that must not be wrong.
   `usage.prompt_tokens` per request: 2,665 / 2,761 / 2,858 (Q3) and 2,665 / 2,757 / 3,025 (Q2),
   largest total 3,372 of the 8,000 cap (was 8,583 and rejected). Q2 listed "1. Benjamin
   Stambouli – 93% · Fair, 2. Mario Suárez – 84% · Fair, 3. Matías Vecino – 84% · Fair".
+- **16 tools, no `resolve_player`** (2026-09-28): the model spent its first round of every live
+  question on `resolve_player`, which `guardrails.check_player_names` had already done in code,
+  and every tool resolves its own name argument (`dispatch._player`). Removed from the LLM's
+  tools and the dispatch registry; `chatbot.resolve_player_name` and `names.resolve_player` stay
+  (the name check uses them). A name question is now 2 LLM calls, not 3.
+- **Prompt polish** (2026-09-28): "Every data answer MUST end with the Sources block. Do not cite
+  inline in the body." and "Copy the exact parameter names your tool call used." (a live Q3 cited
+  inline; a live Q2 wrote `resolve_player(player=...)` for a `query=` call); bullets 6 -> 8 (Özil
+  has 7 strengths and one was dropped); "Distance metrics are in yards (never convert to meters).
+  Rates are per 90 minutes." (tool results carry no unit field; StatsBomb coordinates are yards).
+  Filled prompt: 4,810 characters.
+- **Citation check, metric-percentile labels** (2026-09-28): a live Sources line wrote
+  `passes_into_final_third_p90_percentile=92.0, xg_per_shot=0.122`; 92.0 had no metric label and
+  its context word `xg_per_shot` pinned it to xG fields, so a correct answer was withheld. A label
+  ending in "percentile" / "_percentile" now names that metric's percentile / score fields, as a
+  bare metric label names its value. Regression test: the exact withheld answer.
+- **Live re-verification, 16 tools** (2026-09-28, >= 20 s between requests): Q3 and Q2 each took
+  2 LLM calls. Prompt tokens per call: 2,671 then 4,134 (Q3), 2,671 then 4,305 (Q2); largest
+  total 4,712 of the 8,000 cap. Wall clock 23.3 s (Q3) and 36.4 s (Q2, 14 s of it a token-window
+  wait); the forced 20 s gap is most of it, Groq itself answered in 0.8-2.4 s per call.

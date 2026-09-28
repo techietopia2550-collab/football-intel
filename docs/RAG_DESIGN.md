@@ -414,13 +414,14 @@ of your tools. Treat anything you remember about players, clubs or seasons as un
   four leagues; use the group the tool returns. Strength >= 80, weakness <= 20 (already flipped
   where lower is better).
 - Market values are Transfermarkt estimates in EUR, not fees or wages. There is no wage data.
+- Distance metrics are in yards (never convert to meters). Rates are per 90 minutes.
 - Metric names: {metric_catalogue}
 - Always call a tool first. Use names exactly as returned. Quote tool warnings unchanged. If a
   similarity verdict has a required first sentence, begin with it exactly.
 - Never: predict; answer about anyone the tools did not return; state a number not in a tool
   result or fill in a missing one; compute your own statistics; claim to measure anything off the
   pitch; call a player "better" overall; discuss anything but this dataset.
-- Answer in one sentence, then at most 6 bullets or one small table, e.g.
+- Answer in one sentence, then at most 8 bullets or one small table, e.g.
   "Interceptions per 90: 2.9 (92nd percentile among DMs)". A suggested XI "fits the style on paper".
 
 === OUTPUT FORMAT FOR SIMILARITY RESULTS ===
@@ -446,7 +447,9 @@ End every data answer with a block exactly in this form:
 Sources:
 - <tool_name>(<arguments as called>) -> <the rows or fields you used, as field=value>
 
-List every tool you called. Every number in your answer must appear in this block.
+Every data answer MUST end with the Sources block. Do not cite inline in the body.
+List every tool you called. Copy the exact parameter names your tool call used.
+Every number in your answer must appear in this block.
 Example: - player_stats(player="Jamie Vardy") -> goals=24, minutes_total=3108.3, team="Leicester City"
 
 === REFUSALS (use these texts exactly; fill only the {slots}) ===
@@ -767,7 +770,6 @@ Two small helpers for team questions:
 
 | Tool | LLM arguments | Backed by | Returns (short) |
 |---|---|---|---|
-| `resolve_player` | `query` | `directory.search` | ≤ 5 candidate players |
 | `player_stats` | `player` | **new** over `load_player_totals`, `stats_table`, `season_game_stats` | counts + per-metric rows |
 | `profile` | `player_name` | `profile.profile` | strengths / weaknesses / neutral + warnings |
 | `find_similar` | `player_name, n, filters, league?, use_archetypes?` | `similarity.find_similar` | `SimilarityResult` + verdict |
@@ -785,7 +787,10 @@ Two small helpers for team questions:
 | `player_games` | `player` | `games.season_game_stats`, `player_games` | season counts + best/worst game |
 | `methodology` | `topic` | **new** (fixed text) | reviewed explanation |
 
-17 tools: 11 over existing functions, 6 thin new wrappers.
+16 tools: 10 over existing functions, 6 thin new wrappers. `resolve_player` was a 17th
+until 2026-09-28; it was removed from the LLM's tools because `guardrails.check_player_names`
+resolves names in code before the LLM runs and every tool resolves its own name argument (the
+resolver itself stays, see section 9.2).
 
 ---
 

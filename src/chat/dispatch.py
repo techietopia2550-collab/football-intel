@@ -72,10 +72,6 @@ def _team(name: str) -> Result:
 # ---- tool implementations ----------------------------------------------------------------------
 
 
-def _resolve_player(query: str) -> Result:
-    return chatbot.resolve_player_name(query, SEASON)
-
-
 def _player_stats(player: str) -> Result:
     return chatbot.player_stats(player, SEASON)
 
@@ -239,7 +235,7 @@ def _methodology(topic: str | None = None) -> Result:
 
 
 REGISTRY: dict[str, Callable[..., Result]] = {
-    "resolve_player": _resolve_player, "player_stats": _player_stats, "profile": _profile,
+    "player_stats": _player_stats, "profile": _profile,
     "find_similar": _find_similar, "compare_players": _compare_players,
     "find_players_by_profile": _find_players_by_profile, "explain_metric": _explain_metric,
     "team_fingerprint": _team_fingerprint, "list_teams": _list_teams,

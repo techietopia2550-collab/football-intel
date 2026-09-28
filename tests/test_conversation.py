@@ -116,16 +116,16 @@ def test_factual_answer_runs_the_tool_and_verifies_numbers(_tmp_log: Path) -> No
 
 @needs_db
 def test_two_tool_rounds_then_an_answer_without_tool_schemas() -> None:
-    """resolve_player -> player_stats -> answer (the live pattern): tools on the first two calls,
-    none on the last, which may only answer."""
+    """Two tool rounds, then the answer: tools on the first two calls, none on the last, which
+    may only answer."""
     fake = FakeClient(
-        _tool_call("resolve_player", {"query": "Vardy"}),
+        _tool_call("market_value", {"player": "Jamie Vardy"}),
         _tool_call("player_stats", {"player": "Jamie Vardy"}, "c2"),
         _text("Jamie Vardy scored 24 goals in 2015/16.\n\nSources:\n- player_stats -> goals=24"),
     )
     out = conversation.ask("How many goals did Vardy score?", client=fake)
     assert not out["refused"] and "24 goals" in out["answer"] and out["llm_calls"] == 3
-    assert [c["name"] for c in out["tool_calls"]] == ["resolve_player", "player_stats"]
+    assert [c["name"] for c in out["tool_calls"]] == ["market_value", "player_stats"]
     assert fake.with_tools == [True, True, False]
 
 

@@ -3,7 +3,7 @@
 `ask(question, history)`:
   1. rule-based refusals (no LLM call);
   2. name check: unknown -> NOT_IN_DB, ambiguous -> AMBIGUOUS (no LLM call);
-  3. LLM with the system prompt and the 17 tools; tool calls run through `dispatch.call_tool`,
+  3. LLM with the system prompt and the 16 tools; tool calls run through `dispatch.call_tool`,
      at most MAX_TOOL_ROUNDS rounds;
   4. similarity results go through the Decision 3 rule before the LLM sees them;
   5. every number in the final answer must appear in a tool result, else the answer is withheld.
