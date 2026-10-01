@@ -226,6 +226,33 @@ def test_rejected_tool_call_without_a_round_left_is_unavailable() -> None:
     assert out["answer"] == conversation.UNAVAILABLE
 
 
+def test_tool_call_on_the_last_round_gets_one_nudge_to_answer() -> None:
+    """Live E03/W05/W07: "Tool choice is none, but model called a tool" on the tools-free round."""
+    from src.chat.llm_client import GroqToolCallError
+
+    fake = FakeClient(
+        _tool_call("methodology", {}),
+        _tool_call("methodology", {}, cid="c2"),
+        GroqToolCallError("rejected", "Tool choice is none, but model called a tool"),
+        _text("The match % is a cosine similarity."),
+    )
+    out = conversation.ask("How is the match percent computed for players?", client=fake)
+    assert not out["refused"] and out["answer"].startswith("The match % is a cosine")
+    assert fake.requests[3][-1]["content"] == conversation.NO_MORE_TOOLS
+    assert fake.with_tools == [True, True, False, False]
+
+
+def test_second_tool_call_on_the_last_round_is_unavailable() -> None:
+    from src.chat.llm_client import GroqToolCallError
+
+    rejected = GroqToolCallError("rejected", "Tool choice is none, but model called a tool")
+    fake = FakeClient(
+        _tool_call("methodology", {}), _tool_call("methodology", {}, cid="c2"), rejected, rejected
+    )
+    out = conversation.ask("How is the match percent computed for players?", client=fake)
+    assert out["refused"] and out["error"] == "tool_call_rejected"
+
+
 def test_percentile_quoted_as_value_ships_with_a_warning(monkeypatch: pytest.MonkeyPatch) -> None:
     rows = {"weaknesses": [{"metric": "fouls_won_p90", "value": 0.984, "percentile": 6.7}]}
     monkeypatch.setattr(conversation, "call_tool", lambda name, args: rows)

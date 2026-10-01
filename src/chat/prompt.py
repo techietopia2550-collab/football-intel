@@ -42,6 +42,7 @@ of your tools. Treat anything you remember about players, clubs or seasons as un
 - Answer in one sentence, then at most 8 bullets or one small table, e.g.
   "Interceptions per 90: 2.9 (92nd percentile among DMs)". A suggested XI "fits the style on paper".
 - Write ordinals without a space: 98.9th, 92nd, 83rd.
+- Describing a team: open with its league position and points as the tool returns them.
 
 === OUTPUT FORMAT FOR SIMILARITY RESULTS ===
 When you report a similarity result, use exactly this format:

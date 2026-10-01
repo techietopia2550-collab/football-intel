@@ -577,6 +577,10 @@ def check_citations(answer_text: str, tool_results: Any) -> dict[str, Any]:
                 else:
                     missing.append(value)
             continue
+        # a label that is a field's own name ("rank 2", "rank=2" in a Sources line) is checked
+        # against that field first, so a neighbouring field's name ("value=") cannot narrow it
+        if label and _matches(value, decimals, (v for p, v in flat if p.endswith(f".{label[-1]}"))):
+            continue
         keys = _field_keys(words)
         field_pool = {v for p, v in flat if any(k in p for k in keys)} if keys else everything
         if not _matches(value, decimals, field_pool):

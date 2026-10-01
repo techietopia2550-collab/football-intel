@@ -3,16 +3,16 @@
     "model": "openai/gpt-oss-120b",
     "test_set": "tests\\fixtures\\chatbot_test_set.json",
     "questions_in_set": 60,
-    "prompt_characters": 4947,
+    "prompt_characters": 5077,
     "pace_seconds": 30.0,
     "max_api_calls": 120,
     "started": "2026-09-28T17:07:50+00:00",
-    "api_calls": 28,
-    "tokens": 100782,
-    "rate_limited_responses": 1,
-    "finished": "2026-09-28T17:29:01+00:00",
-    "stop_reason": "Groq daily limit: {\"error\":{\"message\":\"Rate limit reached for model `openai/gpt-oss-120b` in organization `org_<redacted>` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 198713, Requested 3706. Please try again in 17m25.008s. Need more tokens? Upgrade to Dev Tier today at https:/",
-    "completed": 24,
+    "api_calls": 92,
+    "tokens": 315732,
+    "rate_limited_responses": 2,
+    "finished": "2026-10-01T16:54:18+00:00",
+    "stop_reason": null,
+    "completed": 60,
     "replayed": "2026-09-28T17:52:40+00:00"
   },
   "results": [
@@ -1291,6 +1291,1637 @@
       "citation_status": "passed",
       "citation_warnings": [],
       "replay_note": "citation check: UNVERIFIED -> shown"
+    },
+    {
+      "id": 3,
+      "code": "F03",
+      "category": "factual",
+      "question": "Luis Suárez goals and assists?",
+      "answer": "Luis Suárez recorded 40 goals and 15 assists in the 2015/16 season.\n\n- Goals: 40  \n- Assists: 15  \n\nSources:\n- player_stats(player=\"Luis Suárez\") -> goals=40, assists=15",
+      "withheld_answer": null,
+      "tool_calls": [
+        {
+          "name": "player_stats",
+          "arguments": {
+            "player": "Luis Suárez"
+          },
+          "ok": true
+        }
+      ],
+      "refused": false,
+      "verdict": null,
+      "error": null,
+      "llm_calls": 2,
+      "requests": [
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 2756,
+          "total_tokens": 2798
+        },
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 5266,
+          "total_tokens": 5402
+        }
+      ],
+      "seconds": 5.8,
+      "correct": true,
+      "pattern_matched": true,
+      "withheld_would_match": null,
+      "must_not_matched": false,
+      "tool_ok": true,
+      "reached_citation_check": true,
+      "verified": true,
+      "sources_block": true,
+      "sources_json_args": false,
+      "ordinal_space": false
+    },
+    {
+      "id": 12,
+      "code": "S03",
+      "category": "similarity",
+      "question": "Players similar to Özil",
+      "answer": "Similar players to Mesut Özil in 2015/16 (Chance‑creator archetype) are:\n\n1. James Rodríguez – 97% · Fair  \n2. Abdelaziz Barrada – 85% · Fair  \n3. Ángel Di María – 84% · Fair  \n4. Kevin De Bruyne – 79% · Fair  \n5. David Silva – 76% · Fair  \n\nSources:\n- find_similar(player_name=Mesut Özil) -> James Rodríguez‑similarity=0.9679, Abdelaziz Barrada‑similarity=0.8472, Ángel Di María‑similarity=0.8446, Kevin De Bruyne‑similarity=0.7863, David Silva‑similarity=0.7618, tier=Fair\n\nSimilarity is a heuristic on 2015/16 event data: in testing, about half of Fair matches shared a role and style. It says nothing about ability, age, price or fit.",
+      "withheld_answer": null,
+      "tool_calls": [
+        {
+          "name": "find_similar",
+          "arguments": {
+            "n": 5,
+            "player_name": "Mesut Özil"
+          },
+          "ok": true
+        }
+      ],
+      "refused": false,
+      "verdict": null,
+      "error": null,
+      "llm_calls": 2,
+      "requests": [
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 2754,
+          "total_tokens": 2855
+        },
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 5165,
+          "total_tokens": 5663
+        }
+      ],
+      "seconds": 36.1,
+      "correct": false,
+      "pattern_matched": false,
+      "withheld_would_match": null,
+      "must_not_matched": false,
+      "tool_ok": true,
+      "reached_citation_check": true,
+      "verified": true,
+      "sources_block": true,
+      "sources_json_args": false,
+      "ordinal_space": false
+    },
+    {
+      "id": 20,
+      "code": "P03",
+      "category": "profile",
+      "question": "Describe Kanté",
+      "answer": "In 2015/16 N’Golo Kanté (Leicester City, CM / Destroyer) logged 3025 minutes and was among the elite defensive midfielders, combining top‑tier tackling, interceptions and ball recovery with high pressing work‑rate, while contributing little offensively.\n\n- Tackles p90: 4.879 (99.7th percentile among CMs)  \n- Interceptions p90: 3.273 (99.7th percentile)  \n- Ball recoveries p90: 8.033 (99.2nd percentile)  \n- Pressures p90: 26.954 (84.6th percentile)  \n- Counter‑pressures p90: 5.891 (84.1st percentile)  \n- Dribble‑success %: 76.19 (98.4th percentile)  \n- Pass‑completion %: 81.44 (73.3rd percentile)  \n- xG p90: 0.023 (2.5th percentile – a weakness)  \n\nSources:\n- player_stats(player=\"N'Golo Kanté\") -> tackles_p90=4.879, percentile=99.7, interceptions_p90=3.273, percentile=99.7, ball_recoveries_p90=8.033, percentile=99.2, pressures_p90=26.954, percentile=84.6, counterpressures_p90=5.891, percentile=84.1, dribble_success_pct=76.19, percentile=98.4, pass_completion_pct=81.436, percentile=73.3, xg_p90=0.023, percentile=2.5, minutes_total=3025.1, position_group_fine=\"CM\", archetype_label=\"Destroyer\"\n\nCaveats from the engine:\n- Mixed role: only 57% of minutes as CM.",
+      "withheld_answer": null,
+      "tool_calls": [
+        {
+          "name": "player_stats",
+          "arguments": {
+            "player": "N'Golo Kanté"
+          },
+          "ok": true
+        }
+      ],
+      "refused": false,
+      "verdict": null,
+      "error": null,
+      "llm_calls": 2,
+      "requests": [
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 2752,
+          "total_tokens": 2810
+        },
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 5419,
+          "total_tokens": 6050
+        }
+      ],
+      "seconds": 36.4,
+      "correct": true,
+      "pattern_matched": true,
+      "withheld_would_match": null,
+      "must_not_matched": false,
+      "tool_ok": false,
+      "reached_citation_check": true,
+      "verified": true,
+      "sources_block": true,
+      "sources_json_args": false,
+      "ordinal_space": false
+    },
+    {
+      "id": 27,
+      "code": "T03",
+      "category": "team_style",
+      "question": "How direct were Atlético?",
+      "answer": "Atlético Madrid’s play was relatively low‑direct in 2015/16, with a direct_speed of 7.6 (≈33rd percentile among teams).\n\n- direct_speed = 7.6 yards per 90 (32.9 percentile)  \n\nSources:\n- team_fingerprint(team=\"Atlético Madrid\") -> values.direct_speed=7.6249414337029515, scores.direct_speed=32.91139240506329",
+      "withheld_answer": null,
+      "tool_calls": [
+        {
+          "name": "team_fingerprint",
+          "arguments": {
+            "team": "Atlético Madrid"
+          },
+          "ok": true
+        }
+      ],
+      "refused": false,
+      "verdict": null,
+      "error": null,
+      "llm_calls": 2,
+      "requests": [
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 2754,
+          "total_tokens": 2881
+        },
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 3618,
+          "total_tokens": 3915
+        }
+      ],
+      "seconds": 35.8,
+      "correct": true,
+      "pattern_matched": true,
+      "withheld_would_match": null,
+      "must_not_matched": false,
+      "tool_ok": true,
+      "reached_citation_check": true,
+      "verified": true,
+      "sources_block": true,
+      "sources_json_args": false,
+      "ordinal_space": false
+    },
+    {
+      "id": 34,
+      "code": "W03",
+      "category": "filter",
+      "question": "Wingers who dribble a lot but rarely create",
+      "answer": "Wingers with high dribbling rates yet low key‑pass creation in 2015/16 were:\n\n- Hernán Pérez – 6.25 dribbles p90 (94.4th percentile), 0.96 key passes p90 (15.6th percentile)【find_players_by_profile(conditions=[{metric=dribbles_p90,op=>=,threshold=80},{metric=key_passes_p90,op=<=,threshold=20}],limit=5,position_group=W) -> dribbles_p90=value=6.246,dribbles_p90=percentile=94.4,key_passes_p90=value=0.961,key_passes_p90=percentile=15.6】  \n- Isaac Success – 5.13 dribbles p90 (85.1st percentile), 0.90 key passes p90 (12.3rd percentile)【find_players_by_profile(conditions=[{metric=dribbles_p90,op=>=,threshold=80},{metric=key_passes_p90,op=<=,threshold=20}],limit=5,position_group=W) -> dribbles_p90=value=5.129,dribbles_p90=percentile=85.1,key_passes_p90=value=0.9,key_passes_p90=percentile=12.3】",
+      "withheld_answer": null,
+      "tool_calls": [
+        {
+          "name": "find_players_by_profile",
+          "arguments": {
+            "conditions": [
+              {
+                "metric": "dribbles_p90",
+                "op": ">=",
+                "threshold": 80
+              },
+              {
+                "metric": "key_passes_p90",
+                "op": "<=",
+                "threshold": 20
+              }
+            ],
+            "limit": 5,
+            "position_group": "W"
+          },
+          "ok": true
+        }
+      ],
+      "refused": false,
+      "verdict": null,
+      "error": null,
+      "llm_calls": 2,
+      "requests": [
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 2759,
+          "total_tokens": 3008
+        },
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 3208,
+          "total_tokens": 3644
+        }
+      ],
+      "seconds": 32.3,
+      "correct": true,
+      "pattern_matched": true,
+      "withheld_would_match": null,
+      "must_not_matched": false,
+      "tool_ok": true,
+      "reached_citation_check": true,
+      "verified": true,
+      "sources_block": false,
+      "sources_json_args": false,
+      "ordinal_space": false
+    },
+    {
+      "id": 41,
+      "code": "C03",
+      "category": "comparison",
+      "question": "Who presses more, Vardy or Kane?",
+      "answer": "\"Kane\" matches several players: Harry Kane (Tottenham Hotspur), Eunan O'Kane (Bournemouth). Which one do you mean?",
+      "withheld_answer": null,
+      "tool_calls": [],
+      "refused": true,
+      "verdict": "AMBIGUOUS",
+      "error": null,
+      "llm_calls": 0,
+      "requests": [],
+      "seconds": 0.3,
+      "correct": false,
+      "pattern_matched": false,
+      "withheld_would_match": null,
+      "must_not_matched": false,
+      "tool_ok": false,
+      "reached_citation_check": false,
+      "verified": null,
+      "sources_block": null,
+      "sources_json_args": null,
+      "ordinal_space": null
+    },
+    {
+      "id": 47,
+      "code": "E03",
+      "category": "explanation",
+      "question": "What does \"progressive passes\" mean?",
+      "answer": "Chatbot is unavailable. Try again later.",
+      "withheld_answer": null,
+      "tool_calls": [
+        {
+          "name": "explain_metric",
+          "arguments": {
+            "metric": "progressive_passes"
+          },
+          "ok": false
+        }
+      ],
+      "refused": true,
+      "verdict": null,
+      "error": "tool_call_rejected",
+      "llm_calls": 1,
+      "requests": [
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 2826,
+          "total_tokens": 2880
+        }
+      ],
+      "seconds": 8.2,
+      "correct": false,
+      "pattern_matched": false,
+      "withheld_would_match": null,
+      "must_not_matched": false,
+      "tool_ok": true,
+      "reached_citation_check": false,
+      "verified": null,
+      "sources_block": null,
+      "sources_json_args": null,
+      "ordinal_space": null
+    },
+    {
+      "id": 4,
+      "code": "F04",
+      "category": "factual",
+      "question": "What was Harry Kane's xG per 90?",
+      "answer": "Harry Kane produced 0.584 xG per 90 minutes (91.5th percentile among STs) in 2015/16.\n\nSources:\n- player_stats(player=\"Harry Kane\") -> xg_p90=0.584, percentile=91.5",
+      "withheld_answer": null,
+      "tool_calls": [
+        {
+          "name": "player_stats",
+          "arguments": {
+            "player": "Harry Kane"
+          },
+          "ok": true
+        }
+      ],
+      "refused": false,
+      "verdict": null,
+      "error": null,
+      "llm_calls": 2,
+      "requests": [
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 2760,
+          "total_tokens": 2815
+        },
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 4881,
+          "total_tokens": 5054
+        }
+      ],
+      "seconds": 27.5,
+      "correct": true,
+      "pattern_matched": true,
+      "withheld_would_match": null,
+      "must_not_matched": false,
+      "tool_ok": true,
+      "reached_citation_check": true,
+      "verified": true,
+      "sources_block": true,
+      "sources_json_args": false,
+      "ordinal_space": false
+    },
+    {
+      "id": 13,
+      "code": "S04",
+      "category": "similarity",
+      "question": "3 players like Payet",
+      "answer": "Kevin De Bruyne – 91% · Fair  \nAbdelaziz Barrada – 84% · Fair  \nMesut Özil – 72% · Fair  \n\nSources:\n- find_similar(n=3,player_name=Payet) -> Kevin De Bruyne‑similarity=91, Abdelaziz Barrada‑similarity=84, Mesut Özil‑similarity=72\n\nSimilarity is a heuristic on 2015/16 event data: in testing, about half of Fair matches shared a role and style. It says nothing about ability, age, price or fit.",
+      "withheld_answer": null,
+      "tool_calls": [
+        {
+          "name": "find_similar",
+          "arguments": {
+            "n": 3,
+            "player_name": "Payet"
+          },
+          "ok": true
+        }
+      ],
+      "refused": false,
+      "verdict": null,
+      "error": null,
+      "llm_calls": 2,
+      "requests": [
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 2754,
+          "total_tokens": 2868
+        },
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 4355,
+          "total_tokens": 4455
+        }
+      ],
+      "seconds": 34.6,
+      "correct": true,
+      "pattern_matched": true,
+      "withheld_would_match": null,
+      "must_not_matched": false,
+      "tool_ok": true,
+      "reached_citation_check": true,
+      "verified": true,
+      "sources_block": true,
+      "sources_json_args": false,
+      "ordinal_space": false
+    },
+    {
+      "id": 21,
+      "code": "P04",
+      "category": "profile",
+      "question": "What kind of player is Mahrez?",
+      "answer": "Mahrez is a high‑output attacking midfielder/central midfielder (CM) who combines elite goal‑scoring and creation with strong dribbling and progressive play, while his passing efficiency and defensive work are comparatively modest.  \n\n- Goals p90: 0.516 (99.7th percentile) – top‑scoring midfielder.  \n- Expected goals p90: 0.369 (99.7th percentile) – elite finishing chance quality.  \n- Dribbles p90: 6.611 (98th percentile) – among the most successful dribblers.  \n- Expected assists p90: 0.289 (97.5th percentile) – creates high‑quality chances.  \n- Assists p90: 0.303 (95.3rd percentile) – prolific playmaker.  \n- Shots p90: 2.638 (94.1st percentile) – frequent shooter.  \n- Progressive carries p90: 7.339 (92.5th percentile) – drives the ball forward.  \n- Fouls won p90: 2.79 (87.4th percentile) – draws many fouls.  \n- Key passes p90: 2.002 (86.9th percentile) – creates scoring opportunities.  \n- Pass completion %: 69.5 (21.1st percentile) – relatively low passing accuracy.  \n\nSources:  \n- profile(player_name=\"Mahrez\") → goals_p90=0.516, goals_p90_percentile=99.7, xg_p90=0.369, xg_p90_percentile=99.7, dribbles_p90=6.611, dribbles_p90_percentile=98.0, xa_p90=0.289, xa_p90_percentile=97.5, assists_p90=0.303, assists_p90_percentile=95.3, shots_p90=2.638, shots_p90_percentile=94.1, progressive_carries_p90=7.339, progressive_carries_p90_percentile=92.5, fouls_won_p90=2.79, fouls_won_p90_percentile=87.4, key_passes_p90=2.002, key_passes_p90_percentile=86.9, pass_completion_pct=69.506, pass_completion_pct_percentile=21.1",
+      "withheld_answer": null,
+      "tool_calls": [
+        {
+          "name": "profile",
+          "arguments": {
+            "player_name": "Mahrez"
+          },
+          "ok": true
+        }
+      ],
+      "refused": false,
+      "verdict": null,
+      "error": null,
+      "llm_calls": 2,
+      "requests": [
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 2757,
+          "total_tokens": 2829
+        },
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 4409,
+          "total_tokens": 5256
+        }
+      ],
+      "seconds": 32.3,
+      "correct": false,
+      "pattern_matched": false,
+      "withheld_would_match": null,
+      "must_not_matched": false,
+      "tool_ok": true,
+      "reached_citation_check": true,
+      "verified": true,
+      "sources_block": true,
+      "sources_json_args": false,
+      "ordinal_space": false
+    },
+    {
+      "id": 28,
+      "code": "T04",
+      "category": "team_style",
+      "question": "Juventus key players and types",
+      "answer": "Juventus’ 2015/16 key players and their archetype types were:\n\n- Leonardo Bonucci – Ball‑playing centre‑back  \n- Gianluigi Buffon – Protected high‑save keeper  \n- Paul Pogba – Dribbling winger  \n- Andrea Barzagli – Ball‑playing centre‑back  \n- Paulo Dybala – Chance creator  \n\nSources:\n- team_fingerprint(team=\"Juventus\") -> key_players.player_name=Leonardo Bonucci, Gianluigi Buffon, Paul Pogba, Andrea Barzagli, Paulo Dybala; archetype_label=Ball‑playing centre‑back, Protected high‑save keeper, Dribbling winger, Ball‑playing centre‑back, Chance creator",
+      "withheld_answer": null,
+      "tool_calls": [
+        {
+          "name": "team_fingerprint",
+          "arguments": {
+            "team": "Juventus"
+          },
+          "ok": true
+        }
+      ],
+      "refused": false,
+      "verdict": null,
+      "error": null,
+      "llm_calls": 2,
+      "requests": [
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 2756,
+          "total_tokens": 2879
+        },
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 3631,
+          "total_tokens": 3931
+        }
+      ],
+      "seconds": 35.3,
+      "correct": true,
+      "pattern_matched": true,
+      "withheld_would_match": null,
+      "must_not_matched": false,
+      "tool_ok": true,
+      "reached_citation_check": true,
+      "verified": true,
+      "sources_block": true,
+      "sources_json_args": false,
+      "ordinal_space": false
+    },
+    {
+      "id": 35,
+      "code": "W04",
+      "category": "filter",
+      "question": "Strikers with high xG but poor shot accuracy",
+      "answer": "In 2015/16 the strikers who combined a top‑80th‑percentile xG per 90 with a bottom‑20th‑percentile shot‑accuracy were:\n\n- Christian Benteke – xG p90 95th pct, shot accuracy 12.3rd pct (Liverpool)  \n- Leonardo Ulloa – xG p90 90.4th pct, shot accuracy 13.9th pct (Leicester City)  \n- Wilfried Bony – xG p90 87.4th pct, shot accuracy 11.7th pct (Manchester City)  \n- Josef Martínez – xG p90 80.4th pct, shot accuracy 17.8th pct (Torino)  \n\nSources:\n- find_players_by_profile(conditions=[{metric=\"xg_p90\",op=\">=\",threshold=80},{metric=\"shot_accuracy\",op=\"<=\",threshold=20}],position_group=\"ST\") -> player_name=Christian Benteke,xg_p90.percentile=95.0,shot_accuracy.percentile=12.3; player_name=Leonardo Ulloa,xg_p90.percentile=90.4,shot_accuracy.percentile=13.9; player_name=Wilfried Bony,xg_p90.percentile=87.4,shot_accuracy.percentile=11.7; player_name=Josef Martínez,xg_p90.percentile=80.4,shot_accuracy.percentile=17.8\n\nCaveats from the engine:\n- Percentile quoted as a value: xg_p90 = 95, shot_accuracy = 12.3, shot_accuracy = 13.9, xg_p90 = 87.4, shot_accuracy = 11.7, shot_accuracy = 17.8 is the percentile in the tool result, not the metric's value.",
+      "withheld_answer": null,
+      "tool_calls": [
+        {
+          "name": "find_players_by_profile",
+          "arguments": {
+            "conditions": [
+              {
+                "metric": "xg_p90",
+                "op": ">=",
+                "threshold": 80
+              },
+              {
+                "metric": "shot_accuracy",
+                "op": "<=",
+                "threshold": 20
+              }
+            ],
+            "position_group": "ST"
+          },
+          "ok": true
+        }
+      ],
+      "refused": false,
+      "verdict": null,
+      "error": null,
+      "llm_calls": 2,
+      "requests": [
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 2759,
+          "total_tokens": 3044
+        },
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 3468,
+          "total_tokens": 3969
+        }
+      ],
+      "seconds": 31.7,
+      "correct": true,
+      "pattern_matched": true,
+      "withheld_would_match": null,
+      "must_not_matched": false,
+      "tool_ok": true,
+      "reached_citation_check": true,
+      "verified": true,
+      "sources_block": true,
+      "sources_json_args": false,
+      "ordinal_space": false
+    },
+    {
+      "id": 42,
+      "code": "C04",
+      "category": "comparison",
+      "question": "Busquets or Pogba for ball progression?",
+      "answer": "\"Pogba\" matches several players: Paul Pogba (Juventus), Florentin Pogba (Saint-Étienne). Which one do you mean?",
+      "withheld_answer": null,
+      "tool_calls": [],
+      "refused": true,
+      "verdict": "AMBIGUOUS",
+      "error": null,
+      "llm_calls": 0,
+      "requests": [],
+      "seconds": 0.3,
+      "correct": true,
+      "pattern_matched": true,
+      "withheld_would_match": null,
+      "must_not_matched": false,
+      "tool_ok": true,
+      "reached_citation_check": false,
+      "verified": null,
+      "sources_block": null,
+      "sources_json_args": null,
+      "ordinal_space": null
+    },
+    {
+      "id": 48,
+      "code": "E04",
+      "category": "explanation",
+      "question": "Why isn't Özil's pass completion a strength?",
+      "answer": "I can't answer that from the 2015/16 data.",
+      "withheld_answer": null,
+      "tool_calls": [
+        {
+          "name": "profile",
+          "arguments": {
+            "player_name": "Mesut Özil"
+          },
+          "ok": true
+        },
+        {
+          "name": "player_stats",
+          "arguments": {
+            "player": "Mesut Özil"
+          },
+          "ok": true
+        }
+      ],
+      "refused": true,
+      "verdict": null,
+      "error": null,
+      "llm_calls": 3,
+      "requests": [
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 2759,
+          "total_tokens": 2817
+        },
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 4222,
+          "total_tokens": 4362
+        },
+        {
+          "status": 200,
+          "tools_sent": false,
+          "prompt_tokens": 5427,
+          "total_tokens": 5569
+        }
+      ],
+      "seconds": 66.5,
+      "correct": false,
+      "pattern_matched": false,
+      "withheld_would_match": null,
+      "must_not_matched": false,
+      "tool_ok": false,
+      "reached_citation_check": false,
+      "verified": null,
+      "sources_block": null,
+      "sources_json_args": null,
+      "ordinal_space": null
+    },
+    {
+      "id": 5,
+      "code": "F05",
+      "category": "factual",
+      "question": "How many minutes did Busquets play?",
+      "answer": "Sergio Busquets logged 2,890.91 league minutes in the 2015/16 season.  \n\nSources:\n- player_stats(player=\"Sergio Busquets\") -> minutes_total=2890.91",
+      "withheld_answer": null,
+      "tool_calls": [
+        {
+          "name": "player_stats",
+          "arguments": {
+            "player": "Sergio Busquets"
+          },
+          "ok": true
+        }
+      ],
+      "refused": false,
+      "verdict": null,
+      "error": null,
+      "llm_calls": 2,
+      "requests": [
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 2757,
+          "total_tokens": 2808
+        },
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 5166,
+          "total_tokens": 5249
+        }
+      ],
+      "seconds": 38.8,
+      "correct": false,
+      "pattern_matched": false,
+      "withheld_would_match": null,
+      "must_not_matched": false,
+      "tool_ok": true,
+      "reached_citation_check": true,
+      "verified": true,
+      "sources_block": true,
+      "sources_json_args": false,
+      "ordinal_space": false
+    },
+    {
+      "id": 14,
+      "code": "S05",
+      "category": "similarity",
+      "question": "Teams that played like Leicester",
+      "answer": "In 2015/16, the clubs whose style most resembled Leicester City were:\n\n- 1. Toulouse – 70% · Fair  \n- 2. Eibar – 63% · Fair  \n- 3. West Ham United – 62% · Fair  \n- 4. Udinese – 62% · Fair  \n- 5. Carpi – 59% · Weak  \n\nSources:\n- find_similar_teams(team=\"Leicester\") -> team_name=Toulouse, similarity=0.7016687650371464, tier=Fair; team_name=Eibar, similarity=0.6271076650028264, tier=Fair; team_name=West Ham United, similarity=0.6221324434237144, tier=Fair; team_name=Udinese, similarity=0.6202484817818504, tier=Fair; team_name=Carpi, similarity=0.5914783956109332, tier=Weak\n\nSimilarity is a heuristic on 2015/16 event data: in testing, about half of Fair matches shared a role and style. It says nothing about ability, age, price or fit.",
+      "withheld_answer": null,
+      "tool_calls": [
+        {
+          "name": "find_similar_teams",
+          "arguments": {
+            "team": "Leicester"
+          },
+          "ok": true
+        }
+      ],
+      "refused": false,
+      "verdict": null,
+      "error": null,
+      "llm_calls": 2,
+      "requests": [
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 2754,
+          "total_tokens": 2901
+        },
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 3236,
+          "total_tokens": 3714
+        }
+      ],
+      "seconds": 35.2,
+      "correct": true,
+      "pattern_matched": true,
+      "withheld_would_match": null,
+      "must_not_matched": false,
+      "tool_ok": true,
+      "reached_citation_check": true,
+      "verified": true,
+      "sources_block": true,
+      "sources_json_args": false,
+      "ordinal_space": false
+    },
+    {
+      "id": 22,
+      "code": "P05",
+      "category": "profile",
+      "question": "Is Gueye good in the air?",
+      "answer": "\"Gueye\" matches several players: Idrissa Gueye (Aston Villa), Babacar Gueye (Troyes). Which one do you mean?",
+      "withheld_answer": null,
+      "tool_calls": [],
+      "refused": true,
+      "verdict": "AMBIGUOUS",
+      "error": null,
+      "llm_calls": 0,
+      "requests": [],
+      "seconds": 0.2,
+      "correct": false,
+      "pattern_matched": false,
+      "withheld_would_match": null,
+      "must_not_matched": false,
+      "tool_ok": false,
+      "reached_citation_check": false,
+      "verified": null,
+      "sources_block": null,
+      "sources_json_args": null,
+      "ordinal_space": null
+    },
+    {
+      "id": 29,
+      "code": "T05",
+      "category": "team_style",
+      "question": "Which teams had the most possession?",
+      "answer": "I couldn't verify the numbers in my answer against the database. Please rephrase the question.",
+      "withheld_answer": "Top 10 teams by possession % in 2015/16:\n\n- Paris Saint‑Germain (FRA) – 66.22 % (rank 1)  \n- Barcelona (ESP) – 66.20 % (rank 2)  \n- Napoli (ITA) – 62.54 % (rank 3)  \n- Lyon (FRA) – 60.998 % (rank 4)  \n- Fiorentina (ITA) – 60.38 % (rank 5)  \n- Manchester United (ENG) – 58.30 % (rank 6)  \n- Arsenal (ENG) – 57.57 % (rank 7)  \n- Nice (FRA) – 57.49 % (rank 8)  \n- Real Madrid (ESP) – 57.24 % (rank 9)  \n- Manchester City (ENG) – 57.01 % (rank 10)  \n\nSources:\n- list_team_axis(axis=possession_pct,direction=top) -> rank=1 team_name=Paris Saint-Germain value=66.223, rank=2 team_name=Barcelona value=66.204, rank=3 team_name=Napoli value=62.537, rank=4 team_name=Lyon value=60.998, rank=5 team_name=Fiorentina value=60.375, rank=6 team_name=Manchester United value=58.296, rank=7 team_name=Arsenal value=57.573, rank=8 team_name=Nice value=57.487, rank=9 team_name=Real Madrid value=57.244, rank=10 team_name=Manchester City value=57.01",
+      "tool_calls": [
+        {
+          "name": "list_team_axis",
+          "arguments": {
+            "axis": "possession_pct",
+            "direction": "top"
+          },
+          "ok": true
+        }
+      ],
+      "refused": true,
+      "verdict": "UNVERIFIED",
+      "error": null,
+      "llm_calls": 2,
+      "requests": [
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 2756,
+          "total_tokens": 2843
+        },
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 3307,
+          "total_tokens": 3693
+        }
+      ],
+      "seconds": 4.7,
+      "correct": false,
+      "pattern_matched": false,
+      "withheld_would_match": true,
+      "must_not_matched": false,
+      "tool_ok": true,
+      "reached_citation_check": true,
+      "verified": false,
+      "sources_block": true,
+      "sources_json_args": false,
+      "ordinal_space": false
+    },
+    {
+      "id": 36,
+      "code": "W05",
+      "category": "filter",
+      "question": "Midfielders top 20% interceptions, bottom 20% progressive passes",
+      "answer": "Chatbot is unavailable. Try again later.",
+      "withheld_answer": null,
+      "tool_calls": [
+        {
+          "name": "find_players_by_profile",
+          "arguments": {
+            "conditions": [
+              {
+                "metric": "interceptions_p90",
+                "op": ">=",
+                "threshold": 80
+              },
+              {
+                "metric": "progressive_passes_p90",
+                "op": "<=",
+                "threshold": 20
+              }
+            ],
+            "limit": 10
+          },
+          "ok": true
+        },
+        {
+          "name": "find_players_by_profile",
+          "arguments": {
+            "conditions": [
+              {
+                "metric": "interceptions_p90",
+                "op": ">=",
+                "threshold": 80
+              },
+              {
+                "metric": "progressive_passes_p90",
+                "op": "<=",
+                "threshold": 20
+              }
+            ],
+            "limit": 10,
+            "position_group": "DM"
+          },
+          "ok": true
+        }
+      ],
+      "refused": true,
+      "verdict": null,
+      "error": "tool_call_rejected",
+      "llm_calls": 2,
+      "requests": [
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 2764,
+          "total_tokens": 3102
+        },
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 4361,
+          "total_tokens": 4704
+        }
+      ],
+      "seconds": 92.4,
+      "correct": false,
+      "pattern_matched": false,
+      "withheld_would_match": null,
+      "must_not_matched": false,
+      "tool_ok": true,
+      "reached_citation_check": false,
+      "verified": null,
+      "sources_block": null,
+      "sources_json_args": null,
+      "ordinal_space": null
+    },
+    {
+      "id": 43,
+      "code": "C05",
+      "category": "comparison",
+      "question": "Messi vs Ronaldo goals",
+      "answer": "\"Ronaldo\" matches several players: Cristiano Ronaldo (Real Madrid), Ronaldo Pompeu da Silva (Empoli). Which one do you mean?",
+      "withheld_answer": null,
+      "tool_calls": [],
+      "refused": true,
+      "verdict": "AMBIGUOUS",
+      "error": null,
+      "llm_calls": 0,
+      "requests": [],
+      "seconds": 0.2,
+      "correct": false,
+      "pattern_matched": false,
+      "withheld_would_match": null,
+      "must_not_matched": false,
+      "tool_ok": false,
+      "reached_citation_check": false,
+      "verified": null,
+      "sources_block": null,
+      "sources_json_args": null,
+      "ordinal_space": null
+    },
+    {
+      "id": 49,
+      "code": "E05",
+      "category": "explanation",
+      "question": "Why does Leicester score low on possession?",
+      "answer": "I couldn't verify the numbers in my answer against the database. Please rephrase the question.",
+      "withheld_answer": "Leicester’s low possession (42.5 % of game time, scoring only 6.33 % on the possession axis) reflects a deliberately direct, wide‑passing style that favours quick transitions over ball‑retention.  \n\n- Possession % = 42.5 % (team fingerprint) – among the lowest in the league.  \n- Possession score = 6.33 / 100, indicating a bottom‑quartile ranking.  \n- Headline facts label the team as “Wide passing” and “Direct passing”.  \n- Direct‑speed score = 94.94 % and transition‑seconds score = 92.41 % show a focus on fast forward play.  \n- Progressive‑pass‑rate is modest (45.6 %), reinforcing limited patient buildup.  \n\nSources:  \n- team_fingerprint(team=\"Leicester City\") -> possession_pct=42.45450198306658, scores.possession_pct=6.329113924050633, headline_facts=[\"Wide passing\",\"Direct passing\"], direct_speed=94.9367088607595, transition_secs=92.40506329113924, progressive_pass_rate=0.20678460213343935",
+      "tool_calls": [
+        {
+          "name": "team_fingerprint",
+          "arguments": {
+            "team": "Leicester City"
+          },
+          "ok": true
+        }
+      ],
+      "refused": true,
+      "verdict": "UNVERIFIED",
+      "error": null,
+      "llm_calls": 2,
+      "requests": [
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 2757,
+          "total_tokens": 2990
+        },
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 3621,
+          "total_tokens": 4029
+        }
+      ],
+      "seconds": 5.5,
+      "correct": false,
+      "pattern_matched": false,
+      "withheld_would_match": true,
+      "must_not_matched": false,
+      "tool_ok": true,
+      "reached_citation_check": true,
+      "verified": false,
+      "sources_block": true,
+      "sources_json_args": false,
+      "ordinal_space": false
+    },
+    {
+      "id": 6,
+      "code": "F06",
+      "category": "factual",
+      "question": "Where did Leicester finish?",
+      "answer": "Leicester City finished 1st in the 2015/16 Premier League.\n\nSources:\n- list_teams(league=ENG-Premier League) -> league_position=1",
+      "withheld_answer": null,
+      "tool_calls": [
+        {
+          "name": "list_teams",
+          "arguments": {
+            "league": "ENG-Premier League"
+          },
+          "ok": true
+        }
+      ],
+      "refused": false,
+      "verdict": null,
+      "error": null,
+      "llm_calls": 2,
+      "requests": [
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 2754,
+          "total_tokens": 2836
+        },
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 3311,
+          "total_tokens": 3352
+        }
+      ],
+      "seconds": 30.6,
+      "correct": false,
+      "pattern_matched": false,
+      "withheld_would_match": null,
+      "must_not_matched": false,
+      "tool_ok": false,
+      "reached_citation_check": true,
+      "verified": true,
+      "sources_block": true,
+      "sources_json_args": false,
+      "ordinal_space": false
+    },
+    {
+      "id": 15,
+      "code": "S06",
+      "category": "similarity",
+      "question": "Who is closest to Luis Suárez and why?",
+      "answer": "Gonzalo Higuaín is the closest analogue to Luis Suárez in the 2015/16 season.\n\n1. Gonzalo Higuaín – 96% · Fair  \n\n- Shared metrics: goals p90 (Suárez 1.143 vs Higuaín 1.106), xG p90 (0.79 vs 0.769) and shots p90 (3.971 vs 5.592) – all among the highest for Poachers.  \n- Differing metrics: Higuaín recorded more progressive passes received p90 (21.109 vs 19.371) and more passes received under pressure p90 (8.265 vs 6.229), while his shots p90 were higher (5.592 vs 3.971).  \n\nSources:\n- find_similar(player_name=\"Luis Suárez\", n=5) -> similarity=0.9587, tier=Fair, shared_metrics=goals_p90, xg_p90, shots_p90, differing_metrics=progressive_passes_received_p90, passes_received_under_pressure_p90, shots_p90.\n\nSimilarity is a heuristic on 2015/16 event data: in testing, about half of Fair matches shared a role and style. It says nothing about ability, age, price or fit.\n\nCaveats from the engine:\n- Low archetype confidence (0.20): near the edge of 'Poacher', so the pool is a soft description of him.",
+      "withheld_answer": null,
+      "tool_calls": [
+        {
+          "name": "find_similar",
+          "arguments": {
+            "n": 5,
+            "player_name": "Luis Suárez"
+          },
+          "ok": true
+        }
+      ],
+      "refused": false,
+      "verdict": null,
+      "error": null,
+      "llm_calls": 2,
+      "requests": [
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 2759,
+          "total_tokens": 3047
+        },
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 5194,
+          "total_tokens": 5744
+        }
+      ],
+      "seconds": 89.7,
+      "correct": true,
+      "pattern_matched": true,
+      "withheld_would_match": null,
+      "must_not_matched": false,
+      "tool_ok": true,
+      "reached_citation_check": true,
+      "verified": true,
+      "sources_block": true,
+      "sources_json_args": false,
+      "ordinal_space": false
+    },
+    {
+      "id": 23,
+      "code": "P06",
+      "category": "profile",
+      "question": "Busquets strengths",
+      "answer": "Sergio Busquets’ 2015/16 strengths (DM group) were:\n\n- pass_completion_pct – 90.69 % (97.1th percentile)  \n- fouls_won_p90 – 2.553 (93.4th percentile)  \n- carries_p90 – 57.00 (91.8th percentile)  \n- passes_into_final_third_p90 – 7.38 (89.1th percentile)  \n- counterpressures_p90 – 5.95 (88.0th percentile)  \n- xa_p90 – 0.096 (83.8th percentile)  \n- aerial_win_pct – 61.67 % (81.9th percentile)  \n- progressive_carries_p90 – 3.92 (80.1th percentile)\n\nSources:\n- profile(player_name=\"Sergio Busquets\") -> metric=pass_completion_pct, percentile=97.1; metric=fouls_won_p90, percentile=93.4; metric=carries_p90, percentile=91.8; metric=passes_into_final_third_p90, percentile=89.1; metric=counterpressures_p90, percentile=88.0; metric=xa_p90, percentile=83.8; metric=aerial_win_pct, percentile=81.9; metric=progressive_carries_p90, percentile=80.1",
+      "withheld_answer": null,
+      "tool_calls": [
+        {
+          "name": "profile",
+          "arguments": {
+            "player_name": "Sergio Busquets"
+          },
+          "ok": true
+        }
+      ],
+      "refused": false,
+      "verdict": null,
+      "error": null,
+      "llm_calls": 3,
+      "requests": [
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 2752,
+          "total_tokens": 2828
+        },
+        {
+          "status": 429,
+          "detail": "{\"error\":{\"message\":\"Rate limit reached for model `openai/gpt-oss-120b` in organization `org_<redacted>` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 2309, Requested 7278. Please try again in 11.9025s. Need more tokens? Upgrade to Dev Tier today at https://co"
+        },
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 4206,
+          "total_tokens": 4710
+        }
+      ],
+      "seconds": 48.2,
+      "correct": true,
+      "pattern_matched": true,
+      "withheld_would_match": null,
+      "must_not_matched": false,
+      "tool_ok": true,
+      "reached_citation_check": true,
+      "verified": true,
+      "sources_block": true,
+      "sources_json_args": false,
+      "ordinal_space": false
+    },
+    {
+      "id": 30,
+      "code": "T06",
+      "category": "team_style",
+      "question": "Arsenal squad market value",
+      "answer": "Arsenal’s squad was valued at €334 million in the 2015/16 season.\n\nSources:\n- team_fingerprint(team=\"Arsenal\") -> total_eur=334000000.0",
+      "withheld_answer": null,
+      "tool_calls": [
+        {
+          "name": "team_fingerprint",
+          "arguments": {
+            "team": "Arsenal"
+          },
+          "ok": true
+        }
+      ],
+      "refused": false,
+      "verdict": null,
+      "error": null,
+      "llm_calls": 2,
+      "requests": [
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 2754,
+          "total_tokens": 2812
+        },
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 3628,
+          "total_tokens": 3717
+        }
+      ],
+      "seconds": 30.8,
+      "correct": false,
+      "pattern_matched": false,
+      "withheld_would_match": null,
+      "must_not_matched": false,
+      "tool_ok": true,
+      "reached_citation_check": true,
+      "verified": true,
+      "sources_block": true,
+      "sources_json_args": false,
+      "ordinal_space": false
+    },
+    {
+      "id": 37,
+      "code": "W06",
+      "category": "filter",
+      "question": "Premier League full-backs with high xA",
+      "answer": "In 2015/16 the Premier League full‑backs with the highest expected assists per 90 (xA) were:\n\n- Robert Brady – 0.148 xA (p 97th) – Norwich City  \n- Alberto Moreno – 0.141 xA (p 94.6th) – Liverpool  \n- Christian Fuchs – 0.136 xA (p 93.1st) – Leicester City  \n- Jeffrey Schlupp – 0.120 xA (p 91.1st) – Leicester City  \n- Kyle Naughton – 0.119 xA (p 89.9th) – Swansea City  \n\nSources:\n- find_players_by_profile(conditions=[{metric=\"xa_p90\",op=\">=\",threshold=80}],leagues=[\"ENG-Premier League\"],limit=10,position_group=\"FB\") -> Robert Brady=xa_p90.value=0.148,xa_p90.percentile=97.0; Alberto Moreno=xa_p90.value=0.141,xa_p90.percentile=94.6; Christian Fuchs=xa_p90.value=0.136,xa_p90.percentile=93.1; Jeffrey Schlupp=xa_p90.value=0.12,xa_p90.percentile=91.1; Kyle Naughton=xa_p90.value=0.119,xa_p90.percentile=89.9",
+      "withheld_answer": null,
+      "tool_calls": [
+        {
+          "name": "find_players_by_profile",
+          "arguments": {
+            "conditions": [
+              {
+                "metric": "xa_p90",
+                "op": ">=",
+                "threshold": 80
+              }
+            ],
+            "leagues": [
+              "ENG-Premier League"
+            ],
+            "limit": 10,
+            "position_group": "FB"
+          },
+          "ok": true
+        }
+      ],
+      "refused": false,
+      "verdict": null,
+      "error": null,
+      "llm_calls": 2,
+      "requests": [
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 2758,
+          "total_tokens": 3044
+        },
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 3929,
+          "total_tokens": 4407
+        }
+      ],
+      "seconds": 31.8,
+      "correct": true,
+      "pattern_matched": true,
+      "withheld_would_match": null,
+      "must_not_matched": false,
+      "tool_ok": true,
+      "reached_citation_check": true,
+      "verified": true,
+      "sources_block": true,
+      "sources_json_args": false,
+      "ordinal_space": false
+    },
+    {
+      "id": 44,
+      "code": "C06",
+      "category": "comparison",
+      "question": "Leicester vs Tottenham style",
+      "answer": "Leicester played a low‑possession, high‑direct, wide‑passing game, while Tottenham favoured possession, a slower build‑up and tighter width with a higher pressing intensity.  \n\n- Possession: Leicester 42.5 % vs Tottenham 56.8 % (Leicester low, Tottenham high)【team_fingerprint(team=\"Leicester City\") -> possession_pct=42.45450198306658】【team_fingerprint(team=\"Tottenham Hotspur\") -> possession_pct=56.83264901209733】  \n- PPDA (defensive pressure): Leicester 16.33 vs Tottenham 12.56 (Tottenham pressed harder)【team_fingerprint(team=\"Leicester City\") -> ppda=16.32936979785969】【team_fingerprint(team=\"Tottenham Hotspur\") -> ppda=12.564958283671038】  \n- Direct‑speed (yards per transition): Leicester 11.35 vs Tottenham 6.98 (Leicester more direct)【team_fingerprint(team=\"Leicester City\") -> direct_speed=11.347578347578347】【team_fingerprint(team=\"Tottenham Hotspur\") -> direct_speed=6.983999224204808】  \n- Width (team spread): Leicester 25.13 % vs Tottenham 24.04 % (Leicester slightly wider)【team_fingerprint(team=\"Leicester City\") -> width=25.134057092723435】【team_fingerprint(team=\"Tottenham Hotspur\") -> width=24.042371313106234】  \n- Crosses per 90: Leicester 13.58 vs Tottenham 11.34 (Leicester crossed more)【team_fingerprint(team=\"Leicester City\") -> crosses_p90=13.578947368421053】【team_fingerprint(team=\"Tottenham Hotspur\") -> crosses_p90=11.342105263157896】  \n- Shots per match: Leicester 13.82 vs Tottenham 17.26 (Tottenham shot more)【team_fingerprint(team=\"Leicester City\") -> shots_pm=13.81578947368421】【team_fingerprint(team=\"Tottenham Hotspur\") -> shots_pm=17.263157894736842】  \n- xG per shot: Leicester 0.126 vs Tottenham 0.095 (Leicester higher‑quality shots)【team_fingerprint(team=\"Leicester City\") -> xg_per_shot=0.12625175425904764】【team_fingerprint(team=\"Tottenham Hotspur\") -> xg_per_shot=0.09505518739207316】  \n- Transition time (seconds): Leicester 17.89 vs Tottenham 24.69 (Leicester transitioned faster)【team_fingerprint(team=\"Leicester City\") -> transition_secs=17.892156862745097】【team_fingerprint(team=\"Tottenham Hotspur\") -> transition_secs=24.693467336683415】\n\nSources:\n- team_fingerprint(team=\"Leicester City\") -> possession_pct=42.45450198306658, ppda=16.32936979785969, direct_speed=11.347578347578347, width=25.134057092723435, crosses_p90=13.578947368421053, shots_pm=13.81578947368421, xg_per_shot=0.12625175425904764, transition_secs=17.892156862745097  \n- team_fingerprint(team=\"Tottenham Hotspur\") -> possession_pct=56.83264901209733, ppda=12.564958283671038, direct_speed=6.983999224204808, width=24.042371313106234, crosses_p90=11.342105263157896, shots_pm=17.263157894736842, xg_per_shot=0.09505518739207316, transition_secs=24.693467336683415",
+      "withheld_answer": null,
+      "tool_calls": [
+        {
+          "name": "team_fingerprint",
+          "arguments": {
+            "team": "Leicester City"
+          },
+          "ok": true
+        },
+        {
+          "name": "team_fingerprint",
+          "arguments": {
+            "team": "Tottenham Hotspur"
+          },
+          "ok": true
+        }
+      ],
+      "refused": false,
+      "verdict": null,
+      "error": null,
+      "llm_calls": 3,
+      "requests": [
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 2754,
+          "total_tokens": 2891
+        },
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 3618,
+          "total_tokens": 3658
+        },
+        {
+          "status": 200,
+          "tools_sent": false,
+          "prompt_tokens": 3151,
+          "total_tokens": 4196
+        }
+      ],
+      "seconds": 76.3,
+      "correct": true,
+      "pattern_matched": true,
+      "withheld_would_match": null,
+      "must_not_matched": false,
+      "tool_ok": true,
+      "reached_citation_check": true,
+      "verified": true,
+      "sources_block": true,
+      "sources_json_args": false,
+      "ordinal_space": false
+    },
+    {
+      "id": 50,
+      "code": "E06",
+      "category": "explanation",
+      "question": "How is the match % computed?",
+      "answer": "The match % is the cosine similarity (0‑1) between the player’s vector of archetype‑defining metrics and a candidate’s vector (after PCA reduction), then multiplied by 100 to give a percentage.  \n\nSources:\n- methodology(topic=similarity_engine) -> 1. Choose the pool: the target's archetype (or his position group). 2. Choose the features: the archetype's 12 most distinctive metrics. 3. Z‑score each feature within the pool. 4. PCA, keeping 85% of the variance. 5. Cosine similarity between the target and each candidate, ranked. 6. Explain: the score splits exactly into per‑metric shares.",
+      "withheld_answer": null,
+      "tool_calls": [
+        {
+          "name": "methodology",
+          "arguments": {
+            "topic": "similarity_engine"
+          },
+          "ok": true
+        }
+      ],
+      "refused": false,
+      "verdict": null,
+      "error": null,
+      "llm_calls": 2,
+      "requests": [
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 2756,
+          "total_tokens": 3142
+        },
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 2878,
+          "total_tokens": 3134
+        }
+      ],
+      "seconds": 31.0,
+      "correct": false,
+      "pattern_matched": false,
+      "withheld_would_match": null,
+      "must_not_matched": false,
+      "tool_ok": true,
+      "reached_citation_check": true,
+      "verified": true,
+      "sources_block": true,
+      "sources_json_args": false,
+      "ordinal_space": false
+    },
+    {
+      "id": 7,
+      "code": "F07",
+      "category": "factual",
+      "question": "How many points did PSG get?",
+      "answer": "I can only answer football analytics questions about the 2015/16 StatsBomb data.",
+      "withheld_answer": null,
+      "tool_calls": [],
+      "refused": true,
+      "verdict": "OFF_TOPIC",
+      "error": null,
+      "llm_calls": 0,
+      "requests": [],
+      "seconds": 0.0,
+      "correct": false,
+      "pattern_matched": false,
+      "withheld_would_match": null,
+      "must_not_matched": false,
+      "tool_ok": false,
+      "reached_citation_check": false,
+      "verified": null,
+      "sources_block": null,
+      "sources_json_args": null,
+      "ordinal_space": null
+    },
+    {
+      "id": 16,
+      "code": "S07",
+      "category": "similarity",
+      "question": "A goalkeeper like the Juventus keeper",
+      "answer": "No close matches for Gianluigi Buffon: the best candidate scores only 36%, which is too low to call similar. Ask 'show the nearest anyway' to see them.",
+      "withheld_answer": null,
+      "tool_calls": [
+        {
+          "name": "find_similar",
+          "arguments": {
+            "league": "ITA-Serie A",
+            "n": 3,
+            "player_name": "Gianluigi Buffon"
+          },
+          "ok": true
+        }
+      ],
+      "refused": true,
+      "verdict": "REFUSE",
+      "error": null,
+      "llm_calls": 1,
+      "requests": [
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 2755,
+          "total_tokens": 2922
+        }
+      ],
+      "seconds": 1.5,
+      "correct": false,
+      "pattern_matched": false,
+      "withheld_would_match": null,
+      "must_not_matched": false,
+      "tool_ok": true,
+      "reached_citation_check": false,
+      "verified": null,
+      "sources_block": null,
+      "sources_json_args": null,
+      "ordinal_space": null
+    },
+    {
+      "id": 24,
+      "code": "P07",
+      "category": "profile",
+      "question": "Is Özil a leader?",
+      "answer": "The data doesn't measure leadership. It contains on-pitch event data from 2015/16 only, so I can describe what a player did with the ball and without it, not leadership.",
+      "withheld_answer": null,
+      "tool_calls": [],
+      "refused": true,
+      "verdict": "UNMEASURABLE",
+      "error": null,
+      "llm_calls": 0,
+      "requests": [],
+      "seconds": 0.0,
+      "correct": true,
+      "pattern_matched": true,
+      "withheld_would_match": null,
+      "must_not_matched": false,
+      "tool_ok": true,
+      "reached_citation_check": false,
+      "verified": null,
+      "sources_block": null,
+      "sources_json_args": null,
+      "ordinal_space": null
+    },
+    {
+      "id": 31,
+      "code": "T07",
+      "category": "team_style",
+      "question": "Leicester wage bill",
+      "answer": "The data doesn't measure wage bill. It contains on‑pitch event data from 2015/16 only, so I can describe what a player did with the ball and without it, not wage bill.",
+      "withheld_answer": null,
+      "tool_calls": [],
+      "refused": false,
+      "verdict": null,
+      "error": null,
+      "llm_calls": 1,
+      "requests": [
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 2753,
+          "total_tokens": 2958
+        }
+      ],
+      "seconds": 1.2,
+      "correct": false,
+      "pattern_matched": false,
+      "withheld_would_match": null,
+      "must_not_matched": false,
+      "tool_ok": false,
+      "reached_citation_check": false,
+      "verified": null,
+      "sources_block": null,
+      "sources_json_args": false,
+      "ordinal_space": false
+    },
+    {
+      "id": 38,
+      "code": "W07",
+      "category": "filter",
+      "question": "Centre-backs who score a lot",
+      "answer": "Chatbot is unavailable. Try again later.",
+      "withheld_answer": null,
+      "tool_calls": [
+        {
+          "name": "find_players_by_profile",
+          "arguments": {
+            "conditions": [
+              {
+                "metric": "goals_p90",
+                "op": ">=",
+                "threshold": 0.2
+              }
+            ],
+            "limit": 5,
+            "position_group": "CB"
+          },
+          "ok": false
+        },
+        {
+          "name": "find_players_by_profile",
+          "arguments": {
+            "conditions": [
+              {
+                "metric": "goals_p90",
+                "op": ">=",
+                "threshold": 0.2
+              }
+            ],
+            "limit": 20
+          },
+          "ok": true
+        }
+      ],
+      "refused": true,
+      "verdict": null,
+      "error": "tool_call_rejected",
+      "llm_calls": 2,
+      "requests": [
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 2756,
+          "total_tokens": 2955
+        },
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 2859,
+          "total_tokens": 3335
+        }
+      ],
+      "seconds": 62.0,
+      "correct": false,
+      "pattern_matched": false,
+      "withheld_would_match": null,
+      "must_not_matched": false,
+      "tool_ok": true,
+      "reached_citation_check": false,
+      "verified": null,
+      "sources_block": null,
+      "sources_json_args": null,
+      "ordinal_space": null
+    },
+    {
+      "id": 8,
+      "code": "F08",
+      "category": "factual",
+      "question": "Mahrez's goals?",
+      "answer": "Riyad Mahrez scored 17 goals in the 2015/16 season.\n\nSources:\n- player_stats(player=\"Riyad Mahrez\") -> goals=17, minutes_total=2967.75, team=\"Leicester City\"",
+      "withheld_answer": null,
+      "tool_calls": [
+        {
+          "name": "player_stats",
+          "arguments": {
+            "player": "Riyad Mahrez"
+          },
+          "ok": true
+        }
+      ],
+      "refused": false,
+      "verdict": null,
+      "error": null,
+      "llm_calls": 2,
+      "requests": [
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 2754,
+          "total_tokens": 2833
+        },
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 5457,
+          "total_tokens": 5585
+        }
+      ],
+      "seconds": 62.5,
+      "correct": true,
+      "pattern_matched": true,
+      "withheld_would_match": null,
+      "must_not_matched": false,
+      "tool_ok": true,
+      "reached_citation_check": true,
+      "verified": true,
+      "sources_block": true,
+      "sources_json_args": false,
+      "ordinal_space": false
+    },
+    {
+      "id": 17,
+      "code": "S08",
+      "category": "similarity",
+      "question": "Find players similar to Heurelho Gomes",
+      "answer": "Weak matches only: the closest player to Heurelho Gomes scores 59%, below the 60% 'Fair' level, so treat this list as loose leads, not look-alikes.\n\nSimilar goalkeepers to Heurelho Gomes in 2015/16:\n\n1. Antonio Adán – 59% · Weak  \n2. Vito Mannone – 49% · Weak  \n\nSources:\n- find_similar(player_name=\"Heurelho Gomes\") -> player_name=Antonio Adán, similarity=0.5857, tier=Weak; player_name=Vito Mannone, similarity=0.491, tier=Weak\n\nSimilarity is a heuristic on 2015/16 event data: in testing, about half of Fair matches shared a role and style. It says nothing about ability, age, price or fit.",
+      "withheld_answer": null,
+      "tool_calls": [
+        {
+          "name": "find_similar",
+          "arguments": {
+            "n": 5,
+            "player_name": "Heurelho Gomes"
+          },
+          "ok": true
+        }
+      ],
+      "refused": false,
+      "verdict": null,
+      "error": null,
+      "llm_calls": 2,
+      "requests": [
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 2757,
+          "total_tokens": 2854
+        },
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 3966,
+          "total_tokens": 4310
+        }
+      ],
+      "seconds": 36.0,
+      "correct": true,
+      "pattern_matched": true,
+      "withheld_would_match": null,
+      "must_not_matched": false,
+      "tool_ok": true,
+      "reached_citation_check": true,
+      "verified": true,
+      "sources_block": true,
+      "sources_json_args": false,
+      "ordinal_space": false
+    },
+    {
+      "id": 9,
+      "code": "F09",
+      "category": "factual",
+      "question": "Jack Wilshere's stats?",
+      "answer": "Jack Wilshere played 143.2 league minutes in 2015/16, below the 900‑minute threshold, so there are no percentiles, profile or similarity scores for this player. Season totals are available. \n\nSources:\n- player_stats(player=\"Jack Wilshere\") -> minutes_total=143.18, warnings=Below the 900‑minute threshold: season counts only, no per‑90 ranks or percentiles.\n\nCaveats from the engine:\n- Below the 900-minute threshold: season counts only, no per-90 ranks or percentiles.",
+      "withheld_answer": null,
+      "tool_calls": [
+        {
+          "name": "player_stats",
+          "arguments": {
+            "player": "Jack Wilshere"
+          },
+          "ok": true
+        }
+      ],
+      "refused": false,
+      "verdict": null,
+      "error": null,
+      "llm_calls": 2,
+      "requests": [
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 2756,
+          "total_tokens": 2802
+        },
+        {
+          "status": 200,
+          "tools_sent": true,
+          "prompt_tokens": 2967,
+          "total_tokens": 3091
+        }
+      ],
+      "seconds": 30.8,
+      "correct": true,
+      "pattern_matched": true,
+      "withheld_would_match": null,
+      "must_not_matched": false,
+      "tool_ok": true,
+      "reached_citation_check": true,
+      "verified": true,
+      "sources_block": true,
+      "sources_json_args": false,
+      "ordinal_space": false
     }
   ]
 }

@@ -479,3 +479,15 @@ def test_player_pay_questions_get_no_data_before_the_llm() -> None:
     # a team's wage bill goes to the tools (team_fingerprint returns the wage context)
     assert g.rule_refusal("Leicester wage bill") is None
     assert g.rule_refusal("What was Arsenal's wage bill?") is None
+
+
+def test_a_field_named_label_is_checked_against_that_field() -> None:
+    """Live T05: "rank=2, team_name=Barcelona, value=66.204" read 2 as a market value."""
+    result = {"teams": [{"rank": 1, "team_name": "Paris Saint-Germain", "value": 66.223},
+                        {"rank": 2, "team_name": "Barcelona", "value": 66.204}]}  # fmt: skip
+    text_ = (
+        "Sources:\n- list_team_axis(axis=possession_pct) -> rank=2, team_name=Barcelona, "
+        "value=66.204"
+    )
+    assert g.check_citations(text_, ["q", result])["missing"] == []
+    assert g.check_citations("Barcelona 66.2 (rank 7)", ["q", result])["missing"] == [7.0]

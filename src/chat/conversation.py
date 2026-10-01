@@ -46,6 +46,12 @@ TOOL_CALL_REJECTED = (
     "Your last tool call was rejected: {reason}. Call the tool again with arguments that match "
     "its schema. Leave out optional arguments you do not need; never send null."
 )
+# Sent when the model calls a tool on the last round, which carries no tools (Groq: "Tool choice
+# is none, but model called a tool").
+NO_MORE_TOOLS = (
+    "No more tool calls are available. Answer now from the tool results above; if they do not "
+    "answer the question, say so."
+)
 SIMILARITY_TOOLS = frozenset({"find_similar", "find_similar_teams"})
 # Errors the model can fix or explain itself (a wrong metric or axis name): fed back as the tool
 # result. Every other error is a verbatim refusal straight away.
@@ -250,7 +256,9 @@ def ask(
     prefix: str | None = None
     used_similarity = False
     answer = ""
-    for round_no in range(MAX_TOOL_ROUNDS + 1):
+    # one spare attempt beyond the last round, used only by the NO_MORE_TOOLS nudge below
+    for attempt in range(MAX_TOOL_ROUNDS + 2):
+        round_no = min(attempt, MAX_TOOL_ROUNDS)
         try:
             # the last round may only answer, so it does not carry the ~1.9k tokens of tool schemas
             resp = call_llm(llm, with_tools=round_no < MAX_TOOL_ROUNDS)
@@ -263,12 +271,17 @@ def ask(
         except GroqToolCallError as exc:
             # Groq refused the tool call the model generated (arguments against the schema, e.g.
             # a null for an optional string). The model is told why and retries, if a round with
-            # tools is left; otherwise the turn ends as unavailable.
+            # tools is left. On the last round, which carries no tools, a tool call is rejected
+            # too: the model is told to answer from what it has, once. Otherwise the turn ends
+            # as unavailable.
             logger.warning("Groq rejected a tool call: {d}", d=exc.detail)
             if round_no + 1 < MAX_TOOL_ROUNDS:
                 messages.append(
                     {"role": "user", "content": TOOL_CALL_REJECTED.format(reason=exc.detail)}
                 )
+                continue
+            if attempt == MAX_TOOL_ROUNDS:
+                messages.append({"role": "user", "content": NO_MORE_TOOLS})
                 continue
             return reply(
                 question, UNAVAILABLE, refused=True, tool_calls=calls_made, sources=sources,

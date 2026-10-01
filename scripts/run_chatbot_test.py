@@ -44,6 +44,7 @@ from src.utils.config import PROJECT_ROOT, settings
 TEST_SET = PROJECT_ROOT / "tests" / "fixtures" / "chatbot_test_set.json"
 RESULTS = PROJECT_ROOT / "docs" / "chatbot_test_results.json"
 SUMMARY = PROJECT_ROOT / "docs" / "CHATBOT_ACCURACY.md"
+MANUAL_MARKER = "<!-- manual review: kept when this file is regenerated -->"
 PACE_SECONDS = 30.0  # minimum gap between two questions
 MAX_API_CALLS = 120  # every Groq request, retries included
 RATE_LIMIT_BACKOFF = (90.0, 180.0)  # waits before re-asking a question that hit the rate limit
@@ -455,8 +456,10 @@ def write_summary(data: dict[str, Any], entries: list[dict[str, Any]]) -> None:
         strict = sum(
             r["correct"] and r.get("citation_status") != "percentile_mismatch" for r in res
         )
-        now_pass = [r["code"] for r in res if r["correct"] and not r.get("live_correct")]
-        now_fail = [r["code"] for r in res if not r["correct"] and r.get("live_correct")]
+        # rows run live after the replay have no live_* copy: their score is the live score
+        replayed = [r for r in res if "live_correct" in r]
+        now_pass = [r["code"] for r in replayed if r["correct"] and not r["live_correct"]]
+        now_fail = [r["code"] for r in replayed if not r["correct"] and r["live_correct"]]
         lines += [
             "",
             f"## Offline replay ({meta['replayed']})",
@@ -467,7 +470,9 @@ def write_summary(data: dict[str, Any], entries: list[dict[str, Any]]) -> None:
             " re-run on the local database. Prompt and tool-description changes made since the"
             " live run are **not** reflected: that needs a live run.",
             "",
-            f"- Live score: {_pct(sum(bool(r.get('live_correct')) for r in res), n_all)};"
+            f"- Applies to the {len(replayed)} questions run before the replay; the other"
+            f" {n_all - len(replayed)} were run live with the replayed code.",
+            f"- Live score: {_pct(sum(r.get('live_correct', r['correct']) for r in res), n_all)};"
             f" replayed: {_pct(k_all, n_all)}",
             f"- Now pass: {', '.join(now_pass) or 'none'};"
             f" now fail: {', '.join(now_fail) or 'none'}",
@@ -519,6 +524,10 @@ def write_summary(data: dict[str, Any], entries: list[dict[str, Any]]) -> None:
     missing = [e for e in entries if e["id"] not in {r["id"] for r in res}]
     if missing:
         lines += ["", "## Not run", "", ", ".join(e["code"] for e in missing)]
+    # a hand-written review below MANUAL_MARKER survives regeneration
+    old = SUMMARY.read_text(encoding="utf-8") if SUMMARY.exists() else ""
+    if MANUAL_MARKER in old:
+        lines += ["", MANUAL_MARKER + old.split(MANUAL_MARKER, 1)[1].rstrip("\n")]
     SUMMARY.write_text("\n".join(lines) + "\n", encoding="utf-8")
     logger.info("wrote {p}", p=SUMMARY)
 
