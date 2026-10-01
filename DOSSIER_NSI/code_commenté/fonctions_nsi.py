@@ -1,6 +1,6 @@
 """Fonctions de niveau Terminale NSI, écrites POUR LE DOSSIER (pas copiées du projet).
 
-IMPORTANT — honnêteté : ces fonctions ne font PAS partie de Football Intel.
+NOTE : ces fonctions ne font PAS partie de Football Intel.
 Ce sont des versions simplifiées, en Python « pur » (sans numpy ni pandas),
 qui illustrent les notions du programme NSI avec les vraies données du projet
 (saison 2015/16, chiffres tirés de data/football.db).

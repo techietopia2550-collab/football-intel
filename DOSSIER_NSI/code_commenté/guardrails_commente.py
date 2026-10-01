@@ -111,14 +111,14 @@ def apply_similarity_rule(similarity_result: dict[str, Any]) -> dict[str, Any]:
         out["verdict"] = "FAIR"
     return out
 
-# >> RÉSUMÉ (tableau à recopier au tableau pour le prof) :
+# >> RÉSUMÉ :
 # >>   meilleur score     | verdict        | ce que voit l'utilisateur
 # >>   (aucun candidat)   | NO_CANDIDATES  | phrase de refus
 # >>   < 0.45             | REFUSE         | phrase de refus, liste cachée
 # >>   0.45 ≤ s < 0.60    | WARN           | avertissement EN PREMIER, puis la liste
 # >>   ≥ 0.60             | FAIR           | la liste + mise en garde permanente
 #
-# >> Ce que j'ai mesuré en lançant le moteur sur tous les joueurs (sans filtre) :
+# >> Mesure faite en lançant le moteur sur tous les joueurs (sans filtre, 1er octobre 2026) :
 # >>   - environ 10 joueurs sur ~1 320 ont un meilleur score < 0.60 (surtout des gardiens,
 # >>     ex. Łukasz Fabiański : 0.55)
 # >>   - AUCUN n'a un meilleur score < 0.45 -> le refus ne se déclenche presque jamais
