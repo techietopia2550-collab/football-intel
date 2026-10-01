@@ -620,6 +620,9 @@ REFUSE_SENTENCE = (
     "to call similar. Ask 'show the nearest anyway' to see them."
 )
 NO_CANDIDATES_SENTENCE = "No {kind}s are left to compare after the filters you asked for."
+# The best-scoring player plays another position: in testing, cross-position pairs were labelled
+# similar far less often than same-position ones (25% vs 65%), at almost the same mean score.
+POSITION_SENTENCE = "These players play different positions. The similarity is less reliable."
 STANDING_CAVEAT = (
     "Similarity is a heuristic on 2015/16 event data: in testing, about half of Fair matches "
     "shared a role and style. It says nothing about ability, age, price or fit."
@@ -627,13 +630,15 @@ STANDING_CAVEAT = (
 
 
 def apply_similarity_rule(similarity_result: dict[str, Any]) -> dict[str, Any]:
-    """Tag, trim and judge a find_similar / find_similar_teams result (Decision 3)."""
+    """Tag, trim and judge a find_similar / find_similar_teams result (Decision 3). Player rows
+    with `position_match` are also counted by group (same / other positions), and a best match
+    in another position adds POSITION_SENTENCE to the prefix."""
     is_team = "team_name" in similarity_result and "target_name" not in similarity_result
     kind = "team" if is_team else "player"
     target = similarity_result.get("target_name") or similarity_result.get("team_name")
     rows = list(similarity_result.get("similar") or [])
     out: dict[str, Any] = {"verdict": None, "prefix": None, "refusal": None,
-                           "caveat": STANDING_CAVEAT, "best_score": None,
+                           "caveat": STANDING_CAVEAT, "best_score": None, "position_warning": None,
                            "result": dict(similarity_result)}  # fmt: skip
     if not rows:
         out["verdict"] = "NO_CANDIDATES"
@@ -653,16 +658,27 @@ def apply_similarity_rule(similarity_result: dict[str, Any]) -> dict[str, Any]:
     ]
     out["result"]["similar"] = kept
     out["result"]["dropped_below_45"] = len(rows) - len(kept)
+    # player rows carry position_match (the app's two groups); count them rather than copy the
+    # rows, so the model sees the split without every row being sent twice
+    if any("position_match" in r for r in kept):
+        same = sum(1 for r in kept if r.get("position_match", True))
+        out["result"]["same_position_count"] = same
+        out["result"]["other_positions_count"] = len(kept) - same
+    top = max(kept, key=lambda r: float(r["similarity"]))
+    out["position_warning"] = None if top.get("position_match", True) else POSITION_SENTENCE
     if best < FAIR_CUT:
         out["verdict"] = "WARN"
         out["prefix"] = WARN_SENTENCE.format(kind=kind, target=target, score=best)
     else:
         out["verdict"] = "FAIR"
+    if out["position_warning"]:
+        out["prefix"] = " ".join(x for x in (out["prefix"], out["position_warning"]) if x)
     return out
 
 
 __all__ = [
-    "REFUSALS", "STANDING_CAVEAT", "apply_similarity_rule", "check_player_names",
+    "POSITION_SENTENCE", "REFUSALS", "STANDING_CAVEAT", "apply_similarity_rule",
+    "check_player_names",
     "check_citations", "classify_with_rules", "name_refusal", "percentile_mismatch_warning",
     "refusal_text", "rule_refusal", "unverified_numbers",
     "verify_citations",

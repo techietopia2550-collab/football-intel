@@ -391,6 +391,7 @@ def find_similar(
                 similarity=round(float(sims[i]), 4),
                 shared_metrics=shared,
                 differing_metrics=differing,
+                position_match=row["position_group_fine"] == group,
             )
         )
     return SimilarityResult(

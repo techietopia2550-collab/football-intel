@@ -15,6 +15,7 @@ from src.analytics import games as games_mod
 from src.app import data, design, player_images, shell
 from src.app.labels import QUICK_RADAR, QUICK_RADAR_STAND_INS, metric_description, metric_label
 from src.models.match import GameCard, SeasonGameStats
+from src.models.similarity import SimilarPlayer
 
 SIMILAR_N = 10
 SEASON_START = date(2015, 8, 1)  # age is quoted at the start of 2015/16
@@ -397,9 +398,64 @@ def _why(shared: list) -> str:
     )
 
 
+def _closer_apart(s: SimilarPlayer) -> str:
+    """The three statistics pulling the pair together and the three pushing it apart (the score's
+    exact per-metric split, from the analytics layer), as two short lines."""
+    closer = ", ".join(metric_label(m.metric) for m in s.shared_metrics)
+    apart = ", ".join(metric_label(m.metric) for m in s.differing_metrics)
+    return (
+        f'<div class="fi-why"><b>Closer on</b> {design.esc(closer) or "–"}</div>'
+        f'<div class="fi-why"><b>Apart on</b> {design.esc(apart) or "–"}</div>'
+    )
+
+
 @st.fragment
 def _value_text(eur: float | None) -> str:
     return f"Market value {design.fmt_eur(eur)}" if eur is not None else "Market value: no value available"
+
+
+def _similar_card(
+    s: SimilarPlayer, pid: str, group: str, kind: str, directory: pd.DataFrame, values: dict
+) -> None:
+    """One similar player: identity, the closer/apart statistics, and the tier word (no %)."""
+    with st.container(key=f"ficard_sim{kind}_{s.player_id}"):
+        league = shell.LEAGUE_SHORT.get(directory.loc[s.player_id, "league"], "")
+        why = _why(s.shared_metrics)
+        cross = design.cross_position_note(s.position_group_fine, group)
+        cross_html = (
+            f'<span class="fi-muted" style="font-style:italic">{design.esc(cross)}</span>'
+            if cross
+            else ""
+        )
+        design.render(
+            '<div class="fi-mini" style="align-items:flex-start">'
+            + design.player_avatar(s.player_name, 32, shell.photo_uri(s.player_id, s.player_name, 32))
+            + f'<div class="fi-col" style="flex:1"><span class="fi-name" style="font-size:{design.SIZE_BODY}px">'
+            f"{s.rank}. {design.esc(s.player_name)} · "
+            f"{design.position_badge(s.position_group_fine)}</span>"
+            f'<span class="fi-muted">{design.esc(s.team)} · {design.esc(league)}</span>'
+            f'<span class="fi-muted">{_value_text(values.get(s.player_id))}</span>'
+            f"{cross_html}{_closer_apart(s)}</div>"
+            f'<div class="fi-stat" style="min-width:64px">{design.match_tier_badge(s.similarity)}</div>'
+            "</div>"
+        )
+        if st.button("Open profile", key=f"sim_open_{pid}_{s.player_id}", help=why):
+            shell.open_player(s.player_id)
+
+
+def _similar_group(
+    kind: str, rows: list[SimilarPlayer], pid: str, group: str, directory: pd.DataFrame,
+    values: dict,
+) -> None:  # fmt: skip
+    """One of the two groups: 'same' position (more reliable) or 'other' positions."""
+    design.render(design.similar_group_header(kind, len(rows)))
+    if not rows:
+        st.caption("None in this top list.")
+        return
+    cols = st.columns(2)
+    for i, s in enumerate(rows):
+        with cols[i % 2]:
+            _similar_card(s, pid, group, kind, directory, values)
 
 
 def _similar_section(row: pd.Series) -> None:
@@ -407,7 +463,7 @@ def _similar_section(row: pd.Series) -> None:
     design.render(
         design.section_header(
             "Similar players",
-            "Ranked inside his archetype by statistical closeness, not by role (see Methodology)",
+            "Ranked inside his archetype by statistical closeness, then split by position",
             anchor="similar-players",
         )
     )
@@ -433,34 +489,12 @@ def _similar_section(row: pd.Series) -> None:
         return
     directory = shell.load_directory().set_index("player_id")
     values = data.market_value_map()
-    cols = st.columns(2)
-    for i, s in enumerate(res.similar):
-        with cols[i % 2], st.container(key=f"ficard_sim_{s.player_id}"):
-            league = shell.LEAGUE_SHORT.get(directory.loc[s.player_id, "league"], "")
-            why = _why(s.shared_metrics)
-            cross = design.cross_position_note(s.position_group_fine, group)
-            cross_html = (
-                f'<span class="fi-muted" style="font-style:italic">{design.esc(cross)}</span>'
-                if cross
-                else ""
-            )
-            design.render(
-                f'<div class="fi-mini" title="{design.esc(why)}">'
-                + design.player_avatar(s.player_name, 32, shell.photo_uri(s.player_id, s.player_name, 32))
-                + f'<div class="fi-col" style="flex:1"><span class="fi-name" style="font-size:{design.SIZE_BODY}px">'
-                f"{s.rank}. {design.esc(s.player_name)} · "
-                f"{design.position_badge(s.position_group_fine)}</span>"
-                f'<span class="fi-muted">{design.esc(s.team)} · {design.esc(league)}</span>'
-                f'<span class="fi-muted">{_value_text(values.get(s.player_id))}</span>'
-                f"{cross_html}</div>"
-                f'<div class="fi-stat" style="min-width:64px"><div class="fi-num" style="font-size:{design.SIZE_H3}px">'
-                f'{design.fmt_match_pct(s.similarity)}</div><div class="fi-stat-label">match</div>'
-                f"{design.match_tier_badge(s.similarity)}</div></div>"
-            )
-            if st.button("Open profile", key=f"sim_open_{pid}_{s.player_id}", help=why):
-                shell.open_player(s.player_id)
+    _similar_group("same", res.same_position, pid, group, directory, values)
+    if res.pool_kind == "archetype":  # a position-group pool has no other positions in it
+        _similar_group("other", res.other_positions, pid, group, directory, values)
+    ordered = [*res.same_position, *res.other_positions]
     if st.button("Compare with these players", key=f"cmp_{pid}"):
-        shell.open_compare([pid, *(s.player_id for s in res.similar[:2])])
+        shell.open_compare([pid, *(s.player_id for s in ordered[:2])])
     top = res.similar[0]
     with st.container(key=f"ficard_closest_{pid}"):
         c_img, c_txt, c_btn = st.columns([0.6, 5, 1.6], vertical_alignment="center")
@@ -471,19 +505,24 @@ def _similar_section(row: pd.Series) -> None:
                 )
             )
         with c_txt:
+            where = "same position" if top.position_match else "other position: less reliable"
             design.render(
-                f'<div class="fi-name">Closest profile match: {design.esc(top.player_name)} · '
-                f"{design.position_badge(top.position_group_fine)} ({design.esc(top.team)}) &mdash; "
-                f"{design.fmt_match_pct(top.similarity)} match "
+                f'<div class="fi-name">Highest score: {design.esc(top.player_name)} · '
+                f"{design.position_badge(top.position_group_fine)} ({design.esc(top.team)}) "
                 f"{design.match_tier_badge(top.similarity)}</div>"
+                f'<div class="fi-muted">{where}</div>'
             )
         if c_btn.button("View profile", key=f"closest_open_{pid}_{top.player_id}"):
             shell.open_player(top.player_id)
+    design.render(design.note(design.esc(design.SIMILARITY_LEADS_NOTE), kind="info"))
+    with st.expander("Why are these results uncertain?"):
+        st.markdown(design.similarity_uncertainty_md())
     st.caption(
         f"Pool: {res.group_size} players in the '{res.archetype_label}' archetype, "
-        f"{res.candidates_considered} after filters. Match % shows how close the playing profile is: 100% would be an identical profile. "
-        f"{design.MATCH_TIER_NOTE} Position is context only: the score does not use it, so "
-        "'cross-position' marks a statistically close player in another position group."
+        f"{res.candidates_considered} after filters. Each player shows a tier word, not a %, "
+        f"because the score is a cosine similarity, not a probability. {design.MATCH_TIER_NOTE} "
+        "Position is not part of the score: it only splits the list, and 'cross-position' marks "
+        "a statistically close player in another position group."
     )
 
 

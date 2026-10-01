@@ -32,3 +32,4 @@ page = st.navigation(pages)  # registered before the sidebar so its page links r
 shell.sidebar()
 shell.load_directory()  # preload the player list once; every page reads the cached copy
 page.run()
+design.render(design.footer())  # not reached on a page that calls st.stop()

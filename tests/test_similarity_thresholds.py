@@ -151,9 +151,30 @@ def test_match_tier_edges() -> None:
     assert design.match_tier(0.97) == ("Fair", "neutral")
     assert design.match_tier(0.5999) == ("Weak", "negative")
     assert design.match_tier(None) is None and design.match_tier(float("nan")) is None
-    assert design.fmt_match(0.72) == "72% · Fair"
+    assert design.fmt_match(0.72) == "Fair"  # the tier word only: never the score as a %
     assert design.fmt_match(float("nan")) == "–"
     assert "Weak" in design.match_tier_badge(0.3) and design.match_tier_badge(None) == ""
+    badge = design.match_tier_badge(0.97)
+    assert "%" not in badge and "not a probability" in badge
+
+
+def test_quoted_evidence_is_recounted_from_the_labelled_csv() -> None:
+    """Every reliability number the app quotes (tier and position) must be the CSV's own count."""
+    from src.app import design
+
+    df, _ = ev.load_labelled(btp.default_path())
+    fair = df["cosine_score"] >= design.MATCH_TIERS[0][1] - 1e-12
+    for word, mask in (("Fair", fair), ("Weak", ~fair)):
+        counted = (int(df.loc[mask, "similar"].sum()), int(mask.sum()))
+        assert design.MATCH_TIER_EVIDENCE[word] == counted
+    split = ev.position_split(df).set_index("position")
+    for kind in ("same", "other"):
+        counted = (int(split.loc[kind, "similar"]), int(split.loc[kind, "n"]))
+        assert design.POSITION_EVIDENCE[kind] == counted
+    assert split.loc["same", "precision"] > split.loc["other", "precision"]
+    assert abs(split.loc["same", "mean_cosine"] - split.loc["other", "mean_cosine"]) < 0.05
+    assert "39 of 60" in design.position_group_text("same")
+    assert "10 of 40" in design.position_group_text("other")
 
 
 def test_cross_position_note() -> None:

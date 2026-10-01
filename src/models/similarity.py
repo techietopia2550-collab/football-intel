@@ -42,6 +42,9 @@ class SimilarPlayer(BaseModel):
     similarity: float  # cosine similarity of the PCA-reduced vectors, -1 to 1
     shared_metrics: list[MetricContribution]  # top metrics adding to the similarity
     differing_metrics: list[MetricContribution]  # top metrics where the two differ
+    # Same position group as the target. The score ignores position; this flag only sorts the
+    # list, because same-position test pairs were labelled similar far more often (65% vs 25%).
+    position_match: bool = True
 
 
 class SimilarityResult(BaseModel):
@@ -67,4 +70,14 @@ class SimilarityResult(BaseModel):
     explained_variance: float  # share of variance the retained components keep
     filters: SimilarityFilters
     warnings: list[str]
-    similar: list[SimilarPlayer]
+    similar: list[SimilarPlayer]  # the full ranking, best score first
+
+    @property
+    def same_position(self) -> list[SimilarPlayer]:
+        """The ranked players in the target's own position group (the more reliable leads)."""
+        return [s for s in self.similar if s.position_match]
+
+    @property
+    def other_positions(self) -> list[SimilarPlayer]:
+        """The ranked players in another position group: statistically close, less reliable."""
+        return [s for s in self.similar if not s.position_match]

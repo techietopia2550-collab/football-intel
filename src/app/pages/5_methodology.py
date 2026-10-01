@@ -92,10 +92,11 @@ st.markdown(
   the player's club (see *Market values* below).
 - **Leagues are pooled as one population.** Whether tagging or pace of play differ enough between
   leagues to bias comparisons has not been checked.
-- **Similarity is statistical, not categorical.** On a 100-pair test the match % did not separate
-  same-role from different-role pairs: precision is roughly 50% at every threshold (see *What the %
-  means* below). Weak archetypes (defensive full-back, destroyer, pressing wide midfielder) give
-  less reliable lists.
+- **Similarity is statistical, not categorical.** On a 100-pair test the match score did not
+  separate same-role from different-role pairs: precision is roughly 50% at every threshold (see
+  *What the score means* below). Same-position pairs were similar 39 times in 60, other-position
+  pairs 10 in 40, so similar-player lists are split by position. Weak archetypes (defensive
+  full-back, destroyer, pressing wide midfielder) give less reliable lists.
 """
 )
 
@@ -181,10 +182,11 @@ st.markdown(
 """
 )
 st.markdown(
-    "**What the % means:** the match % is cosine similarity of statistical profiles within an "
-    "archetype. It does not measure role equivalence. A 90% match can be two players in the same "
-    "archetype who play different positions. Position context is shown on each similar-player "
-    "card. The % was validated on a 100-pair sample (ANALYTICS_DECISIONS section 23): precision is "
+    "**What the score means:** the match score is cosine similarity of statistical profiles within "
+    "an archetype, shown as a tier word (Fair / Weak) rather than a %, because it is not a "
+    "probability. It does not measure role equivalence. A score of 0.90 can be two players in the "
+    "same archetype who play different positions, so lists show same-position players first and "
+    "other positions in a separate, less reliable group. The score was validated on a 100-pair sample (ANALYTICS_DECISIONS section 23): precision is "
     "roughly 50% across thresholds, and this is documented as a known limitation."
 )
 

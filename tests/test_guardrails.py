@@ -207,6 +207,33 @@ def test_similarity_refuse_below_45() -> None:
                                      "scores only 44%")  # fmt: skip
 
 
+def _sim_pos(*rows: tuple[float, bool]) -> dict[str, Any]:
+    return {"target_name": "Sergio Busquets", "warnings": [],
+            "similar": [{"player_name": f"P{i}", "similarity": s, "position_match": m}
+                        for i, (s, m) in enumerate(rows)]}  # fmt: skip
+
+
+def test_similarity_splits_by_position_and_warns_on_a_cross_position_best() -> None:
+    out = g.apply_similarity_rule(_sim_pos((0.81, False), (0.70, True), (0.50, True)))
+    assert out["verdict"] == "FAIR" and out["position_warning"] == g.POSITION_SENTENCE
+    assert out["prefix"] == g.POSITION_SENTENCE
+    assert out["result"]["same_position_count"] == 2
+    assert out["result"]["other_positions_count"] == 1
+    assert [r["position_match"] for r in out["result"]["similar"]] == [False, True, True]
+
+
+def test_similarity_same_position_best_adds_no_position_warning() -> None:
+    out = g.apply_similarity_rule(_sim_pos((0.81, True), (0.70, False)))
+    assert out["position_warning"] is None and out["prefix"] is None
+
+
+def test_similarity_weak_and_cross_position_warnings_combine() -> None:
+    out = g.apply_similarity_rule(_sim_pos((0.52, False)))
+    assert out["verdict"] == "WARN"
+    assert out["prefix"].startswith("Weak matches only")
+    assert out["prefix"].endswith(g.POSITION_SENTENCE)
+
+
 def test_similarity_edges_and_teams() -> None:
     assert g.apply_similarity_rule(_sim(0.60))["verdict"] == "FAIR"
     assert g.apply_similarity_rule(_sim(0.45))["verdict"] == "WARN"

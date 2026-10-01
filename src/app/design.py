@@ -89,7 +89,7 @@ header[data-testid="stHeader"] {{ background:transparent; }}
 h1, h2, h3, h4 {{ font-weight:{WEIGHT_HEADING} !important; color:var(--t1); letter-spacing:-0.01em; }}
 h1 {{ font-size:{SIZE_H1}px !important; }} h2 {{ font-size:{SIZE_H2}px !important; }}
 h3 {{ font-size:{SIZE_H3}px !important; }}
-p, li, label, .stMarkdown {{ color:var(--t1); }}
+p, li, label, .stMarkdown {{ color:var(--t1); line-height:1.55; }}
 .stCaption, [data-testid="stCaptionContainer"] {{ color:var(--t2) !important; font-size:{SIZE_SMALL}px; }}
 .fi-num, [data-testid="stMetricValue"], td, th {{ font-variant-numeric:tabular-nums; font-weight:{WEIGHT_NUMBER}; }}
 [data-testid="stSidebar"] {{ background:var(--bg2); border-right:1px solid var(--border); }}
@@ -113,7 +113,8 @@ a:focus-visible {{ outline:2px solid var(--hi) !important; outline-offset:2px !i
 [class*="st-key-ficard"], .fi-card {{
   background:var(--bg2); border:1px solid var(--border); border-radius:{RADIUS_CARD};
 }}
-[class*="st-key-ficard"] {{ padding:{SP_M}px; margin-bottom:{SP_S}px; }}
+[class*="st-key-ficard"] {{ padding:{SP_M}px; margin-bottom:{SP_S}px; transition:border-color .15s; }}
+[class*="st-key-ficard"]:hover {{ border-color:var(--neu); }}
 .fi-card {{ padding:{SP_M}px {SP_L}px; margin-bottom:{SP_M}px; }}
 .fi-card-title {{ font-size:{SIZE_H3}px; font-weight:{WEIGHT_HEADING}; margin:0 0 {SP_S}px; color:var(--t1); }}
 .fi-row {{ display:flex; align-items:center; gap:{SP_M}px; flex-wrap:wrap; }}
@@ -138,7 +139,7 @@ a:focus-visible {{ outline:2px solid var(--hi) !important; outline-offset:2px !i
 .fi-bar-track {{ flex:1; height:8px; background:var(--bg3); border-radius:{RADIUS_BADGE}; overflow:hidden; }}
 .fi-bar-fill {{ height:100%; border-radius:{RADIUS_BADGE}; }}
 .fi-bar-num {{ flex:0 0 72px; text-align:right; font-size:{SIZE_SMALL}px; font-variant-numeric:tabular-nums; font-weight:{WEIGHT_NUMBER}; }}
-.fi-section {{ margin:{SP_XL}px 0 {SP_M}px; display:flex; justify-content:space-between; align-items:flex-end; gap:{SP_M}px; flex-wrap:wrap; }}
+.fi-section {{ margin:{SP_XL}px 0 {SP_M}px; padding-bottom:{SP_S}px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:flex-end; gap:{SP_M}px; flex-wrap:wrap; }}
 .fi-section h2 {{ margin:0; }}
 .fi-mini {{ display:flex; align-items:center; gap:{SP_S}px; padding:{SP_S}px 0; }}
 .fi-note {{ border-left:3px solid var(--warn); background:rgba(210,153,34,0.10); padding:{SP_S}px {SP_M}px;
@@ -150,6 +151,30 @@ a:focus-visible {{ outline:2px solid var(--hi) !important; outline-offset:2px !i
 .fi-btn {{ display:inline-block; background:var(--hi); color:var(--bg1) !important; text-decoration:none;
   padding:{SP_S}px {SP_M}px; border-radius:{RADIUS_BUTTON}; font-weight:{WEIGHT_NUMBER}; }}
 .fi-credit {{ font-size:{SIZE_SMALL}px; color:var(--t2); }}
+.fi-tip {{ position:relative; cursor:help; }}
+.fi-tip::after {{
+  content:attr(data-tip); position:absolute; right:0; bottom:calc(100% + {SP_S}px); z-index:50;
+  width:max-content; max-width:280px; white-space:normal; text-align:left;
+  background:var(--bg3); color:var(--t1); border:1px solid var(--border); border-radius:{RADIUS_BUTTON};
+  padding:{SP_S}px {SP_M}px; font-size:{SIZE_SMALL}px; font-weight:{WEIGHT_BODY}; line-height:1.5;
+  box-shadow:0 6px 20px rgba(0,0,0,.45); opacity:0; transform:translateY(4px); pointer-events:none;
+  transition:opacity .12s, transform .12s;
+}}
+.fi-tip-left::after {{ right:auto; left:0; }}
+.fi-tip:hover::after, .fi-tip:focus-visible::after {{ opacity:1; transform:none; }}
+.fi-group {{ border-left:3px solid var(--hi); background:var(--bg2); border-radius:0 {RADIUS_BUTTON} {RADIUS_BUTTON} 0;
+  padding:{SP_S}px {SP_M}px; margin:{SP_L}px 0 {SP_S}px; }}
+.fi-group-other {{ border-left-color:var(--warn); }}
+.fi-group-icon {{ font-size:{SIZE_H3}px; color:var(--hi); line-height:1; }}
+.fi-group-other .fi-group-icon {{ color:var(--warn); }}
+.fi-group-title {{ font-size:{SIZE_H3}px; font-weight:{WEIGHT_HEADING}; }}
+[class*="st-key-ficard_simother"] {{ border-style:dashed; }}
+.fi-why {{ font-size:{SIZE_SMALL}px; line-height:1.5; color:var(--t2); }}
+.fi-why b {{ color:var(--t1); font-weight:{WEIGHT_NUMBER}; }}
+.fi-footer {{ margin-top:{SP_XXL}px; padding-top:{SP_M}px; border-top:1px solid var(--border);
+  display:flex; justify-content:space-between; gap:{SP_M}px; flex-wrap:wrap;
+  font-size:{SIZE_SMALL}px; color:var(--t2); }}
+.fi-footer b {{ color:var(--t1); font-weight:{WEIGHT_HEADING}; }}
 [data-testid="stTabs"] [role="tab"] {{ color:var(--t2); font-weight:{WEIGHT_NUMBER}; }}
 [data-testid="stTabs"] [aria-selected="true"] {{ color:var(--t1); }}
 [data-testid="stExpander"] {{ border:1px solid var(--border); border-radius:{RADIUS_BUTTON}; background:var(--bg2); }}
@@ -212,22 +237,102 @@ def band_word(score: float | None) -> str:
 
 
 def fmt_match_pct(similarity: float | None) -> str:
-    """A cosine similarity (0-1) as a whole-number percentage for non-technical readers."""
+    """A cosine similarity (0-1) as a whole-number percentage. Team similarity only: player
+    similarity is never shown as a % because readers take it for a probability (see MATCH_TIERS)."""
     if similarity is None or np.isnan(similarity):
         return "–"
     return f"{min(max(similarity, 0.0), 1.0) * 100:.0f}%"
 
 
-# Match-% tiers, measured on the labelled test set (docs/similarity_thresholds.md,
+def fmt_cosine(similarity: float | None) -> str:
+    """A raw cosine similarity to two decimals, e.g. '0.72', for tables with no measured tier."""
+    if similarity is None or np.isnan(similarity):
+        return "–"
+    return f"{similarity:.2f}"
+
+
+# Match tiers, measured on the labelled test set (docs/similarity_thresholds.md,
 # ANALYTICS_DECISIONS.md section 23): (word, lowest cosine, tone), highest first. Strong (90%
 # precision) and Good (75%) are absent because no threshold reached them; the old judgement cuts
 # were 85 / 70 / 55. Everything under the last cut is MATCH_TIER_BELOW.
+# Player similarity is shown as the tier word only, never as a %: "93%" reads as a 93% chance of
+# being right, while the measured precision is about 50% at every score.
 MATCH_TIERS: tuple[tuple[str, float, str], ...] = (("Fair", 0.60, "neutral"),)
 MATCH_TIER_BELOW: tuple[str, str] = ("Weak", "negative")
+# (pairs labelled similar, pairs labelled) on that test set, per tier and per position split.
+# Every reliability number the UI quotes comes from these two dicts, and
+# tests/test_similarity_thresholds.py recounts both from the CSV.
+MATCH_TIER_EVIDENCE: dict[str, tuple[int, int]] = {"Fair": (36, 70), "Weak": (13, 30)}
+POSITION_EVIDENCE: dict[str, tuple[int, int]] = {"same": (39, 60), "other": (10, 40)}
 MATCH_TIER_NOTE = (
-    "Measured tier: at 60%+ about half of labelled test pairs shared a role and style; "
-    "below 60%, fewer than half. No higher score band proved more reliable than that."
+    "Measured tier: from a cosine score of 0.60 (Fair), about half of labelled test pairs shared "
+    "a role and style; below 0.60 (Weak), fewer than half. No higher score band proved more "
+    "reliable than that."
 )
+COSINE_NOT_PROBABILITY = "The score is a cosine similarity, not a probability."
+SIMILARITY_LEADS_NOTE = (
+    "These results are leads to verify, not certainties. "
+    "Similarity is computed on 2015/16 statistics only."
+)
+
+
+def _share_words(similar: int, labelled: int) -> str:
+    """'about 1 in 2' / 'fewer than 1 in 2' / 'more than 1 in 2' for a measured share."""
+    share = similar / labelled
+    if share < 0.45:
+        return "fewer than 1 in 2"
+    if share > 0.55:
+        return "more than 1 in 2"
+    return "about 1 in 2"
+
+
+def match_tier_tooltip(word: str) -> str:
+    """The hover text of a tier badge: what testing measured for that tier, nothing more."""
+    similar, labelled = MATCH_TIER_EVIDENCE[word]
+    return (
+        f"During tests, {_share_words(similar, labelled)} pairs of this level were truly similar "
+        f"({similar} of {labelled}). {COSINE_NOT_PROBABILITY}"
+    )
+
+
+def position_group_text(kind: str) -> str:
+    """The sentence under the 'Same position' / 'Other positions' heading, from POSITION_EVIDENCE."""
+    similar, labelled = POSITION_EVIDENCE[kind]
+    share = f"{similar / labelled:.0%} of these pairs ({similar} of {labelled})"
+    if kind == "same":
+        return (
+            "These players play the same position. "
+            f"During tests, about {share} were truly similar."
+        )
+    return (
+        "These players play different positions but have similar statistics. "
+        f"During tests, only about {share} were truly similar. Treat them as loose leads."
+    )
+
+
+def similarity_uncertainty_md() -> str:
+    """The 'Why are these results uncertain?' explainer (Markdown). Numbers: the evidence dicts."""
+    fair, weak = MATCH_TIER_EVIDENCE["Fair"], MATCH_TIER_EVIDENCE["Weak"]
+    same, other = POSITION_EVIDENCE["same"], POSITION_EVIDENCE["other"]
+    return (
+        "**What the score is.** Each player becomes a list of numbers (his statistics, "
+        "standardised inside his archetype). The score is the cosine of the *angle* between two "
+        "such lists: 1 means they point the same way, 0 means unrelated. It measures how alike two "
+        "statistical profiles are in shape, not the chance that the players are alike, so it is "
+        "not a probability and is not shown as a %.\n\n"
+        f"**What testing showed.** On {fair[1] + weak[1]} player pairs labelled similar or not "
+        f"similar, {fair[0]} of {fair[1]} pairs scoring 0.60 or more were similar (*Fair*) and "
+        f"{weak[0]} of {weak[1]} below 0.60 (*Weak*). Precision stayed near 50% at every "
+        "threshold: a very high score was not more reliable than a middling one. The score does "
+        f"not see position: same-position pairs were similar {same[0]} times in {same[1]}, "
+        f"other-position pairs {other[0]} in {other[1]}, at almost the same average score. That is "
+        "why the list is split by position. The labels came from position and archetype rules "
+        "applied by a language model, not from expert scouts: a weak baseline, and one that "
+        "partly builds the position gap in.\n\n"
+        "**What it means for you.** Use the list to decide *who to watch*, not *who to sign*. "
+        "Check each lead yourself: the 'Closer on' and 'Apart on' lines show which statistics "
+        "drive the ranking, and video and context the data cannot see still decide."
+    )
 
 
 def match_tier(similarity: float | None) -> tuple[str, str] | None:
@@ -241,15 +346,37 @@ def match_tier(similarity: float | None) -> tuple[str, str] | None:
 
 
 def match_tier_badge(similarity: float | None) -> str:
-    """The tier word as a pill (empty string when there is no score)."""
+    """The tier word as a pill with the measured-precision tooltip ('' when there is no score)."""
     tier = match_tier(similarity)
-    return badge(tier[0], tier[1], MATCH_TIER_NOTE) if tier else ""
+    return tip_badge(tier[0], tier[1], match_tier_tooltip(tier[0])) if tier else ""
 
 
 def fmt_match(similarity: float | None) -> str:
-    """Match % with its tier word, e.g. '72% · Fair', for plain-text cells."""
+    """The tier word alone, e.g. 'Fair', for plain-text cells (never the score as a %)."""
     tier = match_tier(similarity)
-    return f"{fmt_match_pct(similarity)} · {tier[0]}" if tier else fmt_match_pct(similarity)
+    return tier[0] if tier else "–"
+
+
+# kind -> (icon, heading, reliability word, tone, CSS modifier)
+SIMILAR_GROUPS: dict[str, tuple[str, str, str, str, str]] = {
+    "same": ("◎", "Same position", "More reliable", "highlight", "same"),
+    "other": ("⇄", "Other positions", "Less reliable", "warning", "other"),
+}
+
+
+def similar_group_header(kind: str, count: int) -> str:
+    """Heading of one similar-players group: icon, name, count, reliability badge, measured text."""
+    icon, title, word, tone, mod = SIMILAR_GROUPS[kind]
+    tip = position_group_text(kind) + " " + COSINE_NOT_PROBABILITY
+    return _h(
+        f'<div class="fi-group fi-group-{mod}"><div class="fi-row" style="gap:{SP_S}px">'
+        f'<span class="fi-group-icon" aria-hidden="true">{icon}</span>'
+        f'<span class="fi-group-title">{esc(title)}</span>'
+        f'<span class="fi-muted">{count} player{"" if count == 1 else "s"}</span>'
+        f"{tip_badge(word, tone, tip, align='left')}</div>"
+        f'<div class="fi-muted" style="margin-top:{SP_XS}px">{esc(position_group_text(kind))}</div>'
+        "</div>"
+    )
 
 
 def cross_position_note(group: str | None, source_group: str | None) -> str:
@@ -320,6 +447,19 @@ def badge(text: str, tone: str = "neutral", title: str = "") -> str:
     return (
         f'<span class="fi-badge" style="color:{fg};background:{bg};border-color:{fg}33"{tip}>'
         f"{esc(text)}</span>"
+    )
+
+
+def tip_badge(text: str, tone: str, tip: str, align: str = "right") -> str:
+    """A badge with a styled tooltip on hover and keyboard focus (CSS `.fi-tip`, no JavaScript).
+    The ⓘ marks it as explained; aria-label gives screen readers the same text. `align="left"`
+    opens the tooltip rightwards, for badges near the left edge."""
+    fg, bg = TONES[tone]
+    cls = "fi-badge fi-tip fi-tip-left" if align == "left" else "fi-badge fi-tip"
+    return (
+        f'<span class="{cls}" tabindex="0" role="note" data-tip="{esc(tip)}" '
+        f'aria-label="{esc(text)}. {esc(tip)}" '
+        f'style="color:{fg};background:{bg};border-color:{fg}33">{esc(text)} ⓘ</span>'
     )
 
 
@@ -420,6 +560,15 @@ def link_button(label: str, href: str) -> str:
 def note(text: str, kind: str = "warning") -> str:
     cls = "fi-note info" if kind == "info" else "fi-note"
     return _h(f'<div class="{cls}">{text}</div>')
+
+
+def footer() -> str:
+    """The app-wide footer: name, data scope and the standing similarity disclaimer."""
+    return _h(
+        '<div class="fi-footer"><span><b>Football Intel</b> · 2015/16 · StatsBomb Open Data</span>'
+        "<span>One season of event data. Similar-player lists are leads to verify, "
+        "not certainties.</span></div>"
+    )
 
 
 def empty_state(title: str, hint: str = "") -> str:

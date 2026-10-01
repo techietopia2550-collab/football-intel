@@ -145,12 +145,30 @@ def test_similarity_searches_the_archetype_across_position_groups(engine: Engine
     assert features <= set(archetype_features())
 
 
+def test_similar_players_are_split_by_position_without_changing_the_ranking(
+    engine: Engine,
+) -> None:
+    arch.rebuild(SEASON, k=3, gk_k=2, engine=engine)
+    result = find_similar("CM 20", SEASON, n=10, engine=engine)
+    for p in result.similar:
+        assert p.position_match == (p.position_group_fine == "CM")
+    same, other = result.same_position, result.other_positions
+    assert same and other, "the fixture archetype mixes positions"
+    assert {p.position_group_fine for p in same} == {"CM"}
+    assert "CM" not in {p.position_group_fine for p in other}
+    # a partition of the unchanged ranking: nothing lost, each group still best-first
+    assert sorted(p.rank for p in same + other) == [p.rank for p in result.similar]
+    for group in (same, other):
+        assert [p.rank for p in group] == sorted(p.rank for p in group)
+
+
 def test_similarity_can_still_use_the_position_group(engine: Engine) -> None:
     arch.rebuild(SEASON, k=3, gk_k=2, engine=engine)
     result = find_similar("CM 20", SEASON, n=10, engine=engine, use_archetypes=False)
     assert result.pool_kind == "position_group" and result.archetype_id is None
     assert {p.position_group_fine for p in result.similar} == {"CM"}
     assert result.group_size == 22
+    assert result.other_positions == [] and len(result.same_position) == len(result.similar)
 
 
 def test_goalkeepers_are_searched_among_goalkeepers(engine: Engine) -> None:

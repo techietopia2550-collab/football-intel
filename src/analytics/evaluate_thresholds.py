@@ -158,6 +158,29 @@ def band_table(df: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
+def position_split(df: pd.DataFrame) -> pd.DataFrame:
+    """Precision for same-position and cross-position pairs (position_a == position_b or not),
+    with the mean cosine of each. Caveat: the labels were drawn from position and archetype
+    rules, so part of the gap is built into the labels themselves."""
+    same = df["position_a"] == df["position_b"]
+    rows = []
+    for kind, mask in (("same", same), ("other", ~same)):
+        n, k = int(mask.sum()), int((mask & df["similar"]).sum())
+        p_lo, p_hi = wilson(k, n)
+        rows.append(
+            {
+                "position": kind,
+                "n": n,
+                "similar": k,
+                "precision": k / n if n else math.nan,
+                "precision_lo": p_lo,
+                "precision_hi": p_hi,
+                "mean_cosine": float(df.loc[mask, "cosine_score"].mean()) if n else math.nan,
+            }
+        )
+    return pd.DataFrame(rows)
+
+
 def recommend(table: pd.DataFrame, df: pd.DataFrame) -> Recommendation:
     """Tier cut-offs from the curve, by the rule in the module docstring."""
     cuts: dict[str, float | None] = {}
@@ -249,6 +272,27 @@ def _pct(x: float) -> str:
     return "–" if isinstance(x, float) and np.isnan(x) else f"{x:.0%}"
 
 
+def _position_lines(df: pd.DataFrame) -> list[str]:
+    """The report's same-position vs other-positions table (needs position_a / position_b)."""
+    lines = [
+        "",
+        "## Same position vs other positions",
+        "",
+        "Pairs are split on the two players' position groups (`position_a` vs `position_b`). The "
+        "score itself ignores position; the app uses this split to show same-position players "
+        "first. The labelling rules used position, so part of this gap is built into the labels.",
+        "",
+        "| Positions | Pairs | Similar | Precision | 95% CI | Mean cosine |",
+        "|---|---|---|---|---|---|",
+    ]
+    for r in position_split(df).itertuples():
+        lines.append(
+            f"| {r.position} | {r.n} | {r.similar} | {_pct(r.precision)} | "
+            f"{_pct(r.precision_lo)}-{_pct(r.precision_hi)} | {r.mean_cosine:.3f} |"
+        )
+    return lines
+
+
 def report(
     df: pd.DataFrame,
     table: pd.DataFrame,
@@ -303,6 +347,8 @@ def report(
             f"| {r.band} | {r.n} | {r.similar} | {_pct(r.precision)} | "
             f"{_pct(r.precision_lo)}-{_pct(r.precision_hi)} |"
         )
+    if {"position_a", "position_b"} <= set(df.columns):
+        lines += _position_lines(df)
 
     def cut(v: float | None) -> str:
         return "not supported" if v is None else f"{v:.0%}+"

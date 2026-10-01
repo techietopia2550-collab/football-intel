@@ -141,7 +141,7 @@ def _heatmaps(directory: pd.DataFrame, ids: list[str]) -> None:
 
 
 def _matrix(directory: pd.DataFrame, ids: list[str]) -> None:
-    design.render(design.section_header("Pairwise similarity", "How close two players' profiles are, as a match % (heuristic)"))
+    design.render(design.section_header("Pairwise similarity", "How close two players' profiles are: a measured tier word, or the raw cosine score (heuristic)"))
     rows = [analytics_dir.player_row(directory, i) for i in ids]
     names = tuple(r["player_name"] for r in rows)
     labels = [f"{r['player_name']} · {r['position_group_fine']}" for r in rows]
@@ -157,7 +157,7 @@ def _matrix(directory: pd.DataFrame, ids: list[str]) -> None:
             shown = pd.DataFrame(
                 [
                     [
-                        design.fmt_match(v) if arch and i != j else design.fmt_match_pct(v)
+                        "self" if i == j else design.fmt_match(v) if arch else design.fmt_cosine(v)
                         for j, v in enumerate(row)
                     ]
                     for i, row in enumerate(mat.to_numpy())
@@ -172,7 +172,8 @@ def _matrix(directory: pd.DataFrame, ids: list[str]) -> None:
                 + (
                     f" {design.MATCH_TIER_NOTE}"
                     if arch
-                    else " No tier word here: tiers were measured on archetype-weighted scores."
+                    else " No tier word here: tiers were measured on archetype-weighted scores, so the raw "
+                    "cosine (-1 to 1) is shown. It is not a probability or a %."
                 )
             )
 
