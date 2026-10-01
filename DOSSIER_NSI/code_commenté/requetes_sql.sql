@@ -1,6 +1,6 @@
 -- =============================================================================
 -- 10 REQUÊTES SQL commentées, testées sur la vraie base data/football.db
--- (SQLite). Expliquées dans 05_SQL_ET_BASE_DE_DONNEES.md.
+-- (SQLite). Expliquées dans 05_SQL_ET_BASE_DE_DONNEES.pdf.
 -- Les requêtes 8, 9 et 10 MODIFIENT la base : à tester sur une COPIE.
 -- =============================================================================
 

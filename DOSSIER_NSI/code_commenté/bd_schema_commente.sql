@@ -50,7 +50,7 @@ CREATE TABLE player_match_stats (
 	match_id INTEGER NOT NULL,
 	player_id VARCHAR NOT NULL,
 	player_name VARCHAR NOT NULL,         -- >> REDONDANT avec players.canonical_name
-	team VARCHAR NOT NULL,                -- >> (voir « normalisation » dans 05_SQL...md)
+	team VARCHAR NOT NULL,                -- >> (voir « normalisation » dans 05_SQL...pdf)
 	opponent VARCHAR NOT NULL,
 	season VARCHAR NOT NULL,
 	league VARCHAR NOT NULL,

@@ -122,7 +122,7 @@ def apply_similarity_rule(similarity_result: dict[str, Any]) -> dict[str, Any]:
 # >>   - environ 10 joueurs sur ~1 320 ont un meilleur score < 0.60 (surtout des gardiens,
 # >>     ex. Łukasz Fabiański : 0.55)
 # >>   - AUCUN n'a un meilleur score < 0.45 -> le refus ne se déclenche presque jamais
-# >>     sans filtre. Question ouverte à discuter (voir 02_PROBLEMATIQUE.md).
+# >>     sans filtre. Question ouverte à discuter (voir 02_PROBLEMATIQUE.pdf).
 #
 # >> Tests automatiques : tests/test_guardrails.py (test_similarity_fair,
 # >> test_similarity_warn_uses_the_exact_sentence, test_similarity_refuse_below_45,

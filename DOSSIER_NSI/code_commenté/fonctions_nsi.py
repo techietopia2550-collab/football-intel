@@ -166,7 +166,7 @@ def recherche_dichotomique(noms_tries: list, nom: str) -> int:
 # 4. SIMILARITÉ COSINUS (version simplifiée) + SEUIL DE CONFIANCE
 # ===========================================================================
 # Dans le projet, le cosinus est calculé APRÈS deux étapes (centrage-réduction
-# et ACP, voir 07_ALGORITHMES_CLES.md). Ici on le calcule directement sur
+# et ACP, voir 07_ALGORITHMES_CLES.pdf). Ici on le calcule directement sur
 # des statistiques centrées-réduites « à la main » pour garder l'idée.
 STATS = ["xg_p90", "pressions_p90", "tacles_p90", "passes_cles_p90"]
 

@@ -6,7 +6,7 @@
 # Ce fichier n'est pas exécutable seul (il manque les imports du module).
 #
 # Rôle du module : trouver les joueurs qui JOUENT COMME un joueur donné.
-# Étapes (voir 07_ALGORITHMES_CLES.md) :
+# Étapes (voir 07_ALGORITHMES_CLES.pdf) :
 #   1. choisir le « groupe » de comparaison (l'archétype du joueur)
 #   2. choisir les statistiques (les 12 plus typiques de l'archétype)
 #   3. centrer-réduire chaque statistique (z-score)
