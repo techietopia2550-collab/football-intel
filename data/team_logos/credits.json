@@ -1,0 +1,714 @@
+{
+  "Barcelona": {
+    "status": "ok",
+    "title": "FC Barcelona",
+    "page_url": "https://en.wikipedia.org/wiki/FC_Barcelona",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/4/47/FC_Barcelona_%28crest%29.svg/500px-FC_Barcelona_%28crest%29.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+    "file": "FC_Barcelona_(crest).svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T18:31:38.787672+00:00"
+  },
+  "AC Milan": {
+    "status": "ok",
+    "title": "AC Milan",
+    "page_url": "https://en.wikipedia.org/wiki/AC_Milan",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d0/Logo_of_AC_Milan.svg/500px-Logo_of_AC_Milan.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+    "file": "Logo_of_AC_Milan.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T18:31:57.144403+00:00"
+  },
+  "AS Roma": {
+    "status": "ok",
+    "title": "AS Roma",
+    "page_url": "https://en.wikipedia.org/wiki/AS_Roma",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/f/f7/AS_Roma_logo_%282017%29.svg/500px-AS_Roma_logo_%282017%29.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "AS Roma logo (2017).svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:12:19.360119+00:00"
+  },
+  "Angers": {
+    "status": "ok",
+    "title": "Angers SCO",
+    "page_url": "https://en.wikipedia.org/wiki/Angers_SCO",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f6/Angers_Sporting_Club_de_l%27Ouest_logo.svg/500px-Angers_Sporting_Club_de_l%27Ouest_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+    "file": "Angers_Sporting_Club_de_l'Ouest_logo.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:48:29.199600+00:00"
+  },
+  "Chievo": {
+    "status": "ok",
+    "title": "AC ChievoVerona",
+    "page_url": "https://en.wikipedia.org/wiki/AC_ChievoVerona",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/f/f0/A.C._ChievoVerona_logo.svg/500px-A.C._ChievoVerona_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "A.C. ChievoVerona logo.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:19:24.210959+00:00"
+  },
+  "Crystal Palace": {
+    "status": "ok",
+    "title": "Crystal Palace F.C.",
+    "page_url": "https://en.wikipedia.org/wiki/Crystal_Palace_F.C.",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/a/a2/Crystal_Palace_FC_logo_%282022%29.svg/500px-Crystal_Palace_FC_logo_%282022%29.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "Crystal Palace FC logo (2022).svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:19:45.578754+00:00"
+  },
+  "Genoa": {
+    "status": "ok",
+    "title": "Genoa CFC",
+    "page_url": "https://en.wikipedia.org/wiki/Genoa_CFC",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/2/2c/Genoa_CFC_crest.svg/500px-Genoa_CFC_crest.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "Genoa CFC crest.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:49:06.613024+00:00"
+  },
+  "Getafe": {
+    "status": "ok",
+    "title": "Getafe CF",
+    "page_url": "https://en.wikipedia.org/wiki/Getafe_CF",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/4/46/Getafe_logo.svg/500px-Getafe_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "Getafe logo.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:26:10.209954+00:00"
+  },
+  "Villarreal": {
+    "status": "ok",
+    "title": "Villarreal CF",
+    "page_url": "https://en.wikipedia.org/wiki/Villarreal_CF",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/b/b9/Villarreal_CF_logo-en.svg/500px-Villarreal_CF_logo-en.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "Villarreal CF logo-en.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:53:22.856355+00:00"
+  },
+  "Liverpool": {
+    "status": "ok",
+    "title": "Liverpool F.C.",
+    "page_url": "https://en.wikipedia.org/wiki/Liverpool_F.C.",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/0/0c/Liverpool_FC.svg/500px-Liverpool_FC.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "Liverpool FC.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:29:40.834773+00:00"
+  },
+  "Napoli": {
+    "status": "ok",
+    "title": "SSC Napoli",
+    "page_url": "https://en.wikipedia.org/wiki/SSC_Napoli",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4d/SSC_Napoli_2025_%28white_and_azure%29.svg/500px-SSC_Napoli_2025_%28white_and_azure%29.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "SSC Napoli 2025 (white and azure).svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:36:28.112848+00:00"
+  },
+  "Everton": {
+    "status": "ok",
+    "title": "Everton F.C.",
+    "page_url": "https://en.wikipedia.org/wiki/Everton_F.C.",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/7/7c/Everton_FC_logo.svg/500px-Everton_FC_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "Everton FC logo.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:23:07.563081+00:00"
+  },
+  "Arsenal": {
+    "status": "ok",
+    "title": "Arsenal F.C.",
+    "page_url": "https://en.wikipedia.org/wiki/Arsenal_F.C.",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/5/53/Arsenal_FC.svg/500px-Arsenal_FC.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "Arsenal FC.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:13:46.346530+00:00"
+  },
+  "Aston Villa": {
+    "status": "ok",
+    "title": "Aston Villa F.C.",
+    "page_url": "https://en.wikipedia.org/wiki/Aston_Villa_F.C.",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/9/9a/Aston_Villa_FC_new_crest.svg/500px-Aston_Villa_FC_new_crest.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "Aston Villa FC new crest.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:48:36.435530+00:00"
+  },
+  "Athletic Club": {
+    "status": "ok",
+    "title": "Athletic Bilbao",
+    "page_url": "https://en.wikipedia.org/wiki/Athletic_Bilbao",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/9/98/Club_Athletic_Bilbao_logo.svg/500px-Club_Athletic_Bilbao_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "Club Athletic Bilbao logo.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:15:25.773674+00:00"
+  },
+  "Atlético Madrid": {
+    "status": "ok",
+    "title": "Atlético Madrid",
+    "page_url": "https://en.wikipedia.org/wiki/Atl%C3%A9tico_Madrid",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/f/f9/Atletico_Madrid_Logo_2024.svg/500px-Atletico_Madrid_Logo_2024.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "Atletico Madrid Logo 2024.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:15:44.580141+00:00"
+  },
+  "Bournemouth": {
+    "status": "ok",
+    "title": "AFC Bournemouth",
+    "page_url": "https://en.wikipedia.org/wiki/AFC_Bournemouth",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/e/e5/AFC_Bournemouth_%282013%29.svg/500px-AFC_Bournemouth_%282013%29.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "AFC Bournemouth (2013).svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:17:02.831509+00:00"
+  },
+  "Caen": {
+    "status": "ok",
+    "title": "Stade Malherbe Caen",
+    "page_url": "https://en.wikipedia.org/wiki/Stade_Malherbe_Caen",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/a/aa/SM_Caen_2016_logo.svg/500px-SM_Caen_2016_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "SM Caen 2016 logo.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:52:17.606615+00:00"
+  },
+  "Celta Vigo": {
+    "status": "ok",
+    "title": "RC Celta de Vigo",
+    "page_url": "https://en.wikipedia.org/wiki/RC_Celta_de_Vigo",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/1/12/RC_Celta_de_Vigo_logo.svg/500px-RC_Celta_de_Vigo_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "RC Celta de Vigo logo.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:18:19.869498+00:00"
+  },
+  "Chelsea": {
+    "status": "ok",
+    "title": "Chelsea F.C.",
+    "page_url": "https://en.wikipedia.org/wiki/Chelsea_F.C.",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/c/cc/Chelsea_FC.svg/500px-Chelsea_FC.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "Chelsea FC.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:19:05.248951+00:00"
+  },
+  "Deportivo La Coruña": {
+    "status": "ok",
+    "title": "Deportivo de A Coruña",
+    "page_url": "https://en.wikipedia.org/wiki/Deportivo_de_A_Coru%C3%B1a",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/5/56/RC_Deportivo_A_Coru%C3%B1a_logo_2026.svg/500px-RC_Deportivo_A_Coru%C3%B1a_logo_2026.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "RC Deportivo A Coruña logo 2026.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:20:31.113763+00:00"
+  },
+  "Eibar": {
+    "status": "ok",
+    "title": "SD Eibar",
+    "page_url": "https://en.wikipedia.org/wiki/SD_Eibar",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/3/3b/SD_Eibar_logo_2016.svg/500px-SD_Eibar_logo_2016.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+    "file": "SD_Eibar_logo_2016.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:52:30.282925+00:00"
+  },
+  "Espanyol": {
+    "status": "ok",
+    "title": "RCD Espanyol",
+    "page_url": "https://en.wikipedia.org/wiki/RCD_Espanyol",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/9/92/RCD_Espanyol_crest.svg/500px-RCD_Espanyol_crest.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "RCD Espanyol crest.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:22:06.295235+00:00"
+  },
+  "Fiorentina": {
+    "status": "ok",
+    "title": "ACF Fiorentina",
+    "page_url": "https://en.wikipedia.org/wiki/ACF_Fiorentina",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8c/ACF_Fiorentina_-_logo_%28Italy%2C_2022%29.svg/500px-ACF_Fiorentina_-_logo_%28Italy%2C_2022%29.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+    "file": "ACF_Fiorentina_-_logo_(Italy,_2022).svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:09:10.802175+00:00"
+  },
+  "Atalanta": {
+    "status": "ok",
+    "title": "Atalanta BC",
+    "page_url": "https://en.wikipedia.org/wiki/Atalanta_BC",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/f/f2/Atalanta_BC_new_logo.svg/500px-Atalanta_BC_new_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "Atalanta_BC_new_logo.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:52:09.844364+00:00"
+  },
+  "Bastia": {
+    "status": "ok",
+    "title": "SC Bastia",
+    "page_url": "https://en.wikipedia.org/wiki/SC_Bastia",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/d/d7/SC_Bastia_logo_2024.svg/500px-SC_Bastia_logo_2024.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "SC Bastia logo 2024.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:16:08.767422+00:00"
+  },
+  "Bologna": {
+    "status": "ok",
+    "title": "Bologna FC 1909",
+    "page_url": "https://en.wikipedia.org/wiki/Bologna_FC_1909",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5b/Bologna_F.C._1909_logo.svg/500px-Bologna_F.C._1909_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+    "file": "Bologna_F.C._1909_logo.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:16:19.326248+00:00"
+  },
+  "Bordeaux": {
+    "status": "ok",
+    "title": "FC Girondins de Bordeaux",
+    "page_url": "https://en.wikipedia.org/wiki/FC_Girondins_de_Bordeaux",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/1/11/FC_Girondins_de_Bordeaux_logo.svg/500px-FC_Girondins_de_Bordeaux_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+    "file": "FC_Girondins_de_Bordeaux_logo.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:16:42.441356+00:00"
+  },
+  "Carpi": {
+    "status": "ok",
+    "title": "AC Carpi",
+    "page_url": "https://en.wikipedia.org/wiki/AC_Carpi",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/4/48/AC_Carpi_crest.svg/500px-AC_Carpi_crest.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "AC Carpi crest.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:52:25.016783+00:00"
+  },
+  "Empoli": {
+    "status": "ok",
+    "title": "Empoli FC",
+    "page_url": "https://en.wikipedia.org/wiki/Empoli_FC",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/f/fb/Empoli_FC_crest.svg/500px-Empoli_FC_crest.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "Empoli FC crest.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:21:36.984929+00:00"
+  },
+  "Frosinone": {
+    "status": "ok",
+    "title": "Frosinone Calcio",
+    "page_url": "https://en.wikipedia.org/wiki/Frosinone_Calcio",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/0/0b/Frosinone_Calcio_logo.svg/500px-Frosinone_Calcio_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "Frosinone_Calcio_logo.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:24:22.415003+00:00"
+  },
+  "Granada": {
+    "status": "ok",
+    "title": "Granada CF",
+    "page_url": "https://en.wikipedia.org/wiki/Granada_CF",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/d/d5/Logo_of_Granada_Club_de_F%C3%BAtbol.svg/500px-Logo_of_Granada_Club_de_F%C3%BAtbol.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "Logo of Granada Club de Fútbol.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:26:53.511535+00:00"
+  },
+  "Guingamp": {
+    "status": "missing",
+    "note": "only a photo/JPG available on Wikipedia",
+    "checked": "2026-09-23T19:53:56.862145+00:00"
+  },
+  "Hellas Verona": {
+    "status": "ok",
+    "title": "Hellas Verona FC",
+    "page_url": "https://en.wikipedia.org/wiki/Hellas_Verona_FC",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/9/92/Hellas_Verona_FC_logo_%282020%29.svg/500px-Hellas_Verona_FC_logo_%282020%29.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "Hellas Verona FC logo (2020).svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:27:39.234278+00:00"
+  },
+  "Inter Milan": {
+    "status": "ok",
+    "title": "Inter Milan",
+    "page_url": "https://en.wikipedia.org/wiki/Inter_Milan",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/05/FC_Internazionale_Milano_2021.svg/500px-FC_Internazionale_Milano_2021.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "FC Internazionale Milano 2021.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:27:50.930241+00:00"
+  },
+  "Juventus": {
+    "status": "ok",
+    "title": "Juventus FC",
+    "page_url": "https://en.wikipedia.org/wiki/Juventus_FC",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ed/Juventus_FC_-_logo_black_%28Italy%2C_2020%29.svg/500px-Juventus_FC_-_logo_black_%28Italy%2C_2020%29.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+    "file": "Juventus_FC_-_logo_black_(Italy,_2020).svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:28:01.095010+00:00"
+  },
+  "Las Palmas": {
+    "status": "ok",
+    "title": "UD Las Palmas",
+    "page_url": "https://en.wikipedia.org/wiki/UD_Las_Palmas",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/2/20/UD_Las_Palmas_logo.svg/500px-UD_Las_Palmas_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "UD Las Palmas logo.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:49:14.639709+00:00"
+  },
+  "Lazio": {
+    "status": "ok",
+    "title": "SS Lazio",
+    "page_url": "https://en.wikipedia.org/wiki/SS_Lazio",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/c/ce/S.S._Lazio_badge.svg/500px-S.S._Lazio_badge.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "S.S. Lazio badge.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:28:24.038327+00:00"
+  },
+  "Leicester City": {
+    "status": "ok",
+    "title": "Leicester City F.C.",
+    "page_url": "https://en.wikipedia.org/wiki/Leicester_City_F.C.",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/2/2d/Leicester_City_crest.svg/500px-Leicester_City_crest.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "Leicester City crest.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:28:42.218336+00:00"
+  },
+  "Lorient": {
+    "status": "ok",
+    "title": "FC Lorient",
+    "page_url": "https://en.wikipedia.org/wiki/FC_Lorient",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/4/4c/FC_Lorient_logo.svg/500px-FC_Lorient_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "FC Lorient logo.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:30:20.847559+00:00"
+  },
+  "Lyon": {
+    "status": "ok",
+    "title": "Olympique Lyonnais",
+    "page_url": "https://en.wikipedia.org/wiki/Olympique_Lyonnais",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/1/1c/Olympique_Lyonnais_logo.svg/500px-Olympique_Lyonnais_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "Olympique Lyonnais logo.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:30:42.674483+00:00"
+  },
+  "Manchester City": {
+    "status": "ok",
+    "title": "Manchester City F.C.",
+    "page_url": "https://en.wikipedia.org/wiki/Manchester_City_F.C.",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/e/eb/Manchester_City_FC_badge.svg/500px-Manchester_City_FC_badge.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "Manchester City FC badge.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:31:14.438101+00:00"
+  },
+  "Manchester United": {
+    "status": "ok",
+    "title": "Manchester United F.C.",
+    "page_url": "https://en.wikipedia.org/wiki/Manchester_United_F.C.",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/7/7a/Manchester_United_FC_crest.svg/500px-Manchester_United_FC_crest.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "Manchester United FC crest.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:31:48.160695+00:00"
+  },
+  "Marseille": {
+    "status": "ok",
+    "title": "Olympique de Marseille",
+    "page_url": "https://en.wikipedia.org/wiki/Olympique_de_Marseille",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4f/Olympique_de_Marseille_2026_logo.svg/500px-Olympique_de_Marseille_2026_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+    "file": "Olympique_de_Marseille_2026_logo.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:32:01.231557+00:00"
+  },
+  "Monaco": {
+    "status": "ok",
+    "title": "AS Monaco FC",
+    "page_url": "https://en.wikipedia.org/wiki/AS_Monaco_FC",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/c/cf/LogoASMonacoFC2021.svg/500px-LogoASMonacoFC2021.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "LogoASMonacoFC2021.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:32:34.821698+00:00"
+  },
+  "Málaga": {
+    "status": "ok",
+    "title": "Málaga CF",
+    "page_url": "https://en.wikipedia.org/wiki/M%C3%A1laga_CF",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/6/6d/M%C3%A1laga_CF.svg/500px-M%C3%A1laga_CF.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "Málaga CF.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:35:10.571229+00:00"
+  },
+  "Nantes": {
+    "status": "ok",
+    "title": "FC Nantes",
+    "page_url": "https://en.wikipedia.org/wiki/FC_Nantes",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/45/Logo_FC_Nantes_%28avec_fond%29_-_2019.svg/500px-Logo_FC_Nantes_%28avec_fond%29_-_2019.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+    "file": "Logo_FC_Nantes_(avec_fond)_-_2019.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:35:37.864360+00:00"
+  },
+  "Norwich City": {
+    "status": "ok",
+    "title": "Norwich City F.C.",
+    "page_url": "https://en.wikipedia.org/wiki/Norwich_City_F.C.",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/1/17/Norwich_City_FC_logo.svg/500px-Norwich_City_FC_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "Norwich City FC logo.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:37:04.051587+00:00"
+  },
+  "Palermo": {
+    "status": "ok",
+    "title": "Palermo FC",
+    "page_url": "https://en.wikipedia.org/wiki/Palermo_FC",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/d/df/Palermo_Calcio_logo_%282019%29.svg/500px-Palermo_Calcio_logo_%282019%29.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "Palermo Calcio logo (2019).svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:37:12.499634+00:00"
+  },
+  "Paris Saint-Germain": {
+    "status": "ok",
+    "title": "Paris Saint-Germain FC",
+    "page_url": "https://en.wikipedia.org/wiki/Paris_Saint-Germain_FC",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/a/a7/Paris_Saint-Germain_F.C..svg/500px-Paris_Saint-Germain_F.C..svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "Paris Saint-Germain F.C..svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:37:19.477810+00:00"
+  },
+  "Sampdoria": {
+    "status": "ok",
+    "title": "UC Sampdoria",
+    "page_url": "https://en.wikipedia.org/wiki/UC_Sampdoria",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/d/d2/U.C._Sampdoria_logo.svg/500px-U.C._Sampdoria_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "U.C._Sampdoria_logo.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:38:05.336789+00:00"
+  },
+  "Sassuolo": {
+    "status": "ok",
+    "title": "US Sassuolo Calcio",
+    "page_url": "https://en.wikipedia.org/wiki/US_Sassuolo_Calcio",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/1/1c/US_Sassuolo_Calcio_logo.svg/500px-US_Sassuolo_Calcio_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "US Sassuolo Calcio logo.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:49:22.063276+00:00"
+  },
+  "Tottenham Hotspur": {
+    "status": "ok",
+    "title": "Tottenham Hotspur F.C.",
+    "page_url": "https://en.wikipedia.org/wiki/Tottenham_Hotspur_F.C.",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/b/b4/Tottenham_Hotspur.svg/500px-Tottenham_Hotspur.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "Tottenham Hotspur.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:39:03.741957+00:00"
+  },
+  "Toulouse": {
+    "status": "ok",
+    "title": "Toulouse FC",
+    "page_url": "https://en.wikipedia.org/wiki/Toulouse_FC",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/6/63/Toulouse_FC_2018_logo.svg/500px-Toulouse_FC_2018_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "Toulouse FC 2018 logo.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:39:12.036364+00:00"
+  },
+  "Gazélec Ajaccio": {
+    "status": "ok",
+    "title": "Gazélec Ajaccio",
+    "page_url": "https://en.wikipedia.org/wiki/Gaz%C3%A9lec_Ajaccio",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/8/80/Gazelec_Ajaccio_logo.svg/500px-Gazelec_Ajaccio_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "Gazelec Ajaccio logo.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:40:31.952796+00:00"
+  },
+  "Levante": {
+    "status": "missing",
+    "note": "only a photo/JPG available on Wikipedia",
+    "checked": "2026-09-23T19:53:56.864152+00:00"
+  },
+  "Lille": {
+    "status": "ok",
+    "title": "Lille OSC",
+    "page_url": "https://en.wikipedia.org/wiki/Lille_OSC",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/3/3f/Lille_OSC_2018_logo.svg/500px-Lille_OSC_2018_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "Lille OSC 2018 logo.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:40:48.573327+00:00"
+  },
+  "Montpellier": {
+    "status": "ok",
+    "title": "Montpellier FC",
+    "page_url": "https://en.wikipedia.org/wiki/Montpellier_FC",
+    "image_url": "https://upload.wikimedia.org/wikipedia/en/6/6f/Montpellier_FC_logo.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+    "file": "Montpellier FC logo.png",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:41:30.094405+00:00"
+  },
+  "Newcastle United": {
+    "status": "ok",
+    "title": "Newcastle United F.C.",
+    "page_url": "https://en.wikipedia.org/wiki/Newcastle_United_F.C.",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/5/56/Newcastle_United_Logo.svg/500px-Newcastle_United_Logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "Newcastle United Logo.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:41:38.269032+00:00"
+  },
+  "Nice": {
+    "status": "ok",
+    "title": "OGC Nice",
+    "page_url": "https://en.wikipedia.org/wiki/OGC_Nice",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/2/2e/OGC_Nice_logo.svg/500px-OGC_Nice_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "OGC Nice logo.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:42:21.117970+00:00"
+  },
+  "Rayo Vallecano": {
+    "status": "ok",
+    "title": "Rayo Vallecano",
+    "page_url": "https://en.wikipedia.org/wiki/Rayo_Vallecano",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/d/d8/Rayo_Vallecano_logo.svg/500px-Rayo_Vallecano_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "Rayo Vallecano logo.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:42:28.246561+00:00"
+  },
+  "Real Betis": {
+    "status": "ok",
+    "title": "Real Betis",
+    "page_url": "https://en.wikipedia.org/wiki/Real_Betis",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/2/2f/Real_Betis_2022_logo.svg/500px-Real_Betis_2022_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "Real Betis 2022 logo.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:42:35.216107+00:00"
+  },
+  "Real Madrid": {
+    "status": "ok",
+    "title": "Real Madrid CF",
+    "page_url": "https://en.wikipedia.org/wiki/Real_Madrid_CF",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/5/56/Real_Madrid_CF.svg/500px-Real_Madrid_CF.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "Real Madrid CF.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:43:17.155748+00:00"
+  },
+  "Real Sociedad": {
+    "status": "ok",
+    "title": "Real Sociedad",
+    "page_url": "https://en.wikipedia.org/wiki/Real_Sociedad",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/f/f1/Real_Sociedad_logo.svg/500px-Real_Sociedad_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "Real Sociedad logo.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:43:25.200454+00:00"
+  },
+  "Reims": {
+    "status": "ok",
+    "title": "Stade de Reims",
+    "page_url": "https://en.wikipedia.org/wiki/Stade_de_Reims",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/19/Stade_de_Reims_logo.svg/500px-Stade_de_Reims_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+    "file": "Stade_de_Reims_logo.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:43:30.268408+00:00"
+  },
+  "Rennes": {
+    "status": "ok",
+    "title": "Stade Rennais FC",
+    "page_url": "https://en.wikipedia.org/wiki/Stade_Rennais_FC",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/9/9e/Stade_Rennais_FC.svg/500px-Stade_Rennais_FC.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "Stade Rennais FC.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:43:37.735745+00:00"
+  },
+  "Saint-Étienne": {
+    "status": "ok",
+    "title": "AS Saint-Étienne",
+    "page_url": "https://en.wikipedia.org/wiki/AS_Saint-%C3%89tienne",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/2/25/AS_Saint-%C3%89tienne_logo.svg/500px-AS_Saint-%C3%89tienne_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "AS Saint-Étienne logo.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:44:17.513706+00:00"
+  },
+  "Sevilla": {
+    "status": "ok",
+    "title": "Sevilla FC",
+    "page_url": "https://en.wikipedia.org/wiki/Sevilla_FC",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/3/3b/Sevilla_FC_logo.svg/500px-Sevilla_FC_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "Sevilla_FC_logo.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:44:26.328664+00:00"
+  },
+  "Southampton": {
+    "status": "ok",
+    "title": "Southampton F.C.",
+    "page_url": "https://en.wikipedia.org/wiki/Southampton_F.C.",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/c/c9/FC_Southampton.svg/500px-FC_Southampton.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "FC Southampton.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:45:10.509359+00:00"
+  },
+  "Sporting Gijón": {
+    "status": "ok",
+    "title": "Sporting de Gijón",
+    "page_url": "https://en.wikipedia.org/wiki/Sporting_de_Gij%C3%B3n",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/4/48/Real_Sporting_de_Gijon.svg/500px-Real_Sporting_de_Gijon.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "Real Sporting de Gijon.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:45:17.844735+00:00"
+  },
+  "Stoke City": {
+    "status": "ok",
+    "title": "Stoke City F.C.",
+    "page_url": "https://en.wikipedia.org/wiki/Stoke_City_F.C.",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/b/bf/Stoke_City_FC_crest_2026.svg/500px-Stoke_City_FC_crest_2026.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "Stoke City FC crest 2026.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:45:25.195928+00:00"
+  },
+  "Sunderland": {
+    "status": "ok",
+    "title": "Sunderland A.F.C.",
+    "page_url": "https://en.wikipedia.org/wiki/Sunderland_A.F.C.",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/7/77/Logo_Sunderland.svg/500px-Logo_Sunderland.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "Logo Sunderland.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:46:06.040797+00:00"
+  },
+  "Swansea City": {
+    "status": "ok",
+    "title": "Swansea City A.F.C.",
+    "page_url": "https://en.wikipedia.org/wiki/Swansea_City_A.F.C.",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/f/f9/Swansea_City_AFC_logo.svg/500px-Swansea_City_AFC_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "Swansea City AFC logo.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:46:12.968658+00:00"
+  },
+  "Torino": {
+    "status": "ok",
+    "title": "Torino FC",
+    "page_url": "https://en.wikipedia.org/wiki/Torino_FC",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/2/2e/Torino_FC_Logo.svg/500px-Torino_FC_Logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "Torino FC Logo.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:46:20.846449+00:00"
+  },
+  "Udinese": {
+    "status": "ok",
+    "title": "Udinese Calcio",
+    "page_url": "https://en.wikipedia.org/wiki/Udinese_Calcio",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/c/ce/Udinese_Calcio_logo.svg/500px-Udinese_Calcio_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "Udinese Calcio logo.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:47:05.756825+00:00"
+  },
+  "Valencia": {
+    "status": "ok",
+    "title": "Valencia CF",
+    "page_url": "https://en.wikipedia.org/wiki/Valencia_CF",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/c/ce/Valenciacf.svg/500px-Valenciacf.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "Valenciacf.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:47:14.424324+00:00"
+  },
+  "West Bromwich Albion": {
+    "status": "ok",
+    "title": "West Bromwich Albion F.C.",
+    "page_url": "https://en.wikipedia.org/wiki/West_Bromwich_Albion_F.C.",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/8/8b/West_Bromwich_Albion.svg/500px-West_Bromwich_Albion.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "West Bromwich Albion.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:48:04.578644+00:00"
+  },
+  "West Ham United": {
+    "status": "ok",
+    "title": "West Ham United F.C.",
+    "page_url": "https://en.wikipedia.org/wiki/West_Ham_United_F.C.",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/c/c2/West_Ham_United_FC_logo.svg/500px-West_Ham_United_FC_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "West Ham United FC logo.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:48:12.059424+00:00"
+  },
+  "Troyes": {
+    "status": "ok",
+    "title": "ES Troyes AC",
+    "page_url": "https://en.wikipedia.org/wiki/ES_Troyes_AC",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a9/ESTAC_Troyes_Logo.svg/500px-ESTAC_Troyes_Logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+    "file": "ESTAC_Troyes_Logo.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:49:27.685118+00:00"
+  },
+  "Watford": {
+    "status": "ok",
+    "title": "Watford F.C.",
+    "page_url": "https://en.wikipedia.org/wiki/Watford_F.C.",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/en/thumb/e/e2/Watford.svg/500px-Watford.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "Watford.svg",
+    "attribution": "Logo: Wikipedia (club trademark)",
+    "fetched": "2026-09-23T19:50:12.963340+00:00"
+  }
+}
