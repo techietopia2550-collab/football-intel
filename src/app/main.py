@@ -6,9 +6,18 @@ into /src/analytics (through `src.app.data`) instead.
 
 from __future__ import annotations
 
-from src.utils import disk_bootstrap  # isort: skip  # noqa: F401  (must be first)
+import sys  # isort: skip
+from pathlib import Path  # isort: skip
 
-import streamlit as st
+# `streamlit run src/app/main.py` only puts src/app on sys.path; hosted runs (Streamlit Cloud)
+# have no editable install, so add the project root for `import src...` (pages inherit it).
+_ROOT = str(Path(__file__).resolve().parents[2])
+if _ROOT not in sys.path:
+    sys.path.insert(0, _ROOT)
+
+from src.utils import disk_bootstrap  # isort: skip  # noqa: E402, F401  (must be first)
+
+import streamlit as st  # noqa: E402
 
 st.set_page_config(
     page_title="Football Intel", page_icon="⚽", layout="wide", initial_sidebar_state="expanded"
